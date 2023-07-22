@@ -26,10 +26,10 @@
 <div>
 <a target="_blank" href="https://www.amazon.com/Compatible-Brother-TZe-N201-TZeN201-Non-Laminated/dp/B07C9XPK8P/ref=sr_1_7_sspa?crid=1I5KDO7NMSO60&amp;keywords=p+touch+tape&amp;qid=1690056512&amp;sprefix=p+touch+tap%252Caps%252C132&amp;sr=8-7-spons&amp;sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&amp;psc=1&_encoding=UTF8&tag=brianaffil0e6-20&linkCode=ur2&linkId=dd0d70bf8694c198fba4ebc44b71d410&camp=1789&creative=9325">
 <p>3.5mm label tape</p>
-<p>(small enough to fit the Neutrik 1/4" patch bays I'm using)</p>
 <img src="readme_images/label_tape.jpg"  width="49%">
 </a>
 </div>
+(small enough to fit the Neutrik 1/4" patch bays I'm using)
 
 ## How to use
 TODO: write up docs here
