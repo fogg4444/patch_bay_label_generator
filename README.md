@@ -1,7 +1,7 @@
 # Python Patch Bay Label Generator
 
-![patch bay with label](readme_images/image_1.jpg)
-![patch bay with label](readme_images/image_2.jpg)
+![patch bay with label](readme_images/image_1.jpg | width=200)
+![patch bay with label](readme_images/image_2.jpg | width=200)
 
 ## Features
 - Store patch bay routing definitions as code
