@@ -32,9 +32,8 @@
 (small enough to fit the Neutrik 1/4" patch bays I'm using)
 
 ## How to use
-TODO: write up docs here
 
-I've got my personal patch config saved in the code here. At some point I'll remove the config code from the generation script and make this easier to use for others. You can fork the repo, or pull it and modify. Might be a little clunky pulling future changes to the generation script.
+I've got my personal patch config saved in this repo. At some point I'll remove the config code from the generation script and make this easier to use for others. You can fork the repo, or pull it and modify.
 
 ### Editing Patch bay config
 - Config is a list of objects, formatted like so:
