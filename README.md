@@ -65,6 +65,8 @@ I've got my personal patch config saved in the code here. At some point I'll rem
 - Commit your output images if you want to keep them in version control
 
 ### Printing
+- Download some drivers?? I don't remember what I did here...
+
 - Add Brother printer to your list of printers
 <img src="readme_images/print_docs_1.jpg"  width="49%">
 
