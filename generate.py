@@ -200,15 +200,9 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Aux 5 Out",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Aux 6 Out",
-            "bottom": "-",
-            "width": 1
+            "top": "Aux 5 / 6 Out",
+            "bottom": "Pro Verb Out",
+            "width": 2
         },
         {
             "normalled": False,
@@ -228,49 +222,33 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
+            "top": "Aux 8 Out L/R",
+            "bottom": "-",
+            "width": 2
+        },
+        {
+            "normalled": True,
+            "top": "Studio A O/P L/R",
+            "bottom": "Headamp Pro Input",
+            "width": 2
+        },
+        {
+            "normalled": True,
+            "top": "Studio Phones B L/R Out",
+            "bottom": "Meyer Mains In L/R",
+            "width": 2
+        },
+        {
+            "normalled": True,
+            # "top": "DBX 160 Link",
             "top": "-",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
+            "normalled": True,
+            # "top": "DBX 160 Link",
             "top": "-",
             "bottom": "-",
             "width": 1
@@ -288,27 +266,9 @@ config = [
         },
         {
             "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "4 Track Tape In",
+            "bottom": "4 Track Tape Direct Out",
+            "width": 4
         },
         {
             "normalled": False,
