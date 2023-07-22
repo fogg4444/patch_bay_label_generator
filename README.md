@@ -75,3 +75,7 @@ I've got my personal patch config saved in the code here. At some point I'll rem
 - Create a new page size to match the settings in your python file.
   - I'm using `17"` width, and `.14"` height for the .13 tape.
 <img src="readme_images/print_docs_3.jpg"  width="49%">
+
+- `Auto rotate` and `Scale to Fit` settings seem to work
+
+- Print!
