@@ -33,4 +33,45 @@
 
 ## How to use
 TODO: write up docs here
-- Every time you re-patch something on the patch bay, submit a PR
+
+I've got my personal patch config saved in the code here. At some point I'll remove the config code from the generation script and make this easier to use for others. You can fork the repo, or pull it and modify. Might be a little clunky pulling future changes to the generation script.
+
+### Editing Patch bay config
+- Config is a list of objects, formatted like so:
+
+```
+[
+  {
+    "label_name": "patch-bay-1",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "1-24 Inputs",
+            "bottom": "1-24 Outputs",
+            "width": 24
+        },
+    ]
+  }
+]
+```
+
+- Width allows you to group things together under the same label
+- Normalled: script will generate an underline to visually notify that a patch point is normalled
+- Code is currently set to enforce 24 points per bay. This can be modified in the python
+
+### Generating patch label files
+- Run `bash generate.sh`
+- Your images should be exported to `label_outputs`
+- Commit your output images if you want to keep them in version control
+
+### Printing
+- Add Brother printer to your list of printers
+<img src="readme_images/print_docs_1.jpg"  width="49%">
+
+- Printer will have a series of pre-set page sizes. Disregard all of these
+<img src="readme_images/print_docs_2.jpg"  width="49%">
+
+- Click on `Manage Custom Sizes`
+- Create a new page size to match the settings in your python file.
+  - I'm using `17"` width, and `.14"` height for the .13 tape.
+<img src="readme_images/print_docs_3.jpg"  width="49%">
