@@ -272,15 +272,9 @@ config = [
         },
         {
             "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "903 De Esser In 1 / 2",
+            "bottom": "903 De Esser Out 1 / 2",
+            "width": 2
         },
         {
             "normalled": False,
