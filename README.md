@@ -67,15 +67,15 @@ I've got my personal patch config saved in this repo. At some point I'll remove 
 - Download some drivers?? I don't remember what I did here...
 
 - Add Brother printer to your list of printers
-<img src="readme_images/print_docs_1.jpg"  width="49%">
+<img src="readme_images/print_docs_1.png"  width="49%">
 
 - Printer will have a series of pre-set page sizes. Disregard all of these
-<img src="readme_images/print_docs_2.jpg"  width="49%">
+<img src="readme_images/print_docs_2.png"  width="49%">
 
 - Click on `Manage Custom Sizes`
 - Create a new page size to match the settings in your python file.
   - I'm using `17"` width, and `.14"` height for the .13 tape.
-<img src="readme_images/print_docs_3.jpg"  width="49%">
+<img src="readme_images/print_docs_3.png"  width="49%">
 
 - `Auto rotate` and `Scale to Fit` settings seem to work
 
