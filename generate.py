@@ -356,10 +356,28 @@ config = [
             "width": 16
         },
         {
-            "normalled": True,
-            "top": "Group 1 -  8 Direct Outputs",
-            "bottom": "-",
-            "width": 8
+            "normalled": False,
+            "top": "Group 1 / 2 Direct Out",
+            "bottom": "FX 1 In L / R",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Group 3 / 4 Direct Out",
+            "bottom": "FX 2 In L / R",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Group 5 / 6 Direct Out",
+            "bottom": "FX 3 In L / R",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Group 7 / 8 Direct Out",
+            "bottom": "FX 4 In L / R",
+            "width": 2
         },
     ]
   },
