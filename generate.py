@@ -359,7 +359,70 @@ config = [
     ]
   },
   {
-    "label_name": "8-amp-rack",
+    "label_name": "8",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "Main Insert Send",
+            "bottom": "Main Insert Return",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "-",
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "DBX 160 Link",
+            "bottom": "DBX 160 Link",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Fuzz In",
+            "bottom": "Fuzz Out",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Transition Delay In",
+            "bottom": "Transition Delay Out",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Hall of Fame Verb In",
+            "bottom": "Hall of Fame Verb Out",
+            "width": 2
+        },
+    ]
+  },
+  {
+    "label_name": "9",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "-",
+            "width": 24
+        },
+    ]
+  },
+  {
+    "label_name": "10",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "-",
+            "width": 24
+        }
+    ]
+  },
+  {
+    "label_name": "11-amp-rack",
     "entries": [
         {
             "normalled": True,

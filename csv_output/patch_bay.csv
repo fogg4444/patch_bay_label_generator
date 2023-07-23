@@ -34,7 +34,22 @@ Patch bay: 7
 Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Send,,,,,,,
 Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Return,,,,,,,
 
-Patch bay: 8-amp-rack
+Patch bay: 8
+
+Main Insert Send,,-,,,,,,,,,,,,,,,,DBX 160 Link,Fuzz In,Transition Delay In,,Hall of Fame Verb In,
+Main Insert Return,,-,,,,,,,,,,,,,,,,DBX 160 Link,Fuzz Out,Transition Delay Out,,Hall of Fame Verb Out,
+
+Patch bay: 9
+
+-,,,,,,,,,,,,,,,,,,,,,,,
+-,,,,,,,,,,,,,,,,,,,,,,,
+
+Patch bay: 10
+
+-,,,,,,,,,,,,,,,,,,,,,,,
+-,,,,,,,,,,,,,,,,,,,,,,,
+
+Patch bay: 11-amp-rack
 
 L / R Main Input,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
 DBX Drive Rack L/R IN,,High Amp In L/R,,Mid Amp In L/R,,Low Amp In L/R,,-,,,,,,,,,,,,,,,
