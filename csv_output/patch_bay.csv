@@ -1,64 +1,40 @@
+
+Patch bay: 1
+
 Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,API L/R In,,Dbx 160A L/R In,,D-Comp L/R In,,-,-
 Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Out,,-,-
-Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,API L/R In,,Dbx 160A L/R In,,D-Comp L/R In,,-,-
-Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Out,,-,-
--,-,D-Comp L/R In,,Dbx 160A L/R In,,API L/R In,,Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,
--,-,D-Comp L/R Out,,Dbx 160A L/R Out,,API L/R Out,,Console Line In 1-16,,,,,,,,,,,,,,,
--,-,D-Comp L/R In,,Dbx 160A L/R In,,API L/R In,,Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,
--,-,D-Comp L/R Out,,Dbx 160A L/R Out,,API L/R Out,,Console Line In 1-16,,,,,,,,,,,,,,,
-Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,Fuzz In,-,-,Pro Verb Out,,Pro Verb In,
-Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,Fuzz In,-,-,Pro Verb Out,,Pro Verb In,
-Aux 7 Out,,Aux 5 / 6 Out,,Aux 4 Out,Aux 3 Out,Aux 2 Out,Aux 1 Out,Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,
-Pro Verb In,,Pro Verb Out,,-,-,Fuzz In,Moog DLY In,Console Line In 17-32,,,,,,,,,,,,,,,
-Aux 7 Out,,Aux 5 / 6 Out,,Aux 4 Out,Aux 3 Out,Aux 2 Out,Aux 1 Out,Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,
-Pro Verb In,,Pro Verb Out,,-,-,Fuzz In,Moog DLY In,Console Line In 17-32,,,,,,,,,,,,,,,
-Apollo 16 Out,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Studio A O/P L/R,,Studio Phones B L/R Out,,-,-
-Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,,Headamp Pro Input,,Meyer Mains In L/R,,-,-
-Apollo 16 Out,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Studio A O/P L/R,,Studio Phones B L/R Out,,-,-
-Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,,Headamp Pro Input,,Meyer Mains In L/R,,-,-
--,-,Studio Phones B L/R Out,,Studio A O/P L/R,,Aux 8 Out L/R,,Apollo 16 Out,,,,,,,,,,,,,,,
--,-,Meyer Mains In L/R,,Headamp Pro Input,,-,,Ghost 17-32 Tape In,,,,,,,,,,,,,,,
--,-,Studio Phones B L/R Out,,Studio A O/P L/R,,Aux 8 Out L/R,,Apollo 16 Out,,,,,,,,,,,,,,,
--,-,Meyer Mains In L/R,,Headamp Pro Input,,-,,Ghost 17-32 Tape In,,,,,,,,,,,,,,,
-Apollo 16 In,,,,,,,,,,,,,,,,4 Track Tape In,,,,903 De Esser In 1 / 2,,-,-
-Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,4 Track Tape Direct Out,,,,903 De Esser Out 1 / 2,,-,-
-Apollo 16 In,,,,,,,,,,,,,,,,4 Track Tape In,,,,903 De Esser In 1 / 2,,-,-
-Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,4 Track Tape Direct Out,,,,903 De Esser Out 1 / 2,,-,-
--,-,903 De Esser In 1 / 2,,4 Track Tape In,,,,Apollo 16 In,,,,,,,,,,,,,,,
--,-,903 De Esser Out 1 / 2,,4 Track Tape Direct Out,,,,Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,
--,-,903 De Esser In 1 / 2,,4 Track Tape In,,,,Apollo 16 In,,,,,,,,,,,,,,,
--,-,903 De Esser Out 1 / 2,,4 Track Tape Direct Out,,,,Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,
+
+Patch bay: 2
+
+Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 Out,Aux 6 Out,Aux 7 Out,
+Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,Fuzz In,-,-,-,-,Pro Verb In,
+
+Patch bay: 3
+
+Apollo 16 Out,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+
+Patch bay: 4
+
+Apollo 16 In,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+
+Patch bay: 5
+
 -,,,,,,,,,,,,,,,,,,,,,,,
 -,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
+
+Patch bay: 6
+
 Ghost Channel Insert Send 1-16,,,,,,,,,,,,,,,,Group 1 -  8 Direct Outputs,,,,,,,
 Ghost Channel Insert Return 1-16,,,,,,,,,,,,,,,,-,,,,,,,
-Ghost Channel Insert Send 1-16,,,,,,,,,,,,,,,,Group 1 -  8 Direct Outputs,,,,,,,
-Ghost Channel Insert Return 1-16,,,,,,,,,,,,,,,,-,,,,,,,
-Group 1 -  8 Direct Outputs,,,,,,,,Ghost Channel Insert Send 1-16,,,,,,,,,,,,,,,
--,,,,,,,,Ghost Channel Insert Return 1-16,,,,,,,,,,,,,,,
-Group 1 -  8 Direct Outputs,,,,,,,,Ghost Channel Insert Send 1-16,,,,,,,,,,,,,,,
--,,,,,,,,Ghost Channel Insert Return 1-16,,,,,,,,,,,,,,,
+
+Patch bay: 7
+
 Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Send,,,,,,,
 Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Return,,,,,,,
-Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Send,,,,,,,
-Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Return,,,,,,,
-Group 1 - 8 Insert Send,,,,,,,,Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,
-Group 1 - 8 Insert Return,,,,,,,,Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,
-Group 1 - 8 Insert Send,,,,,,,,Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,
-Group 1 - 8 Insert Return,,,,,,,,Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,
+
+Patch bay: 8-amp-rack
+
 L / R Main Input,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
 DBX Drive Rack L/R IN,,High Amp In L/R,,Mid Amp In L/R,,Low Amp In L/R,,-,,,,,,,,,,,,,,,
-L / R Main Input,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
-DBX Drive Rack L/R IN,,High Amp In L/R,,Mid Amp In L/R,,Low Amp In L/R,,-,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,DBX Low Out L/R,,DBX Mid Out L/R,,DBX High Out L/R,,L / R Main Input,
--,,,,,,,,,,,,,,,,Low Amp In L/R,,Mid Amp In L/R,,High Amp In L/R,,DBX Drive Rack L/R IN,
--,,,,,,,,,,,,,,,,DBX Low Out L/R,,DBX Mid Out L/R,,DBX High Out L/R,,L / R Main Input,
--,,,,,,,,,,,,,,,,Low Amp In L/R,,Mid Amp In L/R,,High Amp In L/R,,DBX Drive Rack L/R IN,
