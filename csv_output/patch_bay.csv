@@ -6,18 +6,18 @@ Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Ou
 
 Patch bay: 2
 
-Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 Out,Aux 6 Out,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,Fuzz In,-,-,-,-,Pro Verb In,
+Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
+Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,Fuzz In,-,-,Pro Verb Out,,Pro Verb In,
 
 Patch bay: 3
 
-Apollo 16 Out,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
-Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+Apollo 16 Out,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Studio A O/P L/R,,Studio Phones B L/R Out,,-,-
+Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,,Headamp Pro Input,,Meyer Mains In L/R,,-,-
 
 Patch bay: 4
 
-Apollo 16 In,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
-Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,-,-,-,-,-,-,-,-
+Apollo 16 In,,,,,,,,,,,,,,,,4 Track Tape In (not used),,,,903 De Esser In 1 / 2,,-,-
+Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,4 Track Tape Direct Out (not used),,,,903 De Esser Out 1 / 2,,-,-
 
 Patch bay: 5
 
