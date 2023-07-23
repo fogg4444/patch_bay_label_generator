@@ -198,37 +198,37 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 1 Out",
             "bottom": "Moog DLY In",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 2 Out",
-            "bottom": "Fuzz In",
+            "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 3 Out",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 4 Out",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 5 / 6 Out",
             "bottom": "Pro Verb Out",
             "width": 2
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 7 Out",
             "bottom": "Pro Verb In",
             "width": 2
