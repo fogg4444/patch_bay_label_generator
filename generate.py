@@ -28,12 +28,10 @@ image_height_px = int(image_height_inches * pixels_per_inch)
 fnt = ImageFont.truetype(font_location, font_size)
 
 def clear_csv_file():
-    print('delete csv file contents')
     open(csv_output_file, 'w').close()
-    
+
 
 def append_line_to_csv_file(line_to_append_as_list):
-    print('append line to csv file')
     with open(csv_output_file, "a") as f:
         f.write(f"{','.join(line_to_append_as_list)}\n")
 
