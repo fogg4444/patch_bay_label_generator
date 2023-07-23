@@ -37,7 +37,7 @@ def append_line_to_csv_file(line_to_append_as_list):
 
 
 def generate_single_label(top_or_bottom_key: str, reverse: bool):
-
+    print('top_or_bottom_key', top_or_bottom_key, reverse)
     image_size_tuple = (image_width_px, image_height_px)
 
     image = Image.new('RGB', image_size_tuple, background_color)
@@ -57,14 +57,12 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
     image_output_destination = f"{label_output_dir}/{label_name}-{front_rear_prefix}-{top_or_bottom_key}.png"
 
-    csv_top_list = []
-    csv_bottom_list = []
+    csv_list = []
 
     # loop through entries
     for i, entry in enumerate(entries_list):
         
-        csv_top_list.append(entry['top'])
-        csv_bottom_list.append(entry['bottom'])
+        csv_list.append(entry[top_or_bottom_key])
 
         patch_width = image_width_px / expected_count
 
@@ -107,13 +105,12 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
         # Add trailing commas to csv file entries
         for i in range(entry['width'] - 1):
-            csv_top_list.append('')
-            csv_bottom_list.append('')
+            csv_list.append('')
 
-    append_line_to_csv_file(csv_top_list)
-    append_line_to_csv_file(csv_bottom_list)
-
-    print("generating label...", image_output_destination)
+    if reverse is not True:
+        # Only append lines to CSV if reverse is not true
+        # ie: only generate csv file for front of patch bay
+        append_line_to_csv_file(csv_list)
     
     image.save(image_output_destination)
 
@@ -125,6 +122,10 @@ def generate_patch_bay_labels_from_json(config, index):
     
     if total_width is not expected_count:
         raise Exception(f"Config has {total_width}, but needs {expected_count} items")
+
+    append_line_to_csv_file([])
+    append_line_to_csv_file([f"Patch bay: {config['label_name']}"])
+    append_line_to_csv_file([])
 
     # Generaet top and bottom front
     generate_single_label(
