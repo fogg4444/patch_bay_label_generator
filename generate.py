@@ -264,14 +264,12 @@ config = [
         },
         {
             "normalled": True,
-            # "top": "DBX 160 Link",
             "top": "-",
             "bottom": "-",
             "width": 1
         },
         {
             "normalled": True,
-            # "top": "DBX 160 Link",
             "top": "-",
             "bottom": "-",
             "width": 1
