@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 print('Creating your patch bay label')
 
-csv_file_source = "csv/source.csv"
+csv_output_file = "csv_output/patch_bay.csv"
 
 pixels_per_inch = 300
 
@@ -26,6 +26,17 @@ image_height_px = int(image_height_inches * pixels_per_inch)
 
 # Load a font (this will need to be changed to a path on your system)
 fnt = ImageFont.truetype(font_location, font_size)
+
+def clear_csv_file():
+    print('delete csv file contents')
+    open(csv_output_file, 'w').close()
+    
+
+def append_line_to_csv_file(line_to_append_as_list):
+    print('append line to csv file')
+    with open(csv_output_file, "a") as f:
+        f.write(f"{','.join(line_to_append_as_list)}\n")
+
 
 def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
@@ -48,9 +59,17 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
     image_output_destination = f"{label_output_dir}/{label_name}-{front_rear_prefix}-{top_or_bottom_key}.png"
 
+    csv_top_list = []
+    csv_bottom_list = []
+
     # loop through entries
-    for i, entry in enumerate(entries_list):    
+    for i, entry in enumerate(entries_list):
+
+        print('each entry', entry) 
         
+        csv_top_list.append(entry['top'])
+        csv_bottom_list.append(entry['bottom'])
+
         patch_width = image_width_px / expected_count
 
         rect_width = patch_width * entry['width']
@@ -90,8 +109,16 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
         if entry['normalled'] is True:
             d.line(underline_pos, width=1, fill=ink_color)
 
-    print("generating label...", image_output_destination)
+        # Add trailing commas to csv file entries
+        for i in range(entry['width'] - 1):
+            csv_top_list.append('')
+            csv_bottom_list.append('')
 
+    append_line_to_csv_file(csv_top_list)
+    append_line_to_csv_file(csv_bottom_list)
+
+    print("generating label...", image_output_destination)
+    
     image.save(image_output_destination)
 
 def generate_patch_bay_labels_from_json(config, index):
@@ -418,5 +445,7 @@ config = [
   }
 ]
 
-for i, config in enumerate(config):
+clear_csv_file()
+
+for i, config in enumerate(config):    
     generate_patch_bay_labels_from_json(config, i)
