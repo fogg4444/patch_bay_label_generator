@@ -357,25 +357,25 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Group 1 / 2 Direct Out",
+            "top": "Group 1 / 2 Out",
             "bottom": "FX 1 In L / R",
             "width": 2
         },
         {
             "normalled": False,
-            "top": "Group 3 / 4 Direct Out",
+            "top": "Group 3 / 4 Out",
             "bottom": "FX 2 In L / R",
             "width": 2
         },
         {
             "normalled": False,
-            "top": "Group 5 / 6 Direct Out",
+            "top": "Group 5 / 6 Out",
             "bottom": "FX 3 In L / R",
             "width": 2
         },
         {
             "normalled": False,
-            "top": "Group 7 / 8 Direct Out",
+            "top": "Group 7 / 8 Out",
             "bottom": "FX 4 In L / R",
             "width": 2
         },
