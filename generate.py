@@ -37,7 +37,6 @@ def append_line_to_csv_file(line_to_append_as_list):
 
 
 def generate_single_label(top_or_bottom_key: str, reverse: bool):
-    print('top_or_bottom_key', top_or_bottom_key, reverse)
     image_size_tuple = (image_width_px, image_height_px)
 
     image = Image.new('RGB', image_size_tuple, background_color)
