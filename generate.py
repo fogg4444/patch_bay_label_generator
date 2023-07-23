@@ -289,8 +289,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "4 Track Tape In",
-            "bottom": "4 Track Tape Direct Out",
+            "top": "4 Track Tape In (not used)",
+            "bottom": "4 Track Tape Direct Out (not used)",
             "width": 4
         },
         {
@@ -334,7 +334,7 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Group 1 -  8 Direct Outputs",
             "bottom": "-",
             "width": 8
