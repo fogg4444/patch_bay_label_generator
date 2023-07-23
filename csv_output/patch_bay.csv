@@ -21,8 +21,8 @@ Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,4 Track Tape Direct Out (not used),,,,
 
 Patch bay: 5
 
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
+-,,,,,,,,,,,,,,,,Control Room Out,,Apollo 2 Track Out,,-,,-,
+-,,,,,,,,,,,,,,,,Yamaha Monitors In,,Ghost 2 Track A Input,,Ghost 2 Track B Input,,,
 
 Patch bay: 6
 
@@ -51,5 +51,5 @@ Patch bay: 10
 
 Patch bay: 11-amp-rack
 
-L / R Main Input,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
+L / R Audio Source Out,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
 DBX Drive Rack L/R IN,,High Amp In L/R,,Mid Amp In L/R,,Low Amp In L/R,,-,,,,,,,,,,,,,,,

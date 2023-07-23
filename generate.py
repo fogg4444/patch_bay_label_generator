@@ -315,10 +315,34 @@ config = [
     "label_name": "5",
     "entries": [
         {
-            "normalled": True,
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 24
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "Control Room Out",
+            "bottom": "Yamaha Monitors In",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Apollo 2 Track Out",
+            "bottom": "Ghost 2 Track A Input",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "Ghost 2 Track B Input",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "",
+            "width": 2
         }
     ]
   },
@@ -424,7 +448,7 @@ config = [
     "entries": [
         {
             "normalled": True,
-            "top": "L / R Main Input",
+            "top": "L / R Audio Source Out",
             "bottom": "DBX Drive Rack L/R IN",
             "width": 2
         },
