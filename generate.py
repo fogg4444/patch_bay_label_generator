@@ -64,8 +64,6 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
     # loop through entries
     for i, entry in enumerate(entries_list):
-
-        print('each entry', entry) 
         
         csv_top_list.append(entry['top'])
         csv_bottom_list.append(entry['bottom'])
