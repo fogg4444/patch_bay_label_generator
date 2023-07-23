@@ -198,43 +198,37 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 1 Out",
             "bottom": "Moog DLY In",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 2 Out",
-            "bottom": "Fuzz In",
+            "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 3 Out",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 4 Out",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
-            "top": "Aux 5 Out",
-            "bottom": "-",
-            "width": 1
+            "normalled": True,
+            "top": "Aux 5 / 6 Out",
+            "bottom": "Pro Verb Out",
+            "width": 2
         },
         {
-            "normalled": False,
-            "top": "Aux 6 Out",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
+            "normalled": True,
             "top": "Aux 7 Out",
             "bottom": "Pro Verb In",
             "width": 2
@@ -251,49 +245,31 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
+            "top": "Aux 8 Out L/R",
+            "bottom": "-",
+            "width": 2
+        },
+        {
+            "normalled": True,
+            "top": "Studio A O/P L/R",
+            "bottom": "Headamp Pro Input",
+            "width": 2
+        },
+        {
+            "normalled": True,
+            "top": "Studio Phones B L/R Out",
+            "bottom": "Meyer Mains In L/R",
+            "width": 2
+        },
+        {
+            "normalled": True,
             "top": "-",
             "bottom": "-",
             "width": 1
         },
         {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
+            "normalled": True,
             "top": "-",
             "bottom": "-",
             "width": 1
@@ -311,39 +287,15 @@ config = [
         },
         {
             "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "4 Track Tape In (not used)",
+            "bottom": "4 Track Tape Direct Out (not used)",
+            "width": 4
         },
         {
             "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "903 De Esser In 1 / 2",
+            "bottom": "903 De Esser Out 1 / 2",
+            "width": 2
         },
         {
             "normalled": False,
@@ -363,10 +315,34 @@ config = [
     "label_name": "5",
     "entries": [
         {
-            "normalled": True,
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 24
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "Control Room Out",
+            "bottom": "Yamaha Monitors In",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Apollo 2 Track Out",
+            "bottom": "Ghost 2 Track A Input",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "Ghost 2 Track B Input",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "",
+            "width": 2
         }
     ]
   },
@@ -380,7 +356,7 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Group 1 -  8 Direct Outputs",
             "bottom": "-",
             "width": 8
@@ -405,11 +381,74 @@ config = [
     ]
   },
   {
-    "label_name": "8-amp-rack",
+    "label_name": "8",
     "entries": [
         {
             "normalled": True,
-            "top": "L / R Main Input",
+            "top": "Main Insert Send",
+            "bottom": "Main Insert Return",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "-",
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "DBX 160 Link",
+            "bottom": "DBX 160 Link",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Fuzz In",
+            "bottom": "Fuzz Out",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Transition Delay In",
+            "bottom": "Transition Delay Out",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Hall of Fame Verb In",
+            "bottom": "Hall of Fame Verb Out",
+            "width": 2
+        },
+    ]
+  },
+  {
+    "label_name": "9",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "-",
+            "width": 24
+        },
+    ]
+  },
+  {
+    "label_name": "10",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "-",
+            "width": 24
+        }
+    ]
+  },
+  {
+    "label_name": "11-amp-rack",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "L / R Audio Source Out",
             "bottom": "DBX Drive Rack L/R IN",
             "width": 2
         },
