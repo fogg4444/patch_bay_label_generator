@@ -36,11 +36,8 @@ Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Return,,,,,,
 
 Patch bay: 8
 
-			
-			
-
-Main Insert Send,,,,,,,,,,,,,,Audio In,Loop Out,Delay Out,Time,DBX 160 Link,Fuzz In,Transition Delay In,,Hall of Fame Verb In,
-Main Insert Return,,,,,,,,,,,,,,Mix Out,Loop In,Feedback,Mix,DBX 160 Link,Fuzz Out,Transition Delay Out,,Hall of Fame Verb Out,
+Main Insert Send,,-,,,,,,,,,,,,Audio In,Loop Out,Delay Out,Time,DBX 160 Link,Fuzz In,Transition Delay In,,Hall of Fame Verb In,
+Main Insert Return,,-,,,,,,,,,,,,Mix Out,Loop In,Feedback,Mix,DBX 160 Link,Fuzz Out,Transition Delay Out,,Hall of Fame Verb Out,
 
 Patch bay: 9
 
