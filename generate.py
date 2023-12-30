@@ -316,9 +316,15 @@ config = [
     "entries": [
         {
             "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 16
+            "top": "- TODO Ghost 17 - 25 Tape Direct Out -",
+            "bottom": "- TODO: Apollo 17 - 32 In",
+            "width": 8
+        },
+        {
+        	"normalled": False,
+            "top": "Ghost 25-32 Tape Direct Out",
+            "bottom": "- TODO: Apollo 18 - 32 In -",
+            "width": 8
         },
         {
             "normalled": False,
