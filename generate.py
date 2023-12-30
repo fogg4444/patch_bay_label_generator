@@ -318,7 +318,13 @@ config = [
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 16
+            "width": 8
+        },
+        {
+        	 "normalled": False,
+            "top": "Tape out 25 - 32",
+            "bottom": "",
+            "width": 8
         },
         {
             "normalled": False,
