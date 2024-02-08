@@ -417,7 +417,31 @@ config = [
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 16
+            "width": 12
+        },
+        {
+            "normalled": False,
+            "top": "Audio In",
+            "bottom": "Mix Out",
+            "width": 1
+        },
+        {
+            "normalled": True,
+            "top": "Loop Out",
+            "bottom": "Loop In",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Delay Out",
+            "bottom": "Feedback",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Time",
+            "bottom": "Mix",
+            "width": 1
         },
         {
             "normalled": False,
