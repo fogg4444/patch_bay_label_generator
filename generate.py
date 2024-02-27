@@ -176,8 +176,8 @@ config = [
         },
         {
             "normalled": True,
-            "top": "-",
-            "bottom": "-",
+            "top": "-", # something goes here but I can't read it
+            "bottom": "-", # something goes here but I can't read it
             "width": 1
         },
         {
@@ -189,7 +189,7 @@ config = [
     ]
   },
   {
-    "label_name": "2",
+    "label_name": "2", # There are some changes that I don't understand on this bay
     "entries": [
         {
             "normalled": True,
@@ -240,8 +240,8 @@ config = [
     "entries": [
         {
             "normalled": True,
-            "top": "Apollo 16 Out",
-            "bottom": "Ghost 17-32 Tape In",
+            "top": "Apollo #1 1-16 Out",
+            "bottom": "Ghost 1-16 Tape In",
             "width": 16
         },
         {
@@ -264,16 +264,10 @@ config = [
         },
         {
             "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "Lexicon Return 1-2",
+            "bottom": "Plate Reverb Out 1-2",
+            "width": 2
         },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        }
     ]
   },
   {
@@ -281,33 +275,15 @@ config = [
     "entries": [
         {
             "normalled": True,
-            "top": "Apollo 16 In",
-            "bottom": "Ghost 1-16 Tape Direct Out",
+            "top": "Apollo #2 17-32 Out",
+            "bottom": "Ghost 17-32 Tape In",
             "width": 16
         },
         {
             "normalled": False,
-            "top": "4 Track Tape In (not used)",
-            "bottom": "4 Track Tape Direct Out (not used)",
-            "width": 4
-        },
-        {
-            "normalled": False,
-            "top": "903 De Esser In 1 / 2",
-            "bottom": "903 De Esser Out 1 / 2",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "Tascam TSR-8 In 1-8",
+            "bottom": "Tascam TSR-8 Out 1-8",
+            "width": 8
         }
     ]
   },
@@ -316,15 +292,9 @@ config = [
     "entries": [
         {
             "normalled": False,
-            "top": "- TODO Ghost 17 - 25 Tape Direct Out -",
-            "bottom": "- TODO: Apollo 17 - 32 In",
-            "width": 8
-        },
-        {
-        	"normalled": False,
-            "top": "Ghost 25-32 Tape Direct Out",
-            "bottom": "- TODO: Apollo 18 - 32 In -",
-            "width": 8
+            "top": "Ghost 1-16 Tape Out",
+            "bottom": "Apollo #1 1-16 In",
+            "width": 16
         },
         {
             "normalled": False,
@@ -354,6 +324,23 @@ config = [
   },
   {
     "label_name": "6",
+    "entries": [
+        {
+            "normalled": False,
+            "top": "Ghost 17-32 Tape Out",
+            "bottom": "Apollo #2 17-32 In",
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "",
+            "width": 8
+        }
+    ]
+  },
+  {
+    "label_name": "7",
     "entries": [
         {
             "normalled": True,
@@ -388,7 +375,7 @@ config = [
     ]
   },
   {
-    "label_name": "7",
+    "label_name": "8",
     "entries": [
         {
             "normalled": True,
@@ -398,14 +385,14 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Group 1 - 8 Insert Send",
+            "top": "Group 1 - 2 Insert Send",
             "bottom": "Group 1 - 8 Insert Return",
             "width": 8
         },
     ]
   },
   {
-    "label_name": "8",
+    "label_name": "9",
     "entries": [
         {
             "normalled": True,
@@ -416,47 +403,48 @@ config = [
         {
             "normalled": False,
             "top": "-",
-            "bottom": "-",
-            "width": 16
+            "botton": "-",
+            "width": 14
+        },
+        {
+            "normalled": False,
+            "top": "SDE 1000 Return", # I'm not sure about this
+            "botton": "?", # I'm not sure about this
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "botton": "-",
+            "width": 1
         },
         {
             "normalled": False,
             "top": "DBX 160 Link",
-            "bottom": "DBX 160 Link",
+            "botton": "DBX 160 Link",
             "width": 1
         },
         {
             "normalled": False,
             "top": "Fuzz In",
-            "bottom": "Fuzz Out",
+            "botton": "Fuzz Out",
             "width": 1
         },
         {
             "normalled": False,
             "top": "Transition Delay In",
-            "bottom": "Transition Delay Out",
+            "botton": "Transition Delay Out",
             "width": 2
         },
         {
             "normalled": False,
             "top": "Hall of Fame Verb In",
-            "bottom": "Hall of Fame Verb Out",
+            "botton": "Hall of Fame Verb Out",
             "width": 2
         },
     ]
   },
-  {
-    "label_name": "9",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 24
-        },
-    ]
-  },
-  {
+    {
     "label_name": "10",
     "entries": [
         {
@@ -464,7 +452,7 @@ config = [
             "top": "-",
             "bottom": "-",
             "width": 24
-        }
+        },
     ]
   },
   {
