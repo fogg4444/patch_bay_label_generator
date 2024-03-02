@@ -334,7 +334,7 @@ config = [
         {
             "normalled": False,
             "top": "-",
-            "bottom": "",
+            "bottom": "-",
             "width": 8
         }
     ]
