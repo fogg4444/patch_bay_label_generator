@@ -403,43 +403,43 @@ config = [
         {
             "normalled": False,
             "top": "-",
-            "botton": "-",
+            "bottom": "-",
             "width": 14
         },
         {
             "normalled": False,
             "top": "SDE 1000 Return", # I'm not sure about this
-            "botton": "?", # I'm not sure about this
+            "bottom": "?", # I'm not sure about this
             "width": 1
         },
         {
             "normalled": False,
             "top": "-",
-            "botton": "-",
+            "bottom": "-",
             "width": 1
         },
         {
             "normalled": False,
             "top": "DBX 160 Link",
-            "botton": "DBX 160 Link",
+            "bottom": "DBX 160 Link",
             "width": 1
         },
         {
             "normalled": False,
             "top": "Fuzz In",
-            "botton": "Fuzz Out",
+            "bottom": "Fuzz Out",
             "width": 1
         },
         {
             "normalled": False,
             "top": "Transition Delay In",
-            "botton": "Transition Delay Out",
+            "bottom": "Transition Delay Out",
             "width": 2
         },
         {
             "normalled": False,
             "top": "Hall of Fame Verb In",
-            "botton": "Hall of Fame Verb Out",
+            "bottom": "Hall of Fame Verb Out",
             "width": 2
         },
     ]
