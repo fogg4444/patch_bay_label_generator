@@ -1,5 +1,7 @@
 # Python Patch Bay Label Generator
 
+<img src="readme_images/image_3.jpg">
+
 <img src="readme_images/image_1.jpg">
 <img src="readme_images/image_2.jpg">
 
@@ -80,5 +82,4 @@ I've got my personal patch config saved in this repo. At some point I'll remove 
 
 - Print!
 
-<img src="readme_images/image_3.jpg">
 <img src="readme_images/image_4.jpg">
