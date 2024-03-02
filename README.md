@@ -79,3 +79,6 @@ I've got my personal patch config saved in this repo. At some point I'll remove 
 - `Auto rotate` and `Scale to Fit` settings seem to work
 
 - Print!
+
+<img src="readme_images/image_3.jpg">
+<img src="readme_images/image_4.jpg">
