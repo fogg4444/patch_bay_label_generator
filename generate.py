@@ -385,7 +385,7 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Group 1 - 2 Insert Send",
+            "top": "Group 1 - 8 Insert Send",
             "bottom": "Group 1 - 8 Insert Return",
             "width": 8
         },
