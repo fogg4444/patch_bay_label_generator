@@ -183,7 +183,7 @@ config = [
     ]
   },
   {
-    "label_name": "2", # There are some changes that I don't understand on this bay
+    "label_name": "2",
     "entries": [
         {
             "normalled": True,
