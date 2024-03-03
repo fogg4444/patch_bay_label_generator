@@ -14,7 +14,12 @@ image_width_inches = 17
 image_height_inches = 0.14
 
 font_size = 30
-font_location = '/System/Library/Fonts/Supplemental/Andale Mono.ttf'
+
+# Mac os
+# font_location = '/System/Library/Fonts/Supplemental/Andale Mono.ttf'
+
+# github codespaces
+font_location = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
 background_color = "white"
 ink_color = "black"
