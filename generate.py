@@ -176,15 +176,9 @@ config = [
         },
         {
             "normalled": True,
-            "top": "-", # something goes here but I can't read it
-            "bottom": "-", # something goes here but I can't read it
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "902 De-esser IN 1-2",
+            "bottom": "902 De-esser OUT 1-2",
+            "width": 2
         }
     ]
   },
@@ -200,13 +194,13 @@ config = [
         {
             "normalled": True,
             "top": "Aux 1 Out",
-            "bottom": "Moog DLY In",
+            "bottom": "EMT 140 IN",
             "width": 1
         },
         {
             "normalled": True,
             "top": "Aux 2 Out",
-            "bottom": "-",
+            "bottom": "PCM60 IN",
             "width": 1
         },
         {
@@ -263,9 +257,9 @@ config = [
             "width": 2
         },
         {
-            "normalled": True,
-            "top": "Lexicon Return 1-2",
-            "bottom": "Plate Reverb Out 1-2",
+            "normalled": False,
+            "top": "PCM60 Return L/R",
+            "bottom": "EMT 140 Return L/R",
             "width": 2
         },
     ]
@@ -291,8 +285,8 @@ config = [
     "label_name": "5",
     "entries": [
         {
-            "normalled": False,
-            "top": "Ghost 1-16 Tape Out",
+            "normalled": True,
+            "top": "Ghost 1-16 Tape Send",
             "bottom": "Apollo #1 1-16 In",
             "width": 16
         },
@@ -326,8 +320,8 @@ config = [
     "label_name": "6",
     "entries": [
         {
-            "normalled": False,
-            "top": "Ghost 17-32 Tape Out",
+            "normalled": True,
+            "top": "Ghost 17-32 Tape Send",
             "bottom": "Apollo #2 17-32 In",
             "width": 16
         },
@@ -408,8 +402,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "SDE 1000 Return", # I'm not sure about this
-            "bottom": "?", # I'm not sure about this
+            "top": "SDE 1000 Return",
+            "bottom": "-",
             "width": 1
         },
         {
