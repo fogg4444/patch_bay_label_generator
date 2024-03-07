@@ -211,7 +211,7 @@ config = [
         {
             "normalled": True,
             "top": "Aux 3 Out",
-            "bottom": "-",
+            "bottom": "SDE 1000 IN",
             "width": 1
         },
         {
