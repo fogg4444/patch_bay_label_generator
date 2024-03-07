@@ -14,7 +14,12 @@ image_width_inches = 17
 image_height_inches = 0.14
 
 font_size = 30
+
+# Mac os
 font_location = '/System/Library/Fonts/Supplemental/Andale Mono.ttf'
+
+# github codespaces
+# font_location = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
 background_color = "white"
 ink_color = "black"
@@ -176,15 +181,9 @@ config = [
         },
         {
             "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "902 De-esser IN 1-2",
+            "bottom": "902 De-esser OUT 1-2",
+            "width": 2
         }
     ]
   },
@@ -200,13 +199,13 @@ config = [
         {
             "normalled": True,
             "top": "Aux 1 Out",
-            "bottom": "Moog DLY In",
+            "bottom": "EMT 140 IN",
             "width": 1
         },
         {
             "normalled": True,
             "top": "Aux 2 Out",
-            "bottom": "-",
+            "bottom": "PCM60 IN",
             "width": 1
         },
         {
@@ -240,8 +239,8 @@ config = [
     "entries": [
         {
             "normalled": True,
-            "top": "Apollo 16 Out",
-            "bottom": "Ghost 17-32 Tape In",
+            "top": "Apollo #1 1-16 Out",
+            "bottom": "Ghost 1-16 Tape In",
             "width": 16
         },
         {
@@ -263,17 +262,11 @@ config = [
             "width": 2
         },
         {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "normalled": False,
+            "top": "PCM60 Return L/R",
+            "bottom": "EMT 140 Return L/R",
+            "width": 2
         },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        }
     ]
   },
   {
@@ -281,33 +274,15 @@ config = [
     "entries": [
         {
             "normalled": True,
-            "top": "Apollo 16 In",
-            "bottom": "Ghost 1-16 Tape Direct Out",
+            "top": "Apollo #2 17-32 Out",
+            "bottom": "Ghost 17-32 Tape In",
             "width": 16
         },
         {
             "normalled": False,
-            "top": "4 Track Tape In (not used)",
-            "bottom": "4 Track Tape Direct Out (not used)",
-            "width": 4
-        },
-        {
-            "normalled": False,
-            "top": "903 De Esser In 1 / 2",
-            "bottom": "903 De Esser Out 1 / 2",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
+            "top": "Tascam TSR-8 In 1-8",
+            "bottom": "Tascam TSR-8 Out 1-8",
+            "width": 8
         }
     ]
   },
@@ -315,16 +290,10 @@ config = [
     "label_name": "5",
     "entries": [
         {
-            "normalled": False,
-            "top": "- TODO Ghost 17 - 25 Tape Direct Out -",
-            "bottom": "- TODO: Apollo 17 - 32 In",
-            "width": 8
-        },
-        {
-        	"normalled": False,
-            "top": "Ghost 25-32 Tape Direct Out",
-            "bottom": "- TODO: Apollo 18 - 32 In -",
-            "width": 8
+            "normalled": True,
+            "top": "Ghost 1-16 Tape Send",
+            "bottom": "Apollo #1 1-16 In",
+            "width": 16
         },
         {
             "normalled": False,
@@ -354,6 +323,23 @@ config = [
   },
   {
     "label_name": "6",
+    "entries": [
+        {
+            "normalled": True,
+            "top": "Ghost 17-32 Tape Send",
+            "bottom": "Apollo #2 17-32 In",
+            "width": 16
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "-",
+            "width": 8
+        }
+    ]
+  },
+  {
+    "label_name": "7",
     "entries": [
         {
             "normalled": True,
@@ -388,7 +374,7 @@ config = [
     ]
   },
   {
-    "label_name": "7",
+    "label_name": "8",
     "entries": [
         {
             "normalled": True,
@@ -405,7 +391,7 @@ config = [
     ]
   },
   {
-    "label_name": "8",
+    "label_name": "9",
     "entries": [
         {
             "normalled": True,
@@ -417,7 +403,19 @@ config = [
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 16
+            "width": 14
+        },
+        {
+            "normalled": False,
+            "top": "SDE 1000 Return",
+            "bottom": "-",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "-",
+            "bottom": "-",
+            "width": 1
         },
         {
             "normalled": False,
@@ -445,18 +443,7 @@ config = [
         },
     ]
   },
-  {
-    "label_name": "9",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 24
-        },
-    ]
-  },
-  {
+    {
     "label_name": "10",
     "entries": [
         {
@@ -464,7 +451,7 @@ config = [
             "top": "-",
             "bottom": "-",
             "width": 24
-        }
+        },
     ]
   },
   {

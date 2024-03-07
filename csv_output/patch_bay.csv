@@ -1,48 +1,48 @@
 
 Patch bay: 1
 
-Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,API L/R In,,Dbx 160A L/R In,,D-Comp L/R In,,-,-
-Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Out,,-,-
+Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,API L/R In,,Dbx 160A L/R In,,D-Comp L/R In,,902 De-esser IN 1-2,
+Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Out,,902 De-esser OUT 1-2,
 
 Patch bay: 2
 
 Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,Moog DLY In,-,-,-,Pro Verb Out,,Pro Verb In,
+Console Line In 17-32,,,,,,,,,,,,,,,,EMT 140 IN,PCM60 IN,-,-,Pro Verb Out,,Pro Verb In,
 
 Patch bay: 3
 
-Apollo 16 Out,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Studio A O/P L/R,,Studio Phones B L/R Out,,-,-
-Ghost 17-32 Tape In,,,,,,,,,,,,,,,,-,,Headamp Pro Input,,Meyer Mains In L/R,,-,-
+Apollo #1 1-16 Out,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Studio A O/P L/R,,Studio Phones B L/R Out,,PCM60 Return L/R,
+Ghost 1-16 Tape In,,,,,,,,,,,,,,,,-,,Headamp Pro Input,,Meyer Mains In L/R,,EMT 140 Return L/R,
 
 Patch bay: 4
 
-Apollo 16 In,,,,,,,,,,,,,,,,4 Track Tape In (not used),,,,903 De Esser In 1 / 2,,-,-
-Ghost 1-16 Tape Direct Out,,,,,,,,,,,,,,,,4 Track Tape Direct Out (not used),,,,903 De Esser Out 1 / 2,,-,-
+Apollo #2 17-32 Out,,,,,,,,,,,,,,,,Tascam TSR-8 In 1-8,,,,,,,
+Ghost 17-32 Tape In,,,,,,,,,,,,,,,,Tascam TSR-8 Out 1-8,,,,,,,
 
 Patch bay: 5
 
-- TODO Ghost 17 - 25 Tape Direct Out -,,,,,,,,Ghost 25-32 Tape Direct Out,,,,,,,,Control Room Out,,Apollo 2 Track Out,,-,,-,
-- TODO: Apollo 17 - 32 In,,,,,,,,- TODO: Apollo 18 - 32 In -,,,,,,,,Yamaha Monitors In,,Ghost 2 Track A Input,,Ghost 2 Track B Input,,,
+Ghost 1-16 Tape Send,,,,,,,,,,,,,,,,Control Room Out,,Apollo 2 Track Out,,-,,-,
+Apollo #1 1-16 In,,,,,,,,,,,,,,,,Yamaha Monitors In,,Ghost 2 Track A Input,,Ghost 2 Track B Input,,,
 
 Patch bay: 6
+
+Ghost 17-32 Tape Send,,,,,,,,,,,,,,,,-,,,,,,,
+Apollo #2 17-32 In,,,,,,,,,,,,,,,,-,,,,,,,
+
+Patch bay: 7
 
 Ghost Channel Insert Send 1-16,,,,,,,,,,,,,,,,Group 1 / 2 Out,,Group 3 / 4 Out,,Group 5 / 6 Out,,Group 7 / 8 Out,
 Ghost Channel Insert Return 1-16,,,,,,,,,,,,,,,,FX 1 In L / R,,FX 2 In L / R,,FX 3 In L / R,,FX 4 In L / R,
 
-Patch bay: 7
+Patch bay: 8
 
 Ghost Channel Insert Send 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Send,,,,,,,
 Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,Group 1 - 8 Insert Return,,,,,,,
 
-Patch bay: 8
-
-Main Insert Send,,-,,,,,,,,,,,,,,,,DBX 160 Link,Fuzz In,Transition Delay In,,Hall of Fame Verb In,
-Main Insert Return,,-,,,,,,,,,,,,,,,,DBX 160 Link,Fuzz Out,Transition Delay Out,,Hall of Fame Verb Out,
-
 Patch bay: 9
 
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
+Main Insert Send,,-,,,,,,,,,,,,,,SDE 1000 Return,-,DBX 160 Link,Fuzz In,Transition Delay In,,Hall of Fame Verb In,
+Main Insert Return,,-,,,,,,,,,,,,,,-,-,DBX 160 Link,Fuzz Out,Transition Delay Out,,Hall of Fame Verb Out,
 
 Patch bay: 10
 
