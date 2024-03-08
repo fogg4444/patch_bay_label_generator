@@ -450,7 +450,13 @@ config = [
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 24
+            "width": 23
+        },
+        {
+            "normalled": True,
+            "top": "UA 550 Out",
+            "bottom": "UA 550 In",
+            "width": 1
         },
     ]
   },
