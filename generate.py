@@ -448,9 +448,15 @@ config = [
     "entries": [
         {
             "normalled": True,
+            "top": "MXR Dist IN",
+            "bottom": "MXR Dist OUT",
+            "width": 1
+        },
+        {
+            "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 23
+            "width": 22
         },
         {
             "normalled": True,
