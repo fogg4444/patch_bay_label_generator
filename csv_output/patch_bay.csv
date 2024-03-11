@@ -7,7 +7,7 @@ Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Ou
 Patch bay: 2
 
 Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,EMT 140 IN,PCM60 IN,-,-,Pro Verb Out,,Pro Verb In,
+Console Line In 17-32,,,,,,,,,,,,,,,,EMT 140 IN,PCM60 IN,SDE 1000 IN,-,Pro Verb Out,,Pro Verb In,
 
 Patch bay: 3
 
@@ -46,8 +46,8 @@ Main Insert Return,,-,,,,,,,,,,,,,,-,-,DBX 160 Link,Fuzz Out,Transition Delay Ou
 
 Patch bay: 10
 
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
+MXR Dist IN,-,,,,,,,,,,,,,,,,,,,,,,UA 550 Out
+MXR Dist OUT,-,,,,,,,,,,,,,,,,,,,,,,UA 550 In
 
 Patch bay: 11-amp-rack
 
