@@ -448,18 +448,24 @@ config = [
     "entries": [
         {
             "normalled": True,
+            "top": "-",
+            "bottom": "-",
+            "width": 20
+        },
+        {
+            "normalled": False,
             "top": "MXR Dist IN",
             "bottom": "MXR Dist OUT",
             "width": 1
         },
         {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 22
+            "normalled": False,
+            "top": "Art Comp IN L/R",
+            "bottom": "Art Comp OUT L/R",
+            "width": 2
         },
         {
-            "normalled": True,
+            "normalled": False,
             "top": "UA 550 Out",
             "bottom": "UA 550 In",
             "width": 1
