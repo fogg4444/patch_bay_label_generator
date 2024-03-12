@@ -211,7 +211,7 @@ config = [
         {
             "normalled": True,
             "top": "Aux 3 Out",
-            "bottom": "-",
+            "bottom": "SDE 1000 IN",
             "width": 1
         },
         {
@@ -314,9 +314,9 @@ config = [
             "width": 2
         },
         {
-            "normalled": False,
-            "top": "-",
-            "bottom": "",
+            "normalled": True,
+            "top": "Ghost Mix OUT",
+            "bottom": "-",
             "width": 2
         }
     ]
@@ -331,10 +331,16 @@ config = [
             "width": 16
         },
         {
+            "normalled": True,
+            "top": "Alt CRM Out L/R",
+            "bottom": "Mix Cube L / -",
+            "width": 2
+        },
+        {
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 8
+            "width": 6
         }
     ]
   },
@@ -447,10 +453,34 @@ config = [
     "label_name": "10",
     "entries": [
         {
+            "normalled": False,
+            "top": "Rooms IN (todo define this)",
+            "bottom": "Rooms IN ",
+            "width": 3
+        },
+        {
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 24
+            "width": 17
+        },
+        {
+            "normalled": False,
+            "top": "MXR Dist IN",
+            "bottom": "MXR Dist OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Art Comp IN L/R",
+            "bottom": "Art Comp OUT L/R",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "UA 550 In",
+            "bottom": "UA 550 Out",
+            "width": 1
         },
     ]
   },

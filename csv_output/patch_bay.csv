@@ -7,7 +7,7 @@ Console Line In 1-16,,,,,,,,,,,,,,,,API L/R Out,,Dbx 160A L/R Out,,D-Comp L/R Ou
 Patch bay: 2
 
 Worm hole Matched to Left Side Patch bay 1-16 bottom,,,,,,,,,,,,,,,,Aux 1 Out,Aux 2 Out,Aux 3 Out,Aux 4 Out,Aux 5 / 6 Out,,Aux 7 Out,
-Console Line In 17-32,,,,,,,,,,,,,,,,EMT 140 IN,PCM60 IN,-,-,Pro Verb Out,,Pro Verb In,
+Console Line In 17-32,,,,,,,,,,,,,,,,EMT 140 IN,PCM60 IN,SDE 1000 IN,-,Pro Verb Out,,Pro Verb In,
 
 Patch bay: 3
 
@@ -21,13 +21,13 @@ Ghost 17-32 Tape In,,,,,,,,,,,,,,,,Tascam TSR-8 Out 1-8,,,,,,,
 
 Patch bay: 5
 
-Ghost 1-16 Tape Send,,,,,,,,,,,,,,,,Control Room Out,,Apollo 2 Track Out,,-,,-,
-Apollo #1 1-16 In,,,,,,,,,,,,,,,,Yamaha Monitors In,,Ghost 2 Track A Input,,Ghost 2 Track B Input,,,
+Ghost 1-16 Tape Send,,,,,,,,,,,,,,,,Control Room Out,,Apollo 2 Track Out,,-,,Ghost Mix OUT,
+Apollo #1 1-16 In,,,,,,,,,,,,,,,,Yamaha Monitors In,,Ghost 2 Track A Input,,Ghost 2 Track B Input,,-,
 
 Patch bay: 6
 
-Ghost 17-32 Tape Send,,,,,,,,,,,,,,,,-,,,,,,,
-Apollo #2 17-32 In,,,,,,,,,,,,,,,,-,,,,,,,
+Ghost 17-32 Tape Send,,,,,,,,,,,,,,,,Alt CRM Out L/R,,-,,,,,
+Apollo #2 17-32 In,,,,,,,,,,,,,,,,Mix Cube L / -,,-,,,,,
 
 Patch bay: 7
 
@@ -46,8 +46,8 @@ Main Insert Return,,-,,,,,,,,,,,,,,-,-,DBX 160 Link,Fuzz Out,Transition Delay Ou
 
 Patch bay: 10
 
--,,,,,,,,,,,,,,,,,,,,,,,
--,,,,,,,,,,,,,,,,,,,,,,,
+Rooms IN (todo define this),,,-,,,,,,,,,,,,,,,,,MXR Dist IN,Art Comp IN L/R,,UA 550 In
+Rooms IN ,,,-,,,,,,,,,,,,,,,,,MXR Dist OUT,Art Comp OUT L/R,,UA 550 Out
 
 Patch bay: 11-amp-rack
 
