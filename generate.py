@@ -478,8 +478,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "UA 550 Out",
-            "bottom": "UA 550 In",
+            "top": "UA 550 In",
+            "bottom": "UA 550 Out",
             "width": 1
         },
     ]
