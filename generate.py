@@ -314,9 +314,9 @@ config = [
             "width": 2
         },
         {
-            "normalled": False,
-            "top": "-",
-            "bottom": "",
+            "normalled": True,
+            "top": "Ghost Mix OUT",
+            "bottom": "-",
             "width": 2
         }
     ]
@@ -331,10 +331,16 @@ config = [
             "width": 16
         },
         {
+            "normalled": True,
+            "top": "Alt CRM Out L/R",
+            "bottom": "Mix Cube L / -",
+            "width": 2
+        },
+        {
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 8
+            "width": 6
         }
     ]
   },
