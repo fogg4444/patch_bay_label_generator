@@ -46,8 +46,8 @@ Main Insert Return,,-,,,,,,,,,,,,,,-,-,DBX 160 Link,Fuzz Out,Transition Delay Ou
 
 Patch bay: 10
 
--,,,,,,,,,,,,,,,,,,,,MXR Dist IN,Art Comp IN L/R,,UA 550 Out
--,,,,,,,,,,,,,,,,,,,,MXR Dist OUT,Art Comp OUT L/R,,UA 550 In
+Rooms IN (todo define this),,,-,,,,,,,,,,,,,,,,,MXR Dist IN,Art Comp IN L/R,,UA 550 Out
+Rooms IN ,,,-,,,,,,,,,,,,,,,,,MXR Dist OUT,Art Comp OUT L/R,,UA 550 In
 
 Patch bay: 11-amp-rack
 

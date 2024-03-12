@@ -447,10 +447,16 @@ config = [
     "label_name": "10",
     "entries": [
         {
+            "normalled": False,
+            "top": "Rooms IN (todo define this)",
+            "bottom": "Rooms IN ",
+            "width": 3
+        },
+        {
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 20
+            "width": 17
         },
         {
             "normalled": False,
