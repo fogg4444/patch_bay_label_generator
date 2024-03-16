@@ -459,10 +459,22 @@ config = [
             "width": 3
         },
         {
+            "normalled": False,
+            "top": "Moog DLY IN",
+            "bottom": "Moog DLY OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Tanzbar OUT L/R",
+            "bottom": "-",
+            "width": 2
+        },
+        {
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 17
+            "width": 14
         },
         {
             "normalled": False,
