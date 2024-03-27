@@ -407,8 +407,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Snake Return A, B, C, D",
-            "bottom": "Snake Return E, F, G, H",
+            "top": "Basement Snake Send A, B, C, D",
+            "bottom": "Basement Snake Send E, F, G, H",
             "width": 4
         },
         {
