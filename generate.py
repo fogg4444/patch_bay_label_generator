@@ -407,9 +407,15 @@ config = [
         },
         {
             "normalled": False,
+            "top": "Basement Snake Send A, B, C, D",
+            "bottom": "Basement Snake Send E, F, G, H",
+            "width": 4
+        },
+        {
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 14
+            "width": 10
         },
         {
             "normalled": False,
