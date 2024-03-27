@@ -407,9 +407,15 @@ config = [
         },
         {
             "normalled": False,
+            "top": "Snake Return A, B, C, D",
+            "bottom": "Snake Return E, F, G, H",
+            "width": 4
+        },
+        {
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 14
+            "width": 10
         },
         {
             "normalled": False,
