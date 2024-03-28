@@ -466,7 +466,7 @@ config = [
         },
         {
             "normalled": False,
-            "top": "TBD",
+            "top": "Mast Bed",
             "bottom": "Bath Upper",
             "width": 1
         },
