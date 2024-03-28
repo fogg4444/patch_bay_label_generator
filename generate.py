@@ -472,7 +472,7 @@ config = [
         },
         {
             "normalled": False,
-            "top": "TBD",
+            "top": "Kitchen",
             "bottom": "TBD",
             "width": 1
         },
