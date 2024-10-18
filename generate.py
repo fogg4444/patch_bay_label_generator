@@ -497,7 +497,7 @@ config = [
         {
             "normalled": True,
             "top": "-",
-            "bottom": "Moog Sub 37 OUT",
+            "bottom": "Sub 37 OUT",
             "width": 1
         },
         {
