@@ -460,9 +460,21 @@ config = [
     "entries": [
         {
             "normalled": False,
-            "top": "Rooms IN (todo define this)",
-            "bottom": "Rooms IN ",
-            "width": 3
+            "top": "TBD",
+            "bottom": "Office",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Mast Bed",
+            "bottom": "Bath Upper",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Kitchen",
+            "bottom": "TBD",
+            "width": 1
         },
         {
             "normalled": False,
@@ -480,7 +492,13 @@ config = [
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 14
+            "width": 13
+        },
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "Sub 37 OUT",
+            "width": 1
         },
         {
             "normalled": False,
