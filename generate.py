@@ -491,8 +491,14 @@ config = [
         {
             "normalled": True,
             "top": "-",
-            "bottom": "-",
-            "width": 14
+            "bottom": "Moog Sub 37 OUT",
+            "width": 13
+        },
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "Moog Sub 37 OUT",
+            "width": 1
         },
         {
             "normalled": False,
