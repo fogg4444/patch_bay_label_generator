@@ -455,8 +455,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Hall of Fame Verb In",
-            "bottom": "Hall of Fame Verb Out",
+            "top": "-",
+            "bottom": "Phones Amp In L/R",
             "width": 2
         },
     ]
