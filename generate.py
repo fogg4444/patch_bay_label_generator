@@ -340,7 +340,13 @@ config = [
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 6
+            "width": 5
+        },
+        {
+            "normalled": False,
+            "top": "LA-2A In",
+            "bottom": "LA-2A Out",
+            "width": 1
         }
     ]
   },
