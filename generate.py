@@ -296,20 +296,20 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Control Room Out",
             "bottom": "Yamaha Monitors In",
             "width": 2
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Apollo 2 Track Out",
             "bottom": "Ghost 2 Track A Input",
             "width": 2
         },
         {
-            "normalled": False,
-            "top": "-",
+            "normalled": True,
+            "top": "Record Player OUT",
             "bottom": "Ghost 2 Track B Input",
             "width": 2
         },
@@ -338,9 +338,15 @@ config = [
         },
         {
             "normalled": False,
+            "top": "Hearback IN 1, 2, 3, 4",
+            "bottom": "Hearback IN 5, 6, 7, 8",
+            "width": 4
+        },
+        {
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 5
+            "width": 1
         },
         {
             "normalled": False,
