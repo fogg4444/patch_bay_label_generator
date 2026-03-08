@@ -9,6 +9,13 @@
 - Store patch bay routing definitions as code
 - Use version control to track changes to patch bay layout
 - Auto generate labels
+- Auto generate a printable 8.5×11" landscape reference sheet (PDF)
+
+## Reference Sheet
+
+Running `bash generate.sh` also outputs a 2-page PDF reference guide to `printable_reference/reference_sheet.pdf`. It shows every patch bay at a glance — with column numbers, TOP/BOTTOM row labels, diagonal hatching for normalled connections, a legend, and a last-updated date.
+
+<img src="readme_images/reference_sheet_preview.png" width="100%">
 
 ## Printer & Tape
 
