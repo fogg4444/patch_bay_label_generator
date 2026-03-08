@@ -126,7 +126,7 @@ def draw_bold_text(d, pos, text, font, fill):
     d.text((x + 1, y), text, font=font, fill=fill)
 
 
-def draw_hatch(d, x1, y1, x2, y2, spacing=8, color='#e0e0e0'):
+def draw_hatch(d, x1, y1, x2, y2, spacing=8, color='#b8b8b8'):
     """Draw subtle 45-degree diagonal lines clipped to a rectangle."""
     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
     k_min = x1 - y2
