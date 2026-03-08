@@ -2,6 +2,47 @@
 
 ---
 
+## 2026-03-08
+
+### Added: Ethernet Patch Bay
+
+Added a new single-row ethernet patch bay label (20 ports).
+
+**Ports 1–8: Hearback outputs**
+- Hearback Out 1–8 (grouped block)
+
+**Ports 9–18: Room network drops**
+- Kitchen
+- Bath Up
+- Bath Dn
+- Den
+- Gallery
+- Master Bed
+- Guest Bed
+- Office
+- Front Porch
+- Back Porch
+
+### Moved: Bay 10 Reorganized
+
+Cleaned up Patch Bay 10 layout. Old placeholder entries removed and routing consolidated.
+
+**Removed from Bay 10:**
+- TBD (was port 1 top)
+- Office (was port 1 bottom)
+- Mast Bed (was port 2 top)
+- Bath Upper (was port 2 bottom)
+- Kitchen (was port 3 top)
+- TBD (was port 3 bottom)
+
+**Moved within Bay 10:**
+- Room inputs (Kitchen–Back Porch) moved to ports 1–10 (far left)
+- Moog DLY moved to port 14 (inside filler block, left of Sub 37)
+- Tanzbar OUT L/R moved to ports 15–16 (left of Sub 37)
+- Filler block consolidated to ports 11–16
+
+---
+
 ## 2026-03-07
 
 ### Added: Room Inputs to Patch Bay 10
