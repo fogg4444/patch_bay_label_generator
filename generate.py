@@ -617,36 +617,6 @@ config = [
     {
     "label_name": "10",
     "entries": [
-        {
-            "normalled": False,
-            "top": "TBD",
-            "bottom": "Office",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Mast Bed",
-            "bottom": "Bath Upper",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Kitchen",
-            "bottom": "TBD",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Moog DLY IN",
-            "bottom": "Moog DLY OUT",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Tanzbar OUT L/R",
-            "bottom": "-",
-            "width": 2
-        },
         {"normalled": False, "top": "Kitchen L",    "bottom": "Kitchen R",    "width": 1},
         {"normalled": False, "top": "Bath Up L",    "bottom": "Bath Up R",    "width": 1},
         {"normalled": False, "top": "Bath Dn L",    "bottom": "Bath Dn R",    "width": 1},
@@ -657,7 +627,7 @@ config = [
         {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
         {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
         {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
-        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 6},
         {
             "normalled": True,
             "top": "-",
@@ -681,6 +651,18 @@ config = [
             "top": "UA 550 In",
             "bottom": "UA 550 Out",
             "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Moog DLY IN",
+            "bottom": "Moog DLY OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Tanzbar OUT L/R",
+            "bottom": "-",
+            "width": 2
         },
     ]
   },
