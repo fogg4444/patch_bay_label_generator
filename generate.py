@@ -43,7 +43,7 @@ def append_line_to_csv_file(line_to_append_as_list):
         f.write(f"{','.join(line_to_append_as_list)}\n")
 
 
-def generate_single_label(top_or_bottom_key: str, reverse: bool):
+def generate_single_label(top_or_bottom_key: str, reverse: bool, port_count: int = expected_count):
     image_size_tuple = (image_width_px, image_height_px)
 
     image = Image.new('RGB', image_size_tuple, background_color)
@@ -67,10 +67,10 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
 
     # loop through entries
     for i, entry in enumerate(entries_list):
-        
+
         csv_list.append(entry[top_or_bottom_key])
 
-        patch_width = image_width_px / expected_count
+        patch_width = image_width_px / port_count
 
         rect_width = patch_width * entry['width']
 
@@ -167,7 +167,6 @@ def generate_reference_page(page_configs, page_num, page_count):
     bay_label_col_width = 140
     content_x = margin + bay_label_col_width
     patch_area_width = page_width_px - margin - content_x
-    unit_width = patch_area_width / expected_count
 
     header_height = 34
     bay_gap = 10
@@ -200,31 +199,39 @@ def generate_reference_page(page_configs, page_num, page_count):
                        f"Patch Bay {bay_config['label_name']}", font=ref_fnt, fill='white')
 
         # Column numbers in white over the header bar
-        for col in range(1, expected_count + 1):
-            nx = content_x + (col - 1) * unit_width
+        bay_port_count = bay_config.get("port_count", expected_count)
+        bay_unit_width = patch_area_width / bay_port_count
+        for col in range(1, bay_port_count + 1):
+            nx = content_x + (col - 1) * bay_unit_width
             nw = d.textlength(str(col), font=num_fnt)
-            draw_bold_text(d, (nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
+            draw_bold_text(d, (nx + (bay_unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
                            str(col), font=num_fnt, fill='white')
 
         current_y += header_height
 
-        # Row label cells ("TOP" / "BOTTOM")
-        for row_idx, row_label in enumerate(["TOP", "BOTTOM"]):
-            y0 = current_y + row_idx * cell_height
-            y1 = y0 + cell_height
+        single_row = bay_config.get("single_row", False)
+        row_labels = [""] if single_row else ["TOP", "BOTTOM"]
+        row_keys   = ["top"] if single_row else ["top", "bottom"]
+        row_height = cell_height * 2 if single_row else cell_height
+
+        # Row label cells
+        for row_idx, row_label in enumerate(row_labels):
+            y0 = current_y + row_idx * row_height
+            y1 = y0 + row_height
             d.rectangle([margin, y0, margin + bay_label_col_width, y1], outline='black', width=1)
-            tw = int(d.textlength(row_label, font=ref_fnt))
-            draw_bold_text(d, (margin + (bay_label_col_width - tw) // 2, y0 + (cell_height - text_h) // 2),
-                           row_label, font=ref_fnt, fill='black')
+            if row_label:
+                tw = int(d.textlength(row_label, font=ref_fnt))
+                draw_bold_text(d, (margin + (bay_label_col_width - tw) // 2, y0 + (row_height - text_h) // 2),
+                               row_label, font=ref_fnt, fill='black')
 
         # Patch entry cells
         x = content_x
         for entry in bay_config['entries']:
-            cell_w = unit_width * entry['width']
+            cell_w = bay_unit_width * entry['width']
 
-            for row_idx, text_key in enumerate(["top", "bottom"]):
-                y0 = current_y + row_idx * cell_height
-                y1 = y0 + cell_height
+            for row_idx, text_key in enumerate(row_keys):
+                y0 = current_y + row_idx * row_height
+                y1 = y0 + row_height
 
                 if entry['normalled']:
                     draw_hatch(d, x, y0, x + cell_w, y1)
@@ -234,7 +241,7 @@ def generate_reference_page(page_configs, page_num, page_count):
                 text = entry[text_key]
                 tw = d.textlength(text, font=ref_fnt)
                 tx = x + (cell_w - tw) / 2
-                ty = y0 + (cell_height - text_h) / 2
+                ty = y0 + (row_height - text_h) / 2
                 draw_bold_text(d, (tx, ty), text, font=ref_fnt, fill='black')
 
             x += cell_w
@@ -273,37 +280,23 @@ def generate_reference_sheet(all_configs):
 
 
 def generate_patch_bay_labels_from_json(config, index):
-    # Tally total width and check that we're the right size
-    total_width = 0
-    for i, entry in enumerate(config["entries"]):
-        total_width += entry['width']
-    
-    if total_width is not expected_count:
-        raise Exception(f"Config has {total_width}, but needs {expected_count} items")
+    port_count = config.get("port_count", expected_count)
+    total_width = sum(e['width'] for e in config["entries"])
+
+    if total_width != port_count:
+        raise Exception(f"Config has {total_width}, but needs {port_count} items")
 
     append_line_to_csv_file([])
     append_line_to_csv_file([f"Patch bay: {config['label_name']}"])
     append_line_to_csv_file([])
 
-    # Generaet top and bottom front
-    generate_single_label(
-        top_or_bottom_key="top",
-        reverse=False
-    )
-    generate_single_label(
-        top_or_bottom_key="bottom",
-        reverse=False
-    )
-
-    # Generate top and bottom for rear
-    generate_single_label(
-        top_or_bottom_key="top",
-        reverse=True
-    )
-    generate_single_label(
-        top_or_bottom_key="bottom",
-        reverse=True
-    )
+    if config.get("single_row"):
+        generate_single_label(top_or_bottom_key="top", reverse=False, port_count=port_count)
+    else:
+        generate_single_label(top_or_bottom_key="top", reverse=False, port_count=port_count)
+        generate_single_label(top_or_bottom_key="bottom", reverse=False, port_count=port_count)
+        generate_single_label(top_or_bottom_key="top", reverse=True, port_count=port_count)
+        generate_single_label(top_or_bottom_key="bottom", reverse=True, port_count=port_count)
 
 config = [
   {
@@ -727,6 +720,26 @@ config = [
     ]
   }
 ]
+
+config.append({
+    "label_name": "ethernet",
+    "single_row": True,
+    "port_count": 20,
+    "entries": [
+        {"normalled": False, "top": "Hearback Out 1-8", "width": 8},
+        {"normalled": False, "top": "Kitchen",          "width": 1},
+        {"normalled": False, "top": "Bath Up",          "width": 1},
+        {"normalled": False, "top": "Bath Dn",          "width": 1},
+        {"normalled": False, "top": "Den",              "width": 1},
+        {"normalled": False, "top": "Gallery",          "width": 1},
+        {"normalled": False, "top": "Master Bed",       "width": 1},
+        {"normalled": False, "top": "Guest Bed",        "width": 1},
+        {"normalled": False, "top": "Office",           "width": 1},
+        {"normalled": False, "top": "Front Porch",      "width": 1},
+        {"normalled": False, "top": "Back Porch",       "width": 1},
+        {"normalled": False, "top": "-",                "width": 2},
+    ]
+})
 
 all_configs = config
 clear_csv_file()
