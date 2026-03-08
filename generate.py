@@ -1,4 +1,5 @@
 import csv
+from datetime import date
 from enum import Enum
 import json
 import os
@@ -157,7 +158,7 @@ def generate_reference_page(page_configs, page_num, page_count):
     ref_font_size = 20
     ref_fnt = ImageFont.truetype(font_location, ref_font_size)
     title_fnt = ImageFont.truetype(font_location, 30)
-    num_fnt = ImageFont.truetype(font_location, 14)
+    num_fnt = ImageFont.truetype(font_location, 18)
     key_fnt = ImageFont.truetype(font_location, 16)
 
     image = Image.new('RGB', (page_width_px, page_height_px), 'white')
@@ -185,6 +186,9 @@ def generate_reference_page(page_configs, page_num, page_count):
     page_label = f"  ({page_num}/{page_count})"
     draw_bold_text(d, (margin, current_y), "Studio Carquinez Patch Bay Reference" + page_label,
                    font=title_fnt, fill='black')
+    date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
+    dw = int(d.textlength(date_str, font=title_fnt))
+    draw_bold_text(d, (page_width_px - margin - dw, current_y), date_str, font=title_fnt, fill='black')
     current_y += title_space
 
     for bay_config in page_configs:
@@ -199,8 +203,8 @@ def generate_reference_page(page_configs, page_num, page_count):
         for col in range(1, expected_count + 1):
             nx = content_x + (col - 1) * unit_width
             nw = d.textlength(str(col), font=num_fnt)
-            d.text((nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
-                   str(col), font=num_fnt, fill='white')
+            draw_bold_text(d, (nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
+                           str(col), font=num_fnt, fill='white')
 
         current_y += header_height
 
@@ -246,13 +250,14 @@ def generate_reference_page(page_configs, page_num, page_count):
     legend_x = page_width_px - padding - legend_cell_w
     legend_y = page_height_px - padding - legend_cell_h
 
+    label = "Normalled ="
+    lw = int(d.textlength(label, font=key_fnt))
+    legend_x = page_width_px - padding - legend_cell_w
+    draw_bold_text(d, (legend_x - lw - 8, legend_y + (legend_cell_h - key_text_h) // 2),
+                   label, font=key_fnt, fill='black')
     draw_hatch(d, legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h)
     d.rectangle([legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h],
                 outline='black', width=1)
-    label = "= Normalled"
-    lw = d.textlength(label, font=key_fnt)
-    draw_bold_text(d, (legend_x - lw - 8, legend_y + (legend_cell_h - key_text_h) // 2),
-                   label, font=key_fnt, fill='black')
 
     return image
 
@@ -649,12 +654,17 @@ config = [
             "bottom": "-",
             "width": 2
         },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 13
-        },
+        {"normalled": False, "top": "Kitchen L",    "bottom": "Kitchen R",    "width": 1},
+        {"normalled": False, "top": "Bath Up L",    "bottom": "Bath Up R",    "width": 1},
+        {"normalled": False, "top": "Bath Dn L",    "bottom": "Bath Dn R",    "width": 1},
+        {"normalled": False, "top": "Den L",        "bottom": "Den R",        "width": 1},
+        {"normalled": False, "top": "Gallery L",    "bottom": "Gallery R",    "width": 1},
+        {"normalled": False, "top": "Master Bed L", "bottom": "Master Bed R", "width": 1},
+        {"normalled": False, "top": "Guest Bed L",  "bottom": "Guest Bed R",  "width": 1},
+        {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
+        {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
+        {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
         {
             "normalled": True,
             "top": "-",
