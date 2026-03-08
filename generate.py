@@ -250,13 +250,14 @@ def generate_reference_page(page_configs, page_num, page_count):
     legend_x = page_width_px - padding - legend_cell_w
     legend_y = page_height_px - padding - legend_cell_h
 
+    label = "Normalled ="
+    lw = int(d.textlength(label, font=key_fnt))
+    legend_x = page_width_px - padding - legend_cell_w
+    draw_bold_text(d, (legend_x - lw - 8, legend_y + (legend_cell_h - key_text_h) // 2),
+                   label, font=key_fnt, fill='black')
     draw_hatch(d, legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h)
     d.rectangle([legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h],
                 outline='black', width=1)
-    label = "= Normalled"
-    lw = d.textlength(label, font=key_fnt)
-    draw_bold_text(d, (legend_x - lw - 8, legend_y + (legend_cell_h - key_text_h) // 2),
-                   label, font=key_fnt, fill='black')
 
     return image
 
