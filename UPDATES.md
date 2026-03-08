@@ -4,9 +4,9 @@
 
 ## 2026-03-07
 
-### Added: Patch Bay 12 — Room Inputs
+### Added: Room Inputs to Patch Bay 10
 
-Added a new patch bay row dedicated to room microphone/line inputs.
+Added room microphone/line inputs into the existing Patch Bay 10, replacing the spare filler block.
 
 **Rooms (stereo — top row = L, bottom row = R):**
 - Kitchen
