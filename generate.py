@@ -641,7 +641,7 @@ config = [
             "width": 2
         },
         {
-            "normalled": True,
+            "normalled": False,
             "top": "-",
             "bottom": "Sub 37 OUT",
             "width": 1
