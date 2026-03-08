@@ -290,27 +290,52 @@ def generate_reference_page(page_configs, page_num, page_count):
     return image
 
 
-def generate_changelog_page():
+def generate_changelog_pages(start_page=3, total_pages=None):
     page_width_px = int(11 * pixels_per_inch)
     page_height_px = int(8.5 * pixels_per_inch)
     margin = 40
-
-    image = Image.new('RGB', (page_width_px, page_height_px), 'white')
-    d = ImageDraw.Draw(image)
 
     title_fnt    = ImageFont.truetype(font_location, 30)
     heading_fnt  = ImageFont.truetype(font_location, 38)
     body_fnt     = ImageFont.truetype(font_location, 34)
     date_fnt     = ImageFont.truetype(font_location, 28)
+    check_fnt    = ImageFont.truetype(font_location, 34)
 
-    # Title row
-    draw_bold_text(d, (margin, margin), "Studio Carquinez Patch Bay Reference  —  Change Log", font=title_fnt, fill='black')
-    date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
-    dw = int(d.textlength(date_str, font=title_fnt))
-    draw_bold_text(d, (page_width_px - margin - dw, margin), date_str, font=title_fnt, fill='black')
+    checkbox_size = 60
+    check_label = "All patch changes applied to hardware"
+    check_ascent, check_descent = check_fnt.getmetrics()
+    bottom_reserved = margin + checkbox_size + 16  # space needed for the big checkbox
 
-    current_y = margin + 55
+    section_box = 28
+    item_box    = 18
+    section_indent = margin
+    item_indent    = margin + 40
     line_gap = 8
+
+    def new_page(page_num):
+        img = Image.new('RGB', (page_width_px, page_height_px), 'white')
+        drw = ImageDraw.Draw(img)
+        pg_label = f"({page_num}/{total_pages})" if total_pages else f"(p{page_num})"
+        draw_bold_text(drw, (margin, margin),
+                       f"Studio Carquinez Patch Bay Reference  —  Change Log  {pg_label}",
+                       font=title_fnt, fill='black')
+        date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
+        dw = int(drw.textlength(date_str, font=title_fnt))
+        draw_bold_text(drw, (page_width_px - margin - dw, margin), date_str, font=title_fnt, fill='black')
+        return img, drw, margin + 55
+
+    pages = []
+    page_num = start_page
+    image, d, current_y = new_page(page_num)
+
+    def next_page():
+        nonlocal image, d, current_y, page_num
+        pages.append(image)
+        page_num += 1
+        image, d, current_y = new_page(page_num)  # noqa: F821
+
+    def needs_new_page(extra_y):
+        return current_y + extra_y > page_height_px - bottom_reserved
 
     # Parse and render UPDATES.md
     try:
@@ -319,27 +344,28 @@ def generate_changelog_page():
     except FileNotFoundError:
         lines = []
 
-    section_box = 28   # checkbox size for section headings
-    item_box    = 18   # checkbox size for bullet items
-    section_indent = margin
-    item_indent    = margin + 40
-
     for raw in lines:
         line = raw.rstrip()
         if not line or line == '---' or line.startswith('# '):
             continue
 
         if line.startswith('## '):
+            ascent, descent = date_fnt.getmetrics()
+            row_h = 12 + 8 + ascent + descent + line_gap
+            if needs_new_page(row_h):
+                next_page()
             current_y += 12
             d.line([margin, current_y, page_width_px - margin, current_y], fill='#bbbbbb', width=2)
             current_y += 8
-            ascent, descent = date_fnt.getmetrics()
             draw_bold_text(d, (section_indent, current_y), line[3:], font=date_fnt, fill='#555555')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('### '):
-            current_y += 4
             ascent, descent = heading_fnt.getmetrics()
+            row_h = 4 + ascent + descent + line_gap + 4
+            if needs_new_page(row_h):
+                next_page()
+            current_y += 4
             cy = current_y + (ascent + descent - section_box) // 2
             d.rectangle([section_indent, cy, section_indent + section_box, cy + section_box],
                         outline='black', width=3)
@@ -349,11 +375,15 @@ def generate_changelog_page():
 
         elif line.startswith('**') and line.endswith('**'):
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             draw_bold_text(d, (item_indent, current_y), line.strip('*'), font=body_fnt, fill='#333333')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('- '):
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             cy = current_y + (ascent + descent - item_box) // 2
             d.rectangle([item_indent, cy, item_indent + item_box, cy + item_box],
                         outline='black', width=2)
@@ -362,33 +392,36 @@ def generate_changelog_page():
 
         else:
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             d.text((item_indent, current_y), line, font=body_fnt, fill='black')
             current_y += ascent + descent + line_gap
 
-    # Large "all done" checkbox at the bottom
-    checkbox_size = 60
+    # Large "all done" checkbox anchored to bottom of last page
     checkbox_x = margin
     checkbox_y = page_height_px - margin - checkbox_size
     d.rectangle([checkbox_x, checkbox_y, checkbox_x + checkbox_size, checkbox_y + checkbox_size],
                 outline='black', width=4)
-    check_fnt = ImageFont.truetype(font_location, 34)
-    check_label = "All patch changes applied to hardware"
-    ascent, descent = check_fnt.getmetrics()
     draw_bold_text(d, (checkbox_x + checkbox_size + 20,
-                       checkbox_y + (checkbox_size - ascent - descent) // 2),
+                       checkbox_y + (checkbox_size - check_ascent - check_descent) // 2),
                    check_label, font=check_fnt, fill='black')
 
-    return image
+    pages.append(image)
+    return pages
 
 
 def generate_reference_sheet(all_configs):
     mid = len(all_configs) // 2 + len(all_configs) % 2
-    page1 = generate_reference_page(all_configs[:mid], 1, 2)
-    page2 = generate_reference_page(all_configs[mid:], 2, 2)
-    page3 = generate_changelog_page()
+    # First pass: count changelog pages to get the true total
+    changelog_count = len(generate_changelog_pages())
+    total_pages = 2 + changelog_count
+    # Second pass: render everything with correct page numbers
+    page1 = generate_reference_page(all_configs[:mid], 1, total_pages)
+    page2 = generate_reference_page(all_configs[mid:], 2, total_pages)
+    changelog_pages = generate_changelog_pages(start_page=3, total_pages=total_pages)
     os.makedirs('printable_reference', exist_ok=True)
     path = 'printable_reference/reference_sheet.pdf'
-    page1.save(path, save_all=True, append_images=[page2, page3])
+    page1.save(path, save_all=True, append_images=[page2] + changelog_pages)
     print(f"Reference sheet saved to {path}")
 
 
