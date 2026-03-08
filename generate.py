@@ -186,7 +186,7 @@ def generate_reference_page(page_configs, page_num, page_count):
     page_label = f"  ({page_num}/{page_count})"
     draw_bold_text(d, (margin, current_y), "Studio Carquinez Patch Bay Reference" + page_label,
                    font=title_fnt, fill='black')
-    date_str = date.today().strftime("%Y-%m-%d")
+    date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
     dw = int(d.textlength(date_str, font=title_fnt))
     draw_bold_text(d, (page_width_px - margin - dw, current_y), date_str, font=title_fnt, fill='black')
     current_y += title_space
