@@ -1,6 +1,7 @@
 import csv
 from enum import Enum
 import json
+import os
 from PIL import Image, ImageDraw, ImageFont
 
 print('Creating your patch bay label')
@@ -117,6 +118,154 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool):
         append_line_to_csv_file(csv_list)
     
     image.save(image_output_destination)
+
+def draw_bold_text(d, pos, text, font, fill):
+    """Simulate bold by drawing text twice with a 1px horizontal offset."""
+    x, y = pos
+    d.text((x, y), text, font=font, fill=fill)
+    d.text((x + 1, y), text, font=font, fill=fill)
+
+
+def draw_hatch(d, x1, y1, x2, y2, spacing=8, color='#b8b8b8'):
+    """Draw subtle 45-degree diagonal lines clipped to a rectangle."""
+    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+    k_min = x1 - y2
+    k_max = x2 - y1
+    for k in range(k_min, k_max, spacing):
+        # Entry point (from left edge or top edge)
+        if y1 <= x1 - k <= y2:
+            sx, sy = x1, x1 - k
+        elif x1 <= y1 + k <= x2:
+            sx, sy = y1 + k, y1
+        else:
+            continue
+        # Exit point (from right edge or bottom edge)
+        if y1 <= x2 - k <= y2:
+            ex, ey = x2, x2 - k
+        elif x1 <= y2 + k <= x2:
+            ex, ey = y2 + k, y2
+        else:
+            continue
+        d.line([(sx, sy), (ex, ey)], fill=color, width=1)
+
+
+def generate_reference_page(page_configs, page_num, page_count):
+    page_width_px = int(11 * pixels_per_inch)
+    page_height_px = int(8.5 * pixels_per_inch)
+
+    margin = 40
+    ref_font_size = 20
+    ref_fnt = ImageFont.truetype(font_location, ref_font_size)
+    title_fnt = ImageFont.truetype(font_location, 30)
+    num_fnt = ImageFont.truetype(font_location, 14)
+    key_fnt = ImageFont.truetype(font_location, 16)
+
+    image = Image.new('RGB', (page_width_px, page_height_px), 'white')
+    d = ImageDraw.Draw(image)
+
+    bay_label_col_width = 140
+    content_x = margin + bay_label_col_width
+    patch_area_width = page_width_px - margin - content_x
+    unit_width = patch_area_width / expected_count
+
+    header_height = 34
+    bay_gap = 10
+    title_space = 70
+    n_bays = len(page_configs)
+    available = page_height_px - 2 * margin - title_space
+    cell_height = int((available / n_bays - header_height - bay_gap) / 2)
+
+    ascent, descent = ref_fnt.getmetrics()
+    text_h = ascent + descent
+    num_ascent, num_descent = num_fnt.getmetrics()
+    num_text_h = num_ascent + num_descent
+
+    current_y = margin
+
+    page_label = f"  ({page_num}/{page_count})"
+    draw_bold_text(d, (margin, current_y), "Studio Carquinez Patch Bay Reference" + page_label,
+                   font=title_fnt, fill='black')
+    current_y += title_space
+
+    for bay_config in page_configs:
+        row_right = content_x + patch_area_width
+
+        # Header bar
+        d.rectangle([margin, current_y, row_right, current_y + header_height], fill='#222222')
+        draw_bold_text(d, (margin + 8, current_y + (header_height - text_h) // 2),
+                       f"Patch Bay {bay_config['label_name']}", font=ref_fnt, fill='white')
+
+        # Column numbers in white over the header bar
+        for col in range(1, expected_count + 1):
+            nx = content_x + (col - 1) * unit_width
+            nw = d.textlength(str(col), font=num_fnt)
+            d.text((nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
+                   str(col), font=num_fnt, fill='white')
+
+        current_y += header_height
+
+        # Row label cells ("TOP" / "BOTTOM")
+        for row_idx, row_label in enumerate(["TOP", "BOTTOM"]):
+            y0 = current_y + row_idx * cell_height
+            y1 = y0 + cell_height
+            d.rectangle([margin, y0, margin + bay_label_col_width, y1], outline='black', width=1)
+            tw = int(d.textlength(row_label, font=ref_fnt))
+            draw_bold_text(d, (margin + (bay_label_col_width - tw) // 2, y0 + (cell_height - text_h) // 2),
+                           row_label, font=ref_fnt, fill='black')
+
+        # Patch entry cells
+        x = content_x
+        for entry in bay_config['entries']:
+            cell_w = unit_width * entry['width']
+
+            for row_idx, text_key in enumerate(["top", "bottom"]):
+                y0 = current_y + row_idx * cell_height
+                y1 = y0 + cell_height
+
+                if entry['normalled']:
+                    draw_hatch(d, x, y0, x + cell_w, y1)
+
+                d.rectangle([x, y0, x + cell_w, y1], outline='black', width=1)
+
+                text = entry[text_key]
+                tw = d.textlength(text, font=ref_fnt)
+                tx = x + (cell_w - tw) / 2
+                ty = y0 + (cell_height - text_h) / 2
+                draw_bold_text(d, (tx, ty), text, font=ref_fnt, fill='black')
+
+            x += cell_w
+
+        current_y += cell_height * 2 + bay_gap
+
+    # Legend — bottom-right corner, no margin
+    key_ascent, key_descent = key_fnt.getmetrics()
+    key_text_h = key_ascent + key_descent
+    legend_cell_w = 70
+    legend_cell_h = 34
+    padding = 12
+    legend_x = page_width_px - padding - legend_cell_w
+    legend_y = page_height_px - padding - legend_cell_h
+
+    draw_hatch(d, legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h)
+    d.rectangle([legend_x, legend_y, legend_x + legend_cell_w, legend_y + legend_cell_h],
+                outline='black', width=1)
+    label = "= Normalled"
+    lw = d.textlength(label, font=key_fnt)
+    draw_bold_text(d, (legend_x - lw - 8, legend_y + (legend_cell_h - key_text_h) // 2),
+                   label, font=key_fnt, fill='black')
+
+    return image
+
+
+def generate_reference_sheet(all_configs):
+    mid = len(all_configs) // 2 + len(all_configs) % 2
+    page1 = generate_reference_page(all_configs[:mid], 1, 2)
+    page2 = generate_reference_page(all_configs[mid:], 2, 2)
+    os.makedirs('printable_reference', exist_ok=True)
+    path = 'printable_reference/reference_sheet.pdf'
+    page1.save(path, save_all=True, append_images=[page2])
+    print(f"Reference sheet saved to {path}")
+
 
 def generate_patch_bay_labels_from_json(config, index):
     # Tally total width and check that we're the right size
@@ -569,7 +718,10 @@ config = [
   }
 ]
 
+all_configs = config
 clear_csv_file()
 
-for i, config in enumerate(config):    
+for i, config in enumerate(all_configs):
     generate_patch_bay_labels_from_json(config, i)
+
+generate_reference_sheet(all_configs)
