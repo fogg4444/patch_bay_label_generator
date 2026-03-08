@@ -49,6 +49,11 @@ Patch bay: 10
 TBD,Mast Bed,Kitchen,Moog DLY IN,Tanzbar OUT L/R,,-,,,,,,,,,,,,,-,MXR Dist IN,Art Comp IN L/R,,UA 550 In
 Office,Bath Upper,TBD,Moog DLY OUT,-,,-,,,,,,,,,,,,,Sub 37 OUT,MXR Dist OUT,Art Comp OUT L/R,,UA 550 Out
 
+Patch bay: 12-rooms
+
+Kitchen L,Bath Up L,Bath Dn L,Den L,Gallery L,Master Bed L,Guest Bed L,Office L,Front Porch,Back Porch,-,,,,,,,,,,,,,
+Kitchen R,Bath Up R,Bath Dn R,Den R,Gallery R,Master Bed R,Guest Bed R,Office R,Front Porch,Back Porch,-,,,,,,,,,,,,,
+
 Patch bay: 11-amp-rack
 
 L / R Audio Source Out,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,

@@ -682,6 +682,22 @@ config = [
     ]
   },
   {
+    "label_name": "12-rooms",
+    "entries": [
+        {"normalled": False, "top": "Kitchen L",    "bottom": "Kitchen R",    "width": 1},
+        {"normalled": False, "top": "Bath Up L",    "bottom": "Bath Up R",    "width": 1},
+        {"normalled": False, "top": "Bath Dn L",    "bottom": "Bath Dn R",    "width": 1},
+        {"normalled": False, "top": "Den L",        "bottom": "Den R",        "width": 1},
+        {"normalled": False, "top": "Gallery L",    "bottom": "Gallery R",    "width": 1},
+        {"normalled": False, "top": "Master Bed L", "bottom": "Master Bed R", "width": 1},
+        {"normalled": False, "top": "Guest Bed L",  "bottom": "Guest Bed R",  "width": 1},
+        {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
+        {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
+        {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 14},
+    ]
+  },
+  {
     "label_name": "11-amp-rack",
     "entries": [
         {
