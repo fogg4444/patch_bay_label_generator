@@ -203,8 +203,8 @@ def generate_reference_page(page_configs, page_num, page_count):
         for col in range(1, expected_count + 1):
             nx = content_x + (col - 1) * unit_width
             nw = d.textlength(str(col), font=num_fnt)
-            d.text((nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
-                   str(col), font=num_fnt, fill='white')
+            draw_bold_text(d, (nx + (unit_width - nw) / 2, current_y + (header_height - num_text_h) / 2),
+                           str(col), font=num_fnt, fill='white')
 
         current_y += header_height
 
