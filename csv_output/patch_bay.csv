@@ -53,3 +53,7 @@ Patch bay: 11-amp-rack
 
 L / R Audio Source Out,,DBX High Out L/R,,DBX Mid Out L/R,,DBX Low Out L/R,,-,,,,,,,,,,,,,,,
 DBX Drive Rack L/R IN,,High Amp In L/R,,Mid Amp In L/R,,Low Amp In L/R,,-,,,,,,,,,,,,,,,
+
+Patch bay: ethernet
+
+Hearback Out 1-8,,,,,,,,Kitchen,Bath Up,Bath Dn,Den,Gallery,Master Bed,Guest Bed,Office,Front Porch,Back Porch,-,
