@@ -360,7 +360,7 @@ config = [
         {
             "normalled": True,
             "top": "Aux 3 Out",
-            "bottom": "-",
+            "bottom": "SDE 1000 IN",
             "width": 1
         },
         {
@@ -445,27 +445,27 @@ config = [
             "width": 16
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Control Room Out",
             "bottom": "Yamaha Monitors In",
             "width": 2
         },
         {
-            "normalled": False,
+            "normalled": True,
             "top": "Apollo 2 Track Out",
             "bottom": "Ghost 2 Track A Input",
             "width": 2
         },
         {
-            "normalled": False,
-            "top": "-",
+            "normalled": True,
+            "top": "Record Player OUT",
             "bottom": "Ghost 2 Track B Input",
             "width": 2
         },
         {
-            "normalled": False,
-            "top": "-",
-            "bottom": "",
+            "normalled": True,
+            "top": "Ghost Mix OUT",
+            "bottom": "-",
             "width": 2
         }
     ]
@@ -480,10 +480,28 @@ config = [
             "width": 16
         },
         {
+            "normalled": True,
+            "top": "Alt CRM Out L/R",
+            "bottom": "Mix Cube L / -",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "Hearback IN 1, 2, 3, 4",
+            "bottom": "Hearback IN 5, 6, 7, 8",
+            "width": 4
+        },
+        {
             "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 8
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "LA-2A In",
+            "bottom": "LA-2A Out",
+            "width": 1
         }
     ]
   },
@@ -550,9 +568,15 @@ config = [
         },
         {
             "normalled": False,
+            "top": "Basement Snake Send A, B, C, D",
+            "bottom": "Basement Snake Send E, F, G, H",
+            "width": 4
+        },
+        {
+            "normalled": False,
             "top": "-",
             "bottom": "-",
-            "width": 14
+            "width": 10
         },
         {
             "normalled": False,
@@ -586,8 +610,8 @@ config = [
         },
         {
             "normalled": False,
-            "top": "Hall of Fame Verb In",
-            "bottom": "Hall of Fame Verb Out",
+            "top": "-",
+            "bottom": "Phones Amp In L/R",
             "width": 2
         },
     ]
@@ -596,10 +620,64 @@ config = [
     "label_name": "10",
     "entries": [
         {
+            "normalled": False,
+            "top": "TBD",
+            "bottom": "Office",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Mast Bed",
+            "bottom": "Bath Upper",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Kitchen",
+            "bottom": "TBD",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Moog DLY IN",
+            "bottom": "Moog DLY OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Tanzbar OUT L/R",
+            "bottom": "-",
+            "width": 2
+        },
+        {
             "normalled": True,
             "top": "-",
             "bottom": "-",
-            "width": 24
+            "width": 13
+        },
+        {
+            "normalled": True,
+            "top": "-",
+            "bottom": "Sub 37 OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "MXR Dist IN",
+            "bottom": "MXR Dist OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Art Comp IN L/R",
+            "bottom": "Art Comp OUT L/R",
+            "width": 2
+        },
+        {
+            "normalled": False,
+            "top": "UA 550 In",
+            "bottom": "UA 550 Out",
+            "width": 1
         },
     ]
   },
