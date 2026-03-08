@@ -627,7 +627,7 @@ config = [
         {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
         {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
         {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
-        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 6},
         {
             "normalled": False,
             "top": "Moog DLY IN",
@@ -664,7 +664,6 @@ config = [
             "bottom": "UA 550 Out",
             "width": 1
         },
-        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
     ]
   },
   {
