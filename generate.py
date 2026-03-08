@@ -299,9 +299,9 @@ def generate_changelog_page():
     d = ImageDraw.Draw(image)
 
     title_fnt    = ImageFont.truetype(font_location, 30)
-    heading_fnt  = ImageFont.truetype(font_location, 30)
-    body_fnt     = ImageFont.truetype(font_location, 26)
-    date_fnt     = ImageFont.truetype(font_location, 22)
+    heading_fnt  = ImageFont.truetype(font_location, 38)
+    body_fnt     = ImageFont.truetype(font_location, 34)
+    date_fnt     = ImageFont.truetype(font_location, 28)
 
     # Title row
     draw_bold_text(d, (margin, margin), "Studio Carquinez Patch Bay Reference  —  Change Log", font=title_fnt, fill='black')
@@ -371,7 +371,7 @@ def generate_changelog_page():
     checkbox_y = page_height_px - margin - checkbox_size
     d.rectangle([checkbox_x, checkbox_y, checkbox_x + checkbox_size, checkbox_y + checkbox_size],
                 outline='black', width=4)
-    check_fnt = ImageFont.truetype(font_location, 26)
+    check_fnt = ImageFont.truetype(font_location, 34)
     check_label = "All patch changes applied to hardware"
     ascent, descent = check_fnt.getmetrics()
     draw_bold_text(d, (checkbox_x + checkbox_size + 20,
