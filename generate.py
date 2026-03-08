@@ -269,13 +269,88 @@ def generate_reference_page(page_configs, page_num, page_count):
     return image
 
 
+def generate_changelog_page():
+    page_width_px = int(11 * pixels_per_inch)
+    page_height_px = int(8.5 * pixels_per_inch)
+    margin = 40
+
+    image = Image.new('RGB', (page_width_px, page_height_px), 'white')
+    d = ImageDraw.Draw(image)
+
+    title_fnt    = ImageFont.truetype(font_location, 30)
+    heading_fnt  = ImageFont.truetype(font_location, 22)
+    body_fnt     = ImageFont.truetype(font_location, 18)
+    date_fnt     = ImageFont.truetype(font_location, 16)
+
+    # Title row
+    draw_bold_text(d, (margin, margin), "Studio Carquinez Patch Bay Reference  —  Change Log", font=title_fnt, fill='black')
+    date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
+    dw = int(d.textlength(date_str, font=title_fnt))
+    draw_bold_text(d, (page_width_px - margin - dw, margin), date_str, font=title_fnt, fill='black')
+
+    current_y = margin + 55
+    line_gap = 6
+
+    # Parse and render UPDATES.md
+    try:
+        with open('UPDATES.md', 'r') as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        lines = []
+
+    for raw in lines:
+        line = raw.rstrip()
+        if not line or line == '---' or line.startswith('# '):
+            continue
+
+        if line.startswith('## '):
+            current_y += 10
+            ascent, descent = date_fnt.getmetrics()
+            draw_bold_text(d, (margin, current_y), line[3:], font=date_fnt, fill='#555555')
+            current_y += ascent + descent + line_gap
+
+        elif line.startswith('### '):
+            ascent, descent = heading_fnt.getmetrics()
+            draw_bold_text(d, (margin, current_y), line[4:], font=heading_fnt, fill='black')
+            current_y += ascent + descent + line_gap
+
+        elif line.startswith('**') and line.endswith('**'):
+            ascent, descent = body_fnt.getmetrics()
+            draw_bold_text(d, (margin + 20, current_y), line.strip('*'), font=body_fnt, fill='black')
+            current_y += ascent + descent + line_gap
+
+        elif line.startswith('- '):
+            ascent, descent = body_fnt.getmetrics()
+            d.text((margin + 30, current_y), '•  ' + line[2:], font=body_fnt, fill='black')
+            current_y += ascent + descent + line_gap
+
+        else:
+            ascent, descent = body_fnt.getmetrics()
+            d.text((margin + 20, current_y), line, font=body_fnt, fill='black')
+            current_y += ascent + descent + line_gap
+
+    # Big checkbox at the bottom
+    checkbox_size = 80
+    checkbox_x = margin
+    checkbox_y = page_height_px - margin - checkbox_size
+    d.rectangle([checkbox_x, checkbox_y, checkbox_x + checkbox_size, checkbox_y + checkbox_size],
+                outline='black', width=4)
+    check_fnt = ImageFont.truetype(font_location, 24)
+    check_label = "Patch changes applied to hardware"
+    draw_bold_text(d, (checkbox_x + checkbox_size + 20, checkbox_y + (checkbox_size - 30) // 2),
+                   check_label, font=check_fnt, fill='black')
+
+    return image
+
+
 def generate_reference_sheet(all_configs):
     mid = len(all_configs) // 2 + len(all_configs) % 2
     page1 = generate_reference_page(all_configs[:mid], 1, 2)
     page2 = generate_reference_page(all_configs[mid:], 2, 2)
+    page3 = generate_changelog_page()
     os.makedirs('printable_reference', exist_ok=True)
     path = 'printable_reference/reference_sheet.pdf'
-    page1.save(path, save_all=True, append_images=[page2])
+    page1.save(path, save_all=True, append_images=[page2, page3])
     print(f"Reference sheet saved to {path}")
 
 
