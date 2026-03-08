@@ -8,3 +8,5 @@ pip3 install pillow
 rm ./label_outputs/*
 
 python3 ./generate.py
+
+open -a Preview printable_reference/reference_sheet.pdf

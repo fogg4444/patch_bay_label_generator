@@ -1,9 +1,7 @@
-import csv
 from datetime import date
-from enum import Enum
-import json
 import os
 from PIL import Image, ImageDraw, ImageFont
+from config import config as all_configs
 
 print('Creating your patch bay label')
 
@@ -127,6 +125,24 @@ def draw_bold_text(d, pos, text, font, fill):
     d.text((x + 1, y), text, font=font, fill=fill)
 
 
+def wrap_text(d, text, font, max_width):
+    """Split text into lines that each fit within max_width pixels."""
+    words = text.split()
+    lines = []
+    current = ''
+    for word in words:
+        candidate = (current + ' ' + word).strip()
+        if d.textlength(candidate, font=font) <= max_width:
+            current = candidate
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines if lines else [text]
+
+
 def draw_hatch(d, x1, y1, x2, y2, spacing=8, color='#b8b8b8'):
     """Draw subtle 45-degree diagonal lines clipped to a rectangle."""
     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
@@ -239,10 +255,15 @@ def generate_reference_page(page_configs, page_num, page_count):
                 d.rectangle([x, y0, x + cell_w, y1], outline='black', width=1)
 
                 text = entry[text_key]
-                tw = d.textlength(text, font=ref_fnt)
-                tx = x + (cell_w - tw) / 2
-                ty = y0 + (row_height - text_h) / 2
-                draw_bold_text(d, (tx, ty), text, font=ref_fnt, fill='black')
+                padding = 4
+                lines = wrap_text(d, text, ref_fnt, cell_w - padding * 2)
+                total_text_h = len(lines) * text_h
+                ty = y0 + (row_height - total_text_h) / 2
+                for line in lines:
+                    tw = d.textlength(line, font=ref_fnt)
+                    tx = x + (cell_w - tw) / 2
+                    draw_bold_text(d, (tx, ty), line, font=ref_fnt, fill='black')
+                    ty += text_h
 
             x += cell_w
 
@@ -269,27 +290,52 @@ def generate_reference_page(page_configs, page_num, page_count):
     return image
 
 
-def generate_changelog_page():
+def generate_changelog_pages(start_page=3, total_pages=None):
     page_width_px = int(11 * pixels_per_inch)
     page_height_px = int(8.5 * pixels_per_inch)
     margin = 40
 
-    image = Image.new('RGB', (page_width_px, page_height_px), 'white')
-    d = ImageDraw.Draw(image)
-
     title_fnt    = ImageFont.truetype(font_location, 30)
-    heading_fnt  = ImageFont.truetype(font_location, 22)
-    body_fnt     = ImageFont.truetype(font_location, 18)
-    date_fnt     = ImageFont.truetype(font_location, 16)
+    heading_fnt  = ImageFont.truetype(font_location, 38)
+    body_fnt     = ImageFont.truetype(font_location, 34)
+    date_fnt     = ImageFont.truetype(font_location, 28)
+    check_fnt    = ImageFont.truetype(font_location, 34)
 
-    # Title row
-    draw_bold_text(d, (margin, margin), "Studio Carquinez Patch Bay Reference  —  Change Log", font=title_fnt, fill='black')
-    date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
-    dw = int(d.textlength(date_str, font=title_fnt))
-    draw_bold_text(d, (page_width_px - margin - dw, margin), date_str, font=title_fnt, fill='black')
+    checkbox_size = 60
+    check_label = "All patch changes applied to hardware"
+    check_ascent, check_descent = check_fnt.getmetrics()
+    bottom_reserved = margin + checkbox_size + 16  # space needed for the big checkbox
 
-    current_y = margin + 55
-    line_gap = 6
+    section_box = 28
+    item_box    = 18
+    section_indent = margin
+    item_indent    = margin + 40
+    line_gap = 8
+
+    def new_page(page_num):
+        img = Image.new('RGB', (page_width_px, page_height_px), 'white')
+        drw = ImageDraw.Draw(img)
+        pg_label = f"({page_num}/{total_pages})" if total_pages else f"(p{page_num})"
+        draw_bold_text(drw, (margin, margin),
+                       f"Studio Carquinez Patch Bay Reference  —  Change Log  {pg_label}",
+                       font=title_fnt, fill='black')
+        date_str = "Last updated: " + date.today().strftime("%Y-%m-%d")
+        dw = int(drw.textlength(date_str, font=title_fnt))
+        draw_bold_text(drw, (page_width_px - margin - dw, margin), date_str, font=title_fnt, fill='black')
+        return img, drw, margin + 55
+
+    pages = []
+    page_num = start_page
+    image, d, current_y = new_page(page_num)
+
+    def next_page():
+        nonlocal image, d, current_y, page_num
+        pages.append(image)
+        page_num += 1
+        image, d, current_y = new_page(page_num)  # noqa: F821
+
+    def needs_new_page(extra_y):
+        return current_y + extra_y > page_height_px - bottom_reserved
 
     # Parse and render UPDATES.md
     try:
@@ -298,27 +344,28 @@ def generate_changelog_page():
     except FileNotFoundError:
         lines = []
 
-    section_box = 28   # checkbox size for section headings
-    item_box    = 18   # checkbox size for bullet items
-    section_indent = margin
-    item_indent    = margin + 40
-
     for raw in lines:
         line = raw.rstrip()
         if not line or line == '---' or line.startswith('# '):
             continue
 
         if line.startswith('## '):
+            ascent, descent = date_fnt.getmetrics()
+            row_h = 12 + 8 + ascent + descent + line_gap
+            if needs_new_page(row_h):
+                next_page()
             current_y += 12
             d.line([margin, current_y, page_width_px - margin, current_y], fill='#bbbbbb', width=2)
             current_y += 8
-            ascent, descent = date_fnt.getmetrics()
             draw_bold_text(d, (section_indent, current_y), line[3:], font=date_fnt, fill='#555555')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('### '):
-            current_y += 4
             ascent, descent = heading_fnt.getmetrics()
+            row_h = 4 + ascent + descent + line_gap + 4
+            if needs_new_page(row_h):
+                next_page()
+            current_y += 4
             cy = current_y + (ascent + descent - section_box) // 2
             d.rectangle([section_indent, cy, section_indent + section_box, cy + section_box],
                         outline='black', width=3)
@@ -328,11 +375,15 @@ def generate_changelog_page():
 
         elif line.startswith('**') and line.endswith('**'):
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             draw_bold_text(d, (item_indent, current_y), line.strip('*'), font=body_fnt, fill='#333333')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('- '):
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             cy = current_y + (ascent + descent - item_box) // 2
             d.rectangle([item_indent, cy, item_indent + item_box, cy + item_box],
                         outline='black', width=2)
@@ -341,33 +392,36 @@ def generate_changelog_page():
 
         else:
             ascent, descent = body_fnt.getmetrics()
+            if needs_new_page(ascent + descent + line_gap):
+                next_page()
             d.text((item_indent, current_y), line, font=body_fnt, fill='black')
             current_y += ascent + descent + line_gap
 
-    # Large "all done" checkbox at the bottom
-    checkbox_size = 60
+    # Large "all done" checkbox anchored to bottom of last page
     checkbox_x = margin
     checkbox_y = page_height_px - margin - checkbox_size
     d.rectangle([checkbox_x, checkbox_y, checkbox_x + checkbox_size, checkbox_y + checkbox_size],
                 outline='black', width=4)
-    check_fnt = ImageFont.truetype(font_location, 24)
-    check_label = "All patch changes applied to hardware"
-    ascent, descent = check_fnt.getmetrics()
     draw_bold_text(d, (checkbox_x + checkbox_size + 20,
-                       checkbox_y + (checkbox_size - ascent - descent) // 2),
+                       checkbox_y + (checkbox_size - check_ascent - check_descent) // 2),
                    check_label, font=check_fnt, fill='black')
 
-    return image
+    pages.append(image)
+    return pages
 
 
 def generate_reference_sheet(all_configs):
     mid = len(all_configs) // 2 + len(all_configs) % 2
-    page1 = generate_reference_page(all_configs[:mid], 1, 2)
-    page2 = generate_reference_page(all_configs[mid:], 2, 2)
-    page3 = generate_changelog_page()
+    # First pass: count changelog pages to get the true total
+    changelog_count = len(generate_changelog_pages())
+    total_pages = 2 + changelog_count
+    # Second pass: render everything with correct page numbers
+    page1 = generate_reference_page(all_configs[:mid], 1, total_pages)
+    page2 = generate_reference_page(all_configs[mid:], 2, total_pages)
+    changelog_pages = generate_changelog_pages(start_page=3, total_pages=total_pages)
     os.makedirs('printable_reference', exist_ok=True)
     path = 'printable_reference/reference_sheet.pdf'
-    page1.save(path, save_all=True, append_images=[page2, page3])
+    page1.save(path, save_all=True, append_images=[page2] + changelog_pages)
     print(f"Reference sheet saved to {path}")
 
 
@@ -390,432 +444,6 @@ def generate_patch_bay_labels_from_json(config, index):
         generate_single_label(top_or_bottom_key="top", reverse=True, port_count=port_count)
         generate_single_label(top_or_bottom_key="bottom", reverse=True, port_count=port_count)
 
-config = [
-  {
-    "label_name": "1",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Worm hole Matched to Left Side Patch bay 1-16 top",
-            "bottom": "Console Line In 1-16",
-            "width": 16
-        },
-        {
-            "normalled": False,
-            "top": "API L/R In",
-            "bottom": "API L/R Out",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Dbx 160A L/R In",
-            "bottom": "Dbx 160A L/R Out",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "D-Comp L/R In",
-            "bottom": "D-Comp L/R Out",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "902 De-esser IN 1-2",
-            "bottom": "902 De-esser OUT 1-2",
-            "width": 2
-        }
-    ]
-  },
-  {
-    "label_name": "2",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom",
-            "bottom": "Console Line In 17-32",
-            "width": 16
-        },
-        {
-            "normalled": True,
-            "top": "Aux 1 Out",
-            "bottom": "EMT 140 IN",
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "Aux 2 Out",
-            "bottom": "PCM60 IN",
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "Aux 3 Out",
-            "bottom": "SDE 1000 IN",
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "Aux 4 Out",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": True,
-            "top": "Aux 5 / 6 Out",
-            "bottom": "Pro Verb Out",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Aux 7 Out",
-            "bottom": "Pro Verb In",
-            "width": 2
-        },
-    ]
-  },
-  {
-    "label_name": "3",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Apollo #1 1-16 Out",
-            "bottom": "Ghost 1-16 Tape In",
-            "width": 16
-        },
-        {
-            "normalled": True,
-            "top": "Aux 8 Out L/R",
-            "bottom": "-",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Studio A O/P L/R",
-            "bottom": "Headamp Pro Input",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Studio Phones B L/R Out",
-            "bottom": "Meyer Mains In L/R",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "PCM60 Return L/R",
-            "bottom": "EMT 140 Return L/R",
-            "width": 2
-        },
-    ]
-  },
-  {
-    "label_name": "4",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Apollo #2 17-32 Out",
-            "bottom": "Ghost 17-32 Tape In",
-            "width": 16
-        },
-        {
-            "normalled": False,
-            "top": "Tascam TSR-8 In 1-8",
-            "bottom": "Tascam TSR-8 Out 1-8",
-            "width": 8
-        }
-    ]
-  },
-  {
-    "label_name": "5",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Ghost 1-16 Tape Send",
-            "bottom": "Apollo #1 1-16 In",
-            "width": 16
-        },
-        {
-            "normalled": True,
-            "top": "Control Room Out",
-            "bottom": "Yamaha Monitors In",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Apollo 2 Track Out",
-            "bottom": "Ghost 2 Track A Input",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Record Player OUT",
-            "bottom": "Ghost 2 Track B Input",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "Ghost Mix OUT",
-            "bottom": "-",
-            "width": 2
-        }
-    ]
-  },
-  {
-    "label_name": "6",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Ghost 17-32 Tape Send",
-            "bottom": "Apollo #2 17-32 In",
-            "width": 16
-        },
-        {
-            "normalled": True,
-            "top": "Alt CRM Out L/R",
-            "bottom": "Mix Cube L / -",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Hearback IN 1, 2, 3, 4",
-            "bottom": "Hearback IN 5, 6, 7, 8",
-            "width": 4
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "LA-2A In",
-            "bottom": "LA-2A Out",
-            "width": 1
-        }
-    ]
-  },
-  {
-    "label_name": "7",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Ghost Channel Insert Send 1-16",
-            "bottom": "Ghost Channel Insert Return 1-16",
-            "width": 16
-        },
-        {
-            "normalled": False,
-            "top": "Group 1 / 2 Out",
-            "bottom": "FX 1 In L / R",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Group 3 / 4 Out",
-            "bottom": "FX 2 In L / R",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Group 5 / 6 Out",
-            "bottom": "FX 3 In L / R",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Group 7 / 8 Out",
-            "bottom": "FX 4 In L / R",
-            "width": 2
-        },
-    ]
-  },
-  {
-    "label_name": "8",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Ghost Channel Insert Send 17-32",
-            "bottom": "Ghost Channel Insert Return 17-32",
-            "width": 16
-        },
-        {
-            "normalled": False,
-            "top": "Group 1 - 8 Insert Send",
-            "bottom": "Group 1 - 8 Insert Return",
-            "width": 8
-        },
-    ]
-  },
-  {
-    "label_name": "9",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "Main Insert Send",
-            "bottom": "Main Insert Return",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "Basement Snake Send A, B, C, D",
-            "bottom": "Basement Snake Send E, F, G, H",
-            "width": 4
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 10
-        },
-        {
-            "normalled": False,
-            "top": "SDE 1000 Return",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "-",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "DBX 160 Link",
-            "bottom": "DBX 160 Link",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Fuzz In",
-            "bottom": "Fuzz Out",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Transition Delay In",
-            "bottom": "Transition Delay Out",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "Phones Amp In L/R",
-            "width": 2
-        },
-    ]
-  },
-    {
-    "label_name": "10",
-    "entries": [
-        {"normalled": False, "top": "Kitchen L",    "bottom": "Kitchen R",    "width": 1},
-        {"normalled": False, "top": "Bath Up L",    "bottom": "Bath Up R",    "width": 1},
-        {"normalled": False, "top": "Bath Dn L",    "bottom": "Bath Dn R",    "width": 1},
-        {"normalled": False, "top": "Den L",        "bottom": "Den R",        "width": 1},
-        {"normalled": False, "top": "Gallery L",    "bottom": "Gallery R",    "width": 1},
-        {"normalled": False, "top": "Master Bed L", "bottom": "Master Bed R", "width": 1},
-        {"normalled": False, "top": "Guest Bed L",  "bottom": "Guest Bed R",  "width": 1},
-        {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
-        {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
-        {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
-        {"normalled": False, "top": "-",            "bottom": "-",            "width": 6},
-        {
-            "normalled": False,
-            "top": "Moog DLY IN",
-            "bottom": "Moog DLY OUT",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Tanzbar OUT L/R",
-            "bottom": "-",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "-",
-            "bottom": "Sub 37 OUT",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "MXR Dist IN",
-            "bottom": "MXR Dist OUT",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Art Comp IN L/R",
-            "bottom": "Art Comp OUT L/R",
-            "width": 2
-        },
-        {
-            "normalled": False,
-            "top": "UA 550 In",
-            "bottom": "UA 550 Out",
-            "width": 1
-        },
-    ]
-  },
-  {
-    "label_name": "11-amp-rack",
-    "entries": [
-        {
-            "normalled": True,
-            "top": "L / R Audio Source Out",
-            "bottom": "DBX Drive Rack L/R IN",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "DBX High Out L/R",
-            "bottom": "High Amp In L/R",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "DBX Mid Out L/R",
-            "bottom": "Mid Amp In L/R",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "DBX Low Out L/R",
-            "bottom": "Low Amp In L/R",
-            "width": 2
-        },
-        {
-            "normalled": True,
-            "top": "-",
-            "bottom": "-",
-            "width": 16
-        },
-    ]
-  }
-]
-
-config.append({
-    "label_name": "ethernet",
-    "single_row": True,
-    "port_count": 20,
-    "entries": [
-        {"normalled": False, "top": "Hearback Out 1-8", "width": 8},
-        {"normalled": False, "top": "Kitchen",          "width": 1},
-        {"normalled": False, "top": "Bath Up",          "width": 1},
-        {"normalled": False, "top": "Bath Dn",          "width": 1},
-        {"normalled": False, "top": "Den",              "width": 1},
-        {"normalled": False, "top": "Gallery",          "width": 1},
-        {"normalled": False, "top": "Master Bed",       "width": 1},
-        {"normalled": False, "top": "Guest Bed",        "width": 1},
-        {"normalled": False, "top": "Office",           "width": 1},
-        {"normalled": False, "top": "Front Porch",      "width": 1},
-        {"normalled": False, "top": "Back Porch",       "width": 1},
-        {"normalled": False, "top": "-",                "width": 2},
-    ]
-})
-
-all_configs = config
 clear_csv_file()
 
 for i, config in enumerate(all_configs):
