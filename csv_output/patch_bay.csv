@@ -46,8 +46,8 @@ Main Insert Return,,Basement Snake Send E, F, G, H,,,,-,,,,,,,,,,-,-,DBX 160 Lin
 
 Patch bay: 10
 
-Kitchen L,Bath Up L,Bath Dn L,Den L,Gallery L,Master Bed L,Guest Bed L,Office L,Front Porch,Back Porch,-,,,,,,-,MXR Dist IN,Art Comp IN L/R,,UA 550 In,Moog DLY IN,Tanzbar OUT L/R,
-Kitchen R,Bath Up R,Bath Dn R,Den R,Gallery R,Master Bed R,Guest Bed R,Office R,Front Porch,Back Porch,-,,,,,,Sub 37 OUT,MXR Dist OUT,Art Comp OUT L/R,,UA 550 Out,Moog DLY OUT,-,
+Kitchen L,Bath Up L,Bath Dn L,Den L,Gallery L,Master Bed L,Guest Bed L,Office L,Front Porch,Back Porch,-,,,Moog DLY IN,Tanzbar OUT L/R,,-,MXR Dist IN,Art Comp IN L/R,,UA 550 In,-,,
+Kitchen R,Bath Up R,Bath Dn R,Den R,Gallery R,Master Bed R,Guest Bed R,Office R,Front Porch,Back Porch,-,,,Moog DLY OUT,-,,Sub 37 OUT,MXR Dist OUT,Art Comp OUT L/R,,UA 550 Out,-,,
 
 Patch bay: 11-amp-rack
 

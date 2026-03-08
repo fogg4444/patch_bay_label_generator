@@ -627,7 +627,19 @@ config = [
         {"normalled": False, "top": "Office L",     "bottom": "Office R",     "width": 1},
         {"normalled": False, "top": "Front Porch",  "bottom": "Front Porch",  "width": 1},
         {"normalled": False, "top": "Back Porch",   "bottom": "Back Porch",   "width": 1},
-        {"normalled": False, "top": "-",            "bottom": "-",            "width": 6},
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
+        {
+            "normalled": False,
+            "top": "Moog DLY IN",
+            "bottom": "Moog DLY OUT",
+            "width": 1
+        },
+        {
+            "normalled": False,
+            "top": "Tanzbar OUT L/R",
+            "bottom": "-",
+            "width": 2
+        },
         {
             "normalled": True,
             "top": "-",
@@ -652,18 +664,7 @@ config = [
             "bottom": "UA 550 Out",
             "width": 1
         },
-        {
-            "normalled": False,
-            "top": "Moog DLY IN",
-            "bottom": "Moog DLY OUT",
-            "width": 1
-        },
-        {
-            "normalled": False,
-            "top": "Tanzbar OUT L/R",
-            "bottom": "-",
-            "width": 2
-        },
+        {"normalled": False, "top": "-",            "bottom": "-",            "width": 3},
     ]
   },
   {
