@@ -158,7 +158,7 @@ def generate_reference_page(page_configs, page_num, page_count):
     ref_font_size = 20
     ref_fnt = ImageFont.truetype(font_location, ref_font_size)
     title_fnt = ImageFont.truetype(font_location, 30)
-    num_fnt = ImageFont.truetype(font_location, 14)
+    num_fnt = ImageFont.truetype(font_location, 18)
     key_fnt = ImageFont.truetype(font_location, 16)
 
     image = Image.new('RGB', (page_width_px, page_height_px), 'white')
