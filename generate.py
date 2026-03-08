@@ -298,46 +298,63 @@ def generate_changelog_page():
     except FileNotFoundError:
         lines = []
 
+    section_box = 28   # checkbox size for section headings
+    item_box    = 18   # checkbox size for bullet items
+    section_indent = margin
+    item_indent    = margin + 40
+
     for raw in lines:
         line = raw.rstrip()
         if not line or line == '---' or line.startswith('# '):
             continue
 
         if line.startswith('## '):
-            current_y += 10
+            current_y += 12
+            d.line([margin, current_y, page_width_px - margin, current_y], fill='#bbbbbb', width=2)
+            current_y += 8
             ascent, descent = date_fnt.getmetrics()
-            draw_bold_text(d, (margin, current_y), line[3:], font=date_fnt, fill='#555555')
+            draw_bold_text(d, (section_indent, current_y), line[3:], font=date_fnt, fill='#555555')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('### '):
+            current_y += 4
             ascent, descent = heading_fnt.getmetrics()
-            draw_bold_text(d, (margin, current_y), line[4:], font=heading_fnt, fill='black')
-            current_y += ascent + descent + line_gap
+            cy = current_y + (ascent + descent - section_box) // 2
+            d.rectangle([section_indent, cy, section_indent + section_box, cy + section_box],
+                        outline='black', width=3)
+            draw_bold_text(d, (section_indent + section_box + 12, current_y), line[4:],
+                           font=heading_fnt, fill='black')
+            current_y += ascent + descent + line_gap + 4
 
         elif line.startswith('**') and line.endswith('**'):
             ascent, descent = body_fnt.getmetrics()
-            draw_bold_text(d, (margin + 20, current_y), line.strip('*'), font=body_fnt, fill='black')
+            draw_bold_text(d, (item_indent, current_y), line.strip('*'), font=body_fnt, fill='#333333')
             current_y += ascent + descent + line_gap
 
         elif line.startswith('- '):
             ascent, descent = body_fnt.getmetrics()
-            d.text((margin + 30, current_y), '•  ' + line[2:], font=body_fnt, fill='black')
+            cy = current_y + (ascent + descent - item_box) // 2
+            d.rectangle([item_indent, cy, item_indent + item_box, cy + item_box],
+                        outline='black', width=2)
+            d.text((item_indent + item_box + 10, current_y), line[2:], font=body_fnt, fill='black')
             current_y += ascent + descent + line_gap
 
         else:
             ascent, descent = body_fnt.getmetrics()
-            d.text((margin + 20, current_y), line, font=body_fnt, fill='black')
+            d.text((item_indent, current_y), line, font=body_fnt, fill='black')
             current_y += ascent + descent + line_gap
 
-    # Big checkbox at the bottom
-    checkbox_size = 80
+    # Large "all done" checkbox at the bottom
+    checkbox_size = 60
     checkbox_x = margin
     checkbox_y = page_height_px - margin - checkbox_size
     d.rectangle([checkbox_x, checkbox_y, checkbox_x + checkbox_size, checkbox_y + checkbox_size],
                 outline='black', width=4)
     check_fnt = ImageFont.truetype(font_location, 24)
-    check_label = "Patch changes applied to hardware"
-    draw_bold_text(d, (checkbox_x + checkbox_size + 20, checkbox_y + (checkbox_size - 30) // 2),
+    check_label = "All patch changes applied to hardware"
+    ascent, descent = check_fnt.getmetrics()
+    draw_bold_text(d, (checkbox_x + checkbox_size + 20,
+                       checkbox_y + (checkbox_size - ascent - descent) // 2),
                    check_label, font=check_fnt, fill='black')
 
     return image
