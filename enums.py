@@ -31,3 +31,16 @@ class JackType(_StrEnum):
     MIDI = "midi"
     SWITCH = "switch"
     ETHERNET = "ethernet"
+
+
+class MidiPort(_StrEnum):
+    """A 5-pin MIDI connection on an instrument."""
+    IN = "In"
+    OUT = "Out"
+    THRU = "Thru"
+
+
+class Need(_StrEnum):
+    """How much an instrument's MIDI connection matters."""
+    REQUIRED = "required"
+    LOW = "low priority"

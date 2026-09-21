@@ -1,10 +1,11 @@
 """Render config.py as a single self-contained HTML view of every patch bay."""
 from datetime import date
 from html import escape
+import re
 import os
 
-from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes
-from enums import Category, JackType
+from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes, midi_instruments
+from enums import Category, JackType, Need
 from previous_config import config as previous_configs
 
 output_path = "html_output/patch_bay.html"
@@ -222,7 +223,12 @@ def render_gear_rack(rack):
                 f'<span class="slot{" tbd" if s is None else ""}">{escape(s) if s else i + 1}</span>'
                 for i, s in enumerate(unit["slots"])) + "</div>"
         patched = ""
-        if unit.get("patch"):
+        if unit.get("bay"):
+            bay = next(b for b in all_configs if b["label_name"] == unit["bay"])
+            ports = bay.get("port_count", expected_count)
+            patched = (f'<p class="patched">Patch bay: <a href="#bay-{escape(bay["label_name"])}">'
+                       f'{escape(bay_title(bay["label_name"]))} · 1–{ports}</a></p>')
+        elif unit.get("patch"):
             locs = patch_locations(unit["patch"])
             patched = ('<p class="patched">Patch bay: ' + ", ".join(escape(l) for l in locs) + "</p>") if locs else \
                       '<p class="patched none">Not on the patch bay</p>'
@@ -239,7 +245,7 @@ def render_gear_rack(rack):
     return f"""
 <section class="gear-rack">
   <h2 class="rack-name">{escape(rack['name'])} · equipment ({total}U)</h2>
-  <div class="elevation" style="grid-template-rows:repeat({total}, minmax(var(--u), auto))">{''.join(rows)}
+  <div class="elevation" style="grid-template-rows:repeat({total}, var(--u))">{''.join(rows)}
   </div>
 </section>"""
 
@@ -389,6 +395,40 @@ def render_moves():
     <tbody>{''.join(body)}</tbody>
   </table></div>
 </details>"""
+
+
+def slug(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def render_midi_list():
+    rows, total = [], 0
+    for inst in midi_instruments:
+        ports = inst["ports"]
+        for i, (port, need) in enumerate(ports):
+            total += 1
+            task = f"{slug(inst['name'])}-{slug(port.value)}"
+            jack = inst.get("jacks", {}).get(port)
+            first = i == 0
+            name_cell = (f'<td rowspan="{len(ports)}" class="inst"><b>{escape(inst["name"])}</b>'
+                         + (f'<small>{escape(inst["note"])}</small>' if inst.get("note") else "") + "</td>") if first else ""
+            rows.append(f"""<tr class="{'first' if first else ''}">
+          <td class="done-cell"><input type="checkbox" class="midi-check" id="midi-{task}" data-task="{task}"
+            aria-label="{escape(inst['name'])} MIDI {port.value} connected"></td>
+          {name_cell}
+          <td><label for="midi-{task}">MIDI {escape(port.value)}</label></td>
+          <td><span class="need {'low' if need == Need.LOW else 'req'}">{escape(need.value.capitalize())}</span></td>
+          <td>{f'MIDI patch bay jack {jack}' if jack else '<span class="tbd">Not assigned</span>'}</td>
+        </tr>""")
+    return f"""
+<section class="midi-list" id="midi-list">
+  <h2>MIDI hookups</h2>
+  <p class="progress" id="midi-progress"><b>0</b> of {total} connected</p>
+  <div class="scroll"><table>
+    <thead><tr><th><span class="visually-hidden">Connected</span></th><th>Instrument</th><th>Port</th><th>Priority</th><th>MIDI patch bay</th></tr></thead>
+    <tbody>{''.join(rows)}</tbody>
+  </table></div>
+</section>"""
 
 
 def render_notes():
@@ -575,6 +615,24 @@ button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
 body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }}
 body.focusing .hit {{ opacity: 1; }}
 .moves {{ margin-top: 64px; max-width: 980px; }}
+.midi-list {{ margin-top: 48px; max-width: 820px; }}
+.midi-list h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.midi-list table {{ width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }}
+.midi-list th {{ text-align: left; font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }}
+.midi-list td {{ padding: 7px 10px; vertical-align: top; }}
+.midi-list tr.first td {{ border-top: 1px solid var(--line); }}
+.midi-list td.inst small {{ display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }}
+.midi-list td.done-cell {{ width: 34px; text-align: center; }}
+.midi-list label {{ cursor: pointer; }}
+.midi-list tr.done td:not(.done-cell):not(.inst) {{ opacity: .45; }}
+.midi-list tr.done label {{ text-decoration: line-through; }}
+.midi-check {{ width: 18px; height: 18px; accent-color: var(--ink); cursor: pointer; margin: 1px 0 0; }}
+.midi-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.need {{ font-size: 12px; padding: 2px 8px; border-radius: 999px; }}
+.need.req {{ background: var(--ink); color: var(--ground); }}
+.need.low {{ border: 1px dashed var(--muted); color: var(--muted); }}
+.midi-list .tbd {{ color: var(--muted); }}
 .moves summary {{ display: flex; align-items: baseline; gap: 12px; cursor: pointer; list-style: none; padding: 8px 0;
   border-top: 1px solid var(--line); }}
 .moves summary::-webkit-details-marker {{ display: none; }}
@@ -615,11 +673,13 @@ body.focusing .hit {{ opacity: 1; }}
 .ru {{ display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; }}
 .ru-num {{ font: 500 10px/1 "IBM Plex Mono", monospace; color: var(--engrave); align-self: center; font-variant-numeric: tabular-nums; }}
 .face {{
-  background: #2a2e32; border-radius: 2px; padding: 7px 10px; box-shadow: inset 3px 0 0 var(--c, var(--spare));
-  display: grid; gap: 5px; align-content: center; color: #e4e6e3;
+  background: #2a2e32; border-radius: 2px; padding: 0 10px; box-shadow: inset 3px 0 0 var(--c, var(--spare));
+  display: flex; align-items: center; gap: 12px; color: #e4e6e3; min-width: 0; overflow: hidden; white-space: nowrap;
 }}
+.face .patched {{ margin-left: auto; overflow: hidden; text-overflow: ellipsis; }}
+.face .patched a {{ color: inherit; }}
 .ru.empty .face {{ background: transparent; box-shadow: none; border: 1px dashed #4a5157; color: var(--engrave); }}
-.face-main {{ display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }}
+.face-main {{ display: flex; flex-wrap: nowrap; align-items: center; gap: 10px; flex-shrink: 0; }}
 .face-main b {{ font: 600 14px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }}
 .badge {{ font: 500 11px/1.2 "IBM Plex Sans", sans-serif; padding: 2px 7px; border-radius: 999px; }}
 .badge.move {{ border: 1px dashed #8a9197; color: #c3c8cb; }}
@@ -695,13 +755,19 @@ body.focusing .hit {{ opacity: 1; }}
   .flip.on {{ background: #e6e6e6; color: #111; }}
   .gear {{ gap: 0; }}
   .elevation {{ --u: 22px; max-width: none; padding: 4px 6px; row-gap: 1px; }}
-  .face {{ background: #f3f3f3; color: #111; padding: 3px 8px; gap: 2px; }}
+  .face {{ background: #f3f3f3; color: #111; padding: 0 8px; gap: 10px; }}
   .face-main b {{ font-size: 12px; }}
   .badge {{ font-size: 9px; padding: 1px 5px; }}
   .badge.move {{ color: #333; border-color: #777; }}
   .badge.plan {{ background: #e3ecf5; color: #123; }}
   .badge.q {{ background: #fbefc8; color: #3a2d00; }}
   .patched {{ font-size: 9px; color: #444; }}
+  .midi-list {{ break-before: page; margin-top: 0; max-width: none; }}
+  .midi-list h2 {{ font-size: 15px; margin-bottom: 4px; }}
+  .midi-list table {{ min-width: 0; font-size: 10px; }}
+  .midi-list td, .midi-list th {{ padding: 3px 8px; }}
+  .midi-check {{ width: 13px; height: 13px; }}
+  .need {{ font-size: 9px; padding: 1px 6px; }}
   .notes {{ break-inside: avoid; margin-top: 12px; padding-top: 8px; }}
   .notes li {{ grid-template-columns: 150px 1fr; }}
 }}
@@ -727,6 +793,7 @@ body.focusing .hit {{ opacity: 1; }}
     <h2>Open questions</h2>
     <ul>{render_notes()}</ul>
   </section>
+  {render_midi_list()}
   {render_moves()}
 </div>
 <script>
@@ -809,6 +876,49 @@ window.addEventListener('scroll', function () {{
     }});
   }}
 }})();
+// MIDI hookups: saved in the artifact's shared store when available, else this browser.
+(function () {{
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.midi-check'));
+  if (!boxes.length) return;
+  var progress = document.getElementById('midi-progress');
+  var store = null;
+  function paint() {{
+    var done = 0;
+    boxes.forEach(function (b) {{ b.closest('tr').classList.toggle('done', b.checked); if (b.checked) done++; }});
+    if (progress) progress.querySelector('b').textContent = done;
+  }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-midi') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      boxes.forEach(function (b) {{ st[b.dataset.task] = b.checked; }});
+      localStorage.setItem('patchbay-midi', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  boxes.forEach(function (b) {{ b.checked = !!saved[b.dataset.task]; }});
+  paint();
+  boxes.forEach(function (b) {{
+    b.addEventListener('change', function () {{
+      paint();
+      localSave();
+      if (store) store.collection('midi').doc(b.dataset.task).set({{ connected: b.checked }}).catch(function () {{}});
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('midi').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).connected; }});
+        boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
 // Move checklist: saved in the artifact's shared store when available, else this browser.
 (function () {{
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.move-check'));
@@ -881,7 +991,7 @@ def render_print_pdf():
 
 if __name__ == "__main__":
     from validate import validate
-    validate(all_configs, gear_racks, installed_units, previous_configs, card_changes)
+    validate(all_configs, gear_racks, installed_units, previous_configs, card_changes, midi_instruments)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         f.write(build_html())

@@ -1,11 +1,11 @@
 """Sanity checks for config.py. Both generators call validate() before producing anything."""
 import sys
 
-from enums import Category, JackType
+from enums import Category, JackType, MidiPort, Need
 
 BAY_KEYS = {"label_name", "entries", "port_count", "single_row", "rack", "jack_type"}
 ENTRY_KEYS = {"normalled", "top", "bottom", "width", "category", "note", "pending"}
-UNIT_KEYS = {"u", "size", "name", "category", "patch", "slots", "movable", "plan", "note", "image"}
+UNIT_KEYS = {"u", "size", "name", "category", "patch", "bay", "slots", "movable", "plan", "note", "image"}
 DEFAULT_PORTS = 24
 
 
@@ -104,11 +104,45 @@ def check_card_changes(changes, previous_bays):
     return problems
 
 
-def validate(bays, gear_racks=(), installed=None, previous_bays=(), card_changes=None):
-    problems = check_bays(bays) + check_gear(gear_racks)
+def check_midi_instruments(instruments):
+    problems = []
+    for inst in instruments:
+        at = f"midi_instruments: {inst.get('name', '(no name)')}"
+        for key in set(inst) - {"name", "ports", "jacks", "note"}:
+            problems.append(f"{at}: unknown key '{key}'")
+        seen = set()
+        for pair in inst.get("ports", []):
+            if not (isinstance(pair, tuple) and len(pair) == 2):
+                problems.append(f"{at}: each port is (MidiPort.X, Need.Y), got {pair!r}")
+                continue
+            port, need = pair
+            if not isinstance(port, MidiPort):
+                problems.append(f"{at}: port {port!r} - {_enum_hint(MidiPort, port)}")
+            if not isinstance(need, Need):
+                problems.append(f"{at}: need {need!r} - {_enum_hint(Need, need)}")
+            if port in seen:
+                problems.append(f"{at}: {port} listed twice")
+            seen.add(port)
+        for port, jack in inst.get("jacks", {}).items():
+            if port not in seen:
+                problems.append(f"{at}: jack given for {port}, which isn't in its ports")
+            if not isinstance(jack, int) or jack < 1:
+                problems.append(f"{at}: MIDI patch bay jack for {port} must be a jack number")
+    return problems
+
+
+def check_gear_bays(racks, bays):
+    names = {b["label_name"] for b in bays}
+    return [f"gear rack {r.get('name')}: U{u.get('u')} {u.get('name')}: bay {u['bay']!r} is not in config"
+            for r in racks for u in r.get("units", []) if "bay" in u and u["bay"] not in names]
+
+
+def validate(bays, gear_racks=(), installed=None, previous_bays=(), card_changes=None, midi_instruments=()):
+    problems = check_bays(bays) + check_gear(gear_racks) + check_gear_bays(gear_racks, bays)
     if installed is not None:
         problems += check_installed(installed, bays, previous_bays)
     problems += check_card_changes(card_changes or {}, previous_bays)
+    problems += check_midi_instruments(midi_instruments)
     if problems:
         print("config.py has problems:", file=sys.stderr)
         for p in problems:

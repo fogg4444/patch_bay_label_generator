@@ -11,7 +11,7 @@
 #   jack_type - (on a bay) JackType enum (enums.py): MIDI (5-pin DIN), SWITCH (rocker) or ETHERNET (RJ45)
 #               drawing in the HTML view
 
-from enums import Category, JackType
+from enums import Category, JackType, MidiPort, Need
 
 ROOMS = [
     "Kitchen", "Bath Up", "Bath Dn", "Den", "Gallery",
@@ -185,6 +185,7 @@ config = [
 # Only used by generate_html.py.
 #   u / size - starting rack unit and height in U
 #   patch    - text to search for in patch bay labels, to show where the unit is patched
+#   bay      - label_name of a patch bay this unit IS (links to that whole bay)
 #   slots    - individual labels on a multi-channel unit (None = not labelled yet)
 #   movable  - could be moved to another rack
 #   plan     - planned change
@@ -206,10 +207,11 @@ gear_racks = [
         {"u": 11, "size": 2, "name": "dbx 160 compressors",    "category": Category.OUTBOARD, "patch": "160"},
         {"u": 13, "size": 1, "name": "EMT reverb remote",      "category": Category.FX,       "movable": True},
         {"u": 14, "size": 1, "name": "Headphone amp",          "category": Category.MONITORING, "patch": "Phones Amp", "movable": True},
-        {"u": 15, "size": 1, "name": "MIDI patch bay",         "category": Category.MIDI, "patch": "MIDI"},
-        {"u": 16, "size": 2, "name": "Computer shelf",         "category": Category.COMPUTER},
-        {"u": 18, "size": 1, "name": "",                       "note": "U18 not listed - empty?"},
-        {"u": 19, "size": 2, "name": "Soundcraft Ghost power supply", "category": Category.POWER, "movable": True},
+        {"u": 15, "size": 1, "name": "Headphone power supply", "category": Category.POWER},
+        {"u": 16, "size": 1, "name": "MIDI patch bay",         "category": Category.MIDI, "bay": "midi"},
+        {"u": 17, "size": 1, "name": "Hearback unit",          "category": Category.MONITORING, "patch": "Hearback"},
+        {"u": 18, "size": 1, "name": "Ethernet patch bay",     "category": Category.NETWORK, "bay": "ethernet"},
+        {"u": 19, "size": 2, "name": "Soundcraft Ghost power supply", "category": Category.POWER},
     ]
   },
 ]
@@ -244,3 +246,19 @@ card_changes = {
     "9": {1: False, 2: False, 10: False, 11: False, 12: False, 13: False, 14: False, 15: False, 16: False, 18: False},
     "10": {11: False, 12: False, 13: False, 14: False},
 }
+
+
+# Instruments that need MIDI, tracked in the HTML view (checkbox per port).
+#   ports   - (MidiPort, Need) pairs
+#   jacks   - optional {MidiPort: MIDI patch bay jack number} once assigned
+#   note    - reminder shown in the list
+midi_instruments = [
+    {"name": "Moog Sub 37", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.REQUIRED)]},
+    {"name": "Waldorf Streichfett", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.LOW)]},
+    {"name": "MFB Tanzbar", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.LOW)],
+     "note": "Check which MIDI ports it has"},
+    {"name": "Sim n Tonic", "ports": [(MidiPort.IN, Need.REQUIRED)],
+     "note": "Check which MIDI ports it has"},
+    {"name": "Oberheim OB-X8", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.REQUIRED)]},
+    {"name": "Oberheim OB-6", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.REQUIRED)]},
+]
