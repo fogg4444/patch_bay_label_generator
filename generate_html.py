@@ -1,0 +1,700 @@
+"""Render config.py as a single self-contained HTML view of every patch bay."""
+from datetime import date
+from html import escape
+import os
+
+from config import config as all_configs, gear_racks, installed_units
+from previous_config import config as previous_configs
+
+output_path = "html_output/patch_bay.html"
+
+expected_count = 24
+
+switch_svg = ('<svg viewBox="0 0 20 30" aria-hidden="true"><rect x="1" y="1" width="18" height="28" rx="2.5" fill="#0c0d0e" stroke="#9aa1a6" stroke-width="1.5"/>'
+              '<rect x="4" y="4" width="12" height="11" rx="1.5" fill="#3a4046"/><rect x="4" y="15" width="12" height="11" rx="1.5" fill="#23272b"/>'
+              '<rect x="8.5" y="7" width="3" height="5" rx=".8" fill="#b9bec2"/><circle cx="10" cy="20.5" r="2.4" fill="none" stroke="#6b7278" stroke-width="1.2"/></svg>')
+rj45_svg = '<svg viewBox="0 0 26 24" aria-hidden="true"><rect x="1" y="1" width="24" height="22" rx="1.5" fill="#9aa1a6"/><path d="M3.5 3.5h19v12.5h-5v3.5h-9v-3.5h-5z" fill="#0c0d0e"/><rect x="5.30" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="7.35" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="9.40" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="11.45" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="13.50" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="15.55" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="17.60" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="19.65" y="5" width="1.1" height="4.2" fill="#c9a34a"/></svg>'
+din_svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#9aa1a6"/><circle cx="12" cy="12" r="9.2" fill="#0c0d0e"/><rect x="10.4" y="2.2" width="3.2" height="3.4" rx=".6" fill="#9aa1a6"/><circle cx="17.20" cy="12.00" r="1.25" fill="#b9bec2"/><circle cx="15.68" cy="15.68" r="1.25" fill="#b9bec2"/><circle cx="12.00" cy="17.20" r="1.25" fill="#b9bec2"/><circle cx="8.32" cy="15.68" r="1.25" fill="#b9bec2"/><circle cx="6.80" cy="12.00" r="1.25" fill="#b9bec2"/></svg>'
+console_bucket = 16  # left-side console buckets; divider drawn after this port
+
+categories = {
+    "console":     ("Console core",          "#4f86e8"),
+    "rooms":       ("Room sends",            "#ec6a55"),
+    "tielines":    ("Tie lines",             "#6fa3b5"),
+    "outboard":    ("Outboard",              "#e3a02f"),
+    "instruments": ("Instruments & pedals",  "#d467ad"),
+    "fx":          ("Aux sends & FX",        "#2fb39f"),
+    "monitoring":  ("Monitoring",            "#9a73e0"),
+    "twotrack":    ("2-track",               "#8fb935"),
+    "tape":        ("Tape",                  "#b98a5c"),
+    "groups":      ("Groups & mix bus",      "#d8c23a"),
+    "amp":         ("Amp rack",              "#8b929c"),
+    "network":     ("Network",               "#4fb1dc"),
+    "power":       ("Power",                 "#c75a5a"),
+    "computer":    ("Computer",              "#7c8ea3"),
+    "midi":        ("MIDI",                  "#b98a5c"),
+}
+
+
+def is_spare(text):
+    return text is None or text.strip() in ("", "-")
+
+
+def grid_col(port, port_count):
+    """Grid column for a 1-indexed port; 24-port bays get a divider column after port 16."""
+    if port_count == expected_count and port > console_bucket:
+        return port + 1
+    return port
+
+
+def span(start, width, port_count):
+    return f"{grid_col(start, port_count)} / {grid_col(start + width - 1, port_count) + 1}"
+
+
+def render_bay(bay):
+    port_count = bay.get("port_count", expected_count)
+    single_row = bay.get("single_row", False)
+    jack_svg = {"midi": din_svg, "switch": switch_svg, "ethernet": rj45_svg}.get(bay.get("jack_type"))
+    jack_kind = bay.get("jack_type", "")
+    has_divider = port_count == expected_count
+    template = (f"repeat({console_bucket}, minmax(0, 1fr)) var(--divider) repeat({port_count - console_bucket}, minmax(0, 1fr))"
+                if has_divider else f"repeat({port_count}, minmax(0, 1fr))")
+
+    rows = ["numbers", "tape-top", "jacks-top"] if single_row else \
+           ["numbers", "tape-top", "jacks-top", "norm", "jacks-bottom", "tape-bottom"]
+    row_of = {name: i + 1 for i, name in enumerate(rows)}
+
+    cells = ['<span class="split" style="grid-column:17;grid-row:1 / -1"></span>'] if has_divider else []
+    for port in range(1, port_count + 1):
+        cells.append(f'<span class="num" style="grid-area:{row_of["numbers"]} / {grid_col(port, port_count)}">{port}</span>')
+
+    spare_ports = 0
+    normalled_ports = 0
+    port = 1
+    for entry in bay["entries"]:
+        width = entry["width"]
+        cat = entry.get("category", "")
+        top, bottom = entry.get("top", "-"), entry.get("bottom", "-")
+        spare = is_spare(top) and (single_row or is_spare(bottom))
+        if spare:
+            cat = "spare"
+            spare_ports += width
+        normalled = entry.get("normalled") and not spare
+        pending = entry.get("pending")
+        note = entry.get("note")
+        if not single_row and not entry.get("normalled") and is_spare(top) and not is_spare(bottom):
+            # Neutrik NYS-SPP-L1 "turned" card: with no plug in the rear top jack,
+            # the front top jack is tied to the bottom line.
+            note = ((note + " ") if note else "") + (
+                "Card is turned but nothing is wired to the rear top jack, so the front top jack is "
+                f"connected to {bottom}. Only patch into it if you mean to feed {bottom}.")
+        port_range = f"{port}" if width == 1 else f"{port}-{port + width - 1}"
+        tip = f"Bay {bay['label_name']} · port {port_range}\nTop: {top}"
+        if not single_row:
+            tip += f"\nBottom: {bottom}\n{'Normalled' if normalled else 'Not normalled'}"
+        if pending:
+            tip += f"\nReserved for: {pending}"
+        if note:
+            tip += f"\nNote: {note}"
+        cols = span(port, width, port_count)
+        norm_state = "spare" if spare else ("normalled" if normalled else "open")
+        common = f'data-cat="{cat}" data-norm="{norm_state}"{" data-pending" if pending else ""} title="{escape(tip)}"'
+        flag = ""
+        if note:
+            note_id = f"note-{bay['label_name']}-{port}"
+            flag = (f'<button type="button" class="flag" popovertarget="{note_id}" aria-label="Open question">?</button>'
+                    f'<div popover id="{note_id}" class="pop"><b>Bay {escape(bay["label_name"])} · port {port_range}</b>{escape(note)}</div>')
+
+        def tape(text, row):
+            cls = "tape blank" if is_spare(text) else "tape"
+            label = "" if is_spare(text) else escape(text)
+            if is_spare(text) and pending:
+                cls += " pending"
+                pc = categories.get(entry.get("category"), ("", "var(--spare)"))[1]
+                label = f'<em style="--pc:{pc}">Reserved · {escape(pending)}</em>'
+            return f'<div class="{cls}" {common} style="grid-row:{row_of[row]};grid-column:{cols}"><span>{label}</span>{flag if row == "tape-top" else ""}</div>'
+
+        cells.append(tape(top, "tape-top"))
+        if not single_row:
+            cells.append(tape(bottom, "tape-bottom"))
+            if normalled:
+                word = "Normalled" if width >= 2 else "N"
+                cells.append(f'<div class="norm on" {common} style="grid-row:{row_of["norm"]};grid-column:{cols}"><span>{word}</span></div>')
+                normalled_ports += width
+            elif not spare:
+                cells.append(f'<div class="norm off" {common} style="grid-row:{row_of["norm"]};grid-column:{cols}"></div>')
+        def jack_attrs(text):
+            """Unused jacks get no category colour."""
+            return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if is_spare(text) else common
+
+        for p in range(port, port + width):
+            c = grid_col(p, port_count)
+            n = " normalled" if normalled else ""
+            if jack_svg:
+                cells.append(f'<span class="jack drawn {jack_kind}" {jack_attrs(top)} style="grid-area:{row_of["jacks-top"]} / {c}">{jack_svg}</span>')
+            else:
+                cells.append(f'<span class="jack{n}" {jack_attrs(top)} style="grid-area:{row_of["jacks-top"]} / {c}"></span>')
+            if not single_row:
+                cells.append(f'<span class="jack{n} lower" {jack_attrs(bottom)} style="grid-area:{row_of["jacks-bottom"]} / {c}"></span>')
+        port += width
+
+    kind = "Single row" if single_row else f"{port_count} × 2"
+    return f"""
+<section class="bay" id="bay-{escape(bay['label_name'])}">
+  <header class="bay-head">
+    <h2>{escape(bay['label_name'].replace('-', ' '))}</h2>
+    <p>{kind} · <b>{spare_ports}</b> spare{"" if single_row else f" · <b>{normalled_ports}</b> normalled"}</p>
+  </header>
+  <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}" style="grid-template-columns:{template}">
+    {''.join(cells)}
+  </div></div>
+</section>"""
+
+
+def render_racks():
+    racks = []
+    for bay in all_configs:
+        if bay.get("rack") or not racks:
+            racks.append((bay.get("rack", "Rack"), []))
+        racks[-1][1].append(bay)
+    return "".join(
+        f'<section class="rack-group"><h2 class="rack-name">{escape(name)}</h2>'
+        f'<div class="rack">{"".join(render_bay(b) for b in bays)}</div></section>'
+        for name, bays in racks)
+
+
+def bay_title(label_name):
+    return f"Bay {label_name}" if label_name[0].isdigit() else label_name.replace("-", " ").title()
+
+
+def patch_locations(needle):
+    """Bay/port ranges whose labels mention `needle`."""
+    found = []
+    for bay in all_configs:
+        ports, port = [], 1
+        for e in bay["entries"]:
+            text = f'{e.get("top", "")} {e.get("bottom", "")}'.lower()
+            if needle.lower() in text:
+                ports += range(port, port + e["width"])
+            port += e["width"]
+        if ports:
+            found.append(f'{bay_title(bay["label_name"])} · {port_ranges(ports)}')
+    return found
+
+
+def render_gear_rack(rack):
+    rows = []
+    for unit in rack["units"]:
+        u, size = unit["u"], unit["size"]
+        cat = unit.get("category", "spare")
+        units_label = f"U{u}" if size == 1 else f"U{u}–{u + size - 1}"
+        badges = []
+        if unit.get("movable"):
+            badges.append('<span class="badge move">Could move</span>')
+        if unit.get("plan"):
+            badges.append(f'<span class="badge plan">{escape(unit["plan"])}</span>')
+        if unit.get("note"):
+            badges.append(f'<span class="badge q">? {escape(unit["note"])}</span>')
+        slots = ""
+        if unit.get("slots"):
+            slots = '<div class="slots">' + "".join(
+                f'<span class="slot{" tbd" if s is None else ""}">{escape(s) if s else i + 1}</span>'
+                for i, s in enumerate(unit["slots"])) + "</div>"
+        patched = ""
+        if unit.get("patch"):
+            locs = patch_locations(unit["patch"])
+            patched = ('<p class="patched">Patch bay: ' + ", ".join(escape(l) for l in locs) + "</p>") if locs else \
+                      '<p class="patched none">Not on the patch bay</p>'
+        name = escape(unit["name"]) if unit["name"] else "Empty"
+        rows.append(f"""
+      <div class="ru{' empty' if not unit['name'] else ''}" data-cat="{cat}" style="grid-row:{u} / span {size}">
+        <span class="ru-num">{units_label}</span>
+        <div class="face">
+          <div class="face-main"><b>{name}</b>{''.join(badges)}</div>
+          {slots}{patched}
+        </div>
+      </div>""")
+    total = max(x["u"] + x["size"] - 1 for x in rack["units"])
+    return f"""
+<section class="gear-rack">
+  <h2 class="rack-name">{escape(rack['name'])} · equipment ({total}U)</h2>
+  <div class="elevation" style="grid-template-rows:repeat({total}, minmax(var(--u), auto))">{''.join(rows)}
+  </div>
+</section>"""
+
+
+def normal_states(bay, spare_is_free):
+    """Per-port normalled flag; None where the port is spare and its setting doesn't matter."""
+    states = []
+    for e in bay["entries"]:
+        free = spare_is_free and is_spare(e.get("top")) and is_spare(e.get("bottom"))
+        states += [None if free else bool(e["normalled"])] * e["width"]
+    return states
+
+
+def with_racks(configs):
+    rack, out = "Rack", []
+    for bay in configs:
+        rack = bay.get("rack", rack)
+        if not bay.get("single_row"):
+            out.append((rack, bay))
+    return out
+
+
+def port_ranges(ports):
+    ranges, start = [], None
+    for i, p in enumerate(ports):
+        if start is None:
+            start = p
+        if i == len(ports) - 1 or ports[i + 1] != p + 1:
+            ranges.append(f"{start}" if start == p else f"{start}–{p}")
+            start = None
+    return ", ".join(ranges)
+
+
+def plan_unit_moves():
+    """Assign each existing patch bay unit to a new position (same rack only), minimising
+    normalling cards to flip, then distance moved. Returns (rows, flips_moving, flips_in_place)."""
+    old, new = with_racks(previous_configs), with_racks(all_configs)
+    rows, total, in_place = [], 0, 0
+    for rack in dict.fromkeys(r for r, _ in new):
+        units = [(i, b) for i, (r, b) in enumerate(old) if r == rack]
+        slots = [(j, b) for j, (r, b) in enumerate(new) if r == rack]
+        if len(units) != len(slots):
+            continue
+
+        def flips(unit, slot):
+            return [p + 1 for p, (a, b) in enumerate(zip(normal_states(unit, False), normal_states(slot, True)))
+                    if b is not None and a != b]
+
+        # Fewest card flips first, then fewest units to move from where they're mounted now.
+        cost = [[len(flips(u, sl)) * 1000 + (0 if installed_units.get(sl["label_name"]) == u["label_name"] else 1)
+                 for si, sl in slots] for ui, u in units]
+        best = {0: (0, [])}  # bitmask of used units -> (cost, assignment); slots filled in order
+        for k in range(len(slots)):
+            nxt = {}
+            for mask, (c, assign) in best.items():
+                for u in range(len(units)):
+                    if not mask & (1 << u):
+                        cand = (c + cost[u][k], assign + [u])
+                        m = mask | (1 << u)
+                        if m not in nxt or cand[0] < nxt[m][0]:
+                            nxt[m] = cand
+            best = nxt
+        _, assign = min(best.values())
+        for k, u in enumerate(assign):
+            unit, slot = units[u][1], slots[k][1]
+            f = flips(unit, slot)
+            want = normal_states(slot, True)
+            to_n = [p for p in f if want[p - 1]]
+            to_t = [p for p in f if p not in to_n]
+            # Ports that were unused in the old layout: their real card position was never recorded.
+            unknown = [i + 1 for i, s in enumerate(normal_states(unit, True)) if s is None and want[i] is not None]
+            check_n = [p for p in unknown if want[p - 1] and p not in f]
+            check_t = [p for p in unknown if not want[p - 1] and p not in f]
+            total += len(f)
+            in_place += len(flips(units[k][1], slot))  # as if every unit went back to its old position
+            rows.append((rack, slot["label_name"], unit["label_name"], unit["entries"][0].get("top", ""), to_n, to_t,
+                         check_n, check_t))
+    return rows, total, in_place
+
+
+def render_moves():
+    rows, total, in_place = plan_unit_moves()
+    body = []
+    tasks = 0
+    where = {u: pos for pos, u in installed_units.items()}
+    for rack, pos, unit, was, to_n, to_t, check_n, check_t in rows:
+        moved = installed_units.get(pos) != unit
+        now = f"now at bay {where[unit]}" if unit in where else "not mounted"
+        work = []
+        if to_n:
+            work.append(f'<span class="flip on">Ports {port_ranges(to_n)} → normalled</span>')
+        if to_t:
+            work.append(f'<span class="flip off">Ports {port_ranges(to_t)} → not normalled</span>')
+        if check_n:
+            work.append(f'<span class="flip check">Check ports {port_ranges(check_n)} are normalled</span>')
+        if check_t:
+            work.append(f'<span class="flip check">Check ports {port_ranges(check_t)} are not normalled</span>')
+        needs_work = moved or to_n or to_t or check_n or check_t
+        task_id = f"bay-{pos}-from-{unit}"
+        if needs_work:
+            tasks += 1
+            check = (f'<input type="checkbox" class="move-check" id="{escape(task_id)}" data-task="{escape(task_id)}" '
+                     f'aria-label="Bay {escape(pos)} done">')
+        else:
+            check = '<span class="nothing" title="Nothing to do">–</span>'
+        body.append(f"""<tr class="{'moved' if moved else 'stays'}">
+          <td class="done-cell">{check}</td>
+          <td><label for="{escape(task_id)}"><b>Bay {escape(pos)}</b></label><small>{escape(rack)}</small></td>
+          <td>{f'Unit from old bay {escape(unit)}' if moved else 'Already in place'}<small>{escape(now)} · old layout: {escape(was)}</small></td>
+          <td>{''.join(work) or '<span class="flip none">No cards to flip</span>'}</td>
+        </tr>""")
+    return f"""
+<section class="moves" id="moves">
+  <h2>Moving the patch bay units</h2>
+  <p class="lead">Move whole units instead of re-setting normalling channel by channel. With the moves below you flip
+  <b>{total}</b> normalling cards; keeping every unit in its old position would mean flipping <b>{in_place}</b>.
+  Units already in the right place are marked "Already in place"; where units are mounted now comes from
+  <code>installed_units</code> in <code>config.py</code>.
+  Units only move within their own rack, and spare ports don't count.</p>
+  <p class="lead">Reading a card: <b>normalled</b> (standard) has the grey jack on the <b>front bottom</b> row;
+  <b>not normalled</b> (turned) has the grey jack on the <b>rear top</b> row. "Check" means the old layout had that
+  port unused, so its card position was never recorded. Look at it before mounting the unit.</p>
+  <p class="progress" id="move-progress" data-total="{tasks}"><b>0</b> of {tasks} done</p>
+  <div class="scroll"><table>
+    <thead><tr><th><span class="visually-hidden">Done</span></th><th>Position</th><th>Unit to put there</th><th>Normalling cards to flip</th></tr></thead>
+    <tbody>{''.join(body)}</tbody>
+  </table></div>
+</section>"""
+
+
+def render_notes():
+    items = []
+    for bay in all_configs:
+        port = 1
+        for entry in bay["entries"]:
+            if entry.get("note"):
+                w = entry["width"]
+                rng = f"{port}" if w == 1 else f"{port}–{port + w - 1}"
+                items.append(f'<li><a href="#bay-{escape(bay["label_name"])}">{escape(bay_title(bay["label_name"]))}, port {rng}</a>'
+                             f' <span>{escape(entry["note"])}</span></li>')
+            port += entry["width"]
+    return "".join(items)
+
+
+def render_legend():
+    used = {e.get("category") for b in all_configs for e in b["entries"]}
+    chips = [f'<button type="button" class="chip" data-cat="{key}" aria-pressed="false" style="--c:{color}">{escape(name)}</button>'
+             for key, (name, color) in categories.items() if key in used]
+    chips.append('<button type="button" class="chip" data-cat="spare" aria-pressed="false" style="--c:var(--spare)">Spare</button>')
+    chips.append('<button type="button" class="chip pending-chip" data-flag="pending" aria-pressed="false" style="--c:var(--engrave)">Reserved</button>')
+    chips.append('<span class="chip-sep" aria-hidden="true"></span>')
+    chips.append('<button type="button" class="chip norm-chip" data-norm="normalled" aria-pressed="false" style="--c:var(--norm)">Normalled</button>')
+    chips.append('<button type="button" class="chip norm-chip open" data-norm="open" aria-pressed="false" style="--c:var(--engrave)">Not normalled</button>')
+    return "".join(chips)
+
+
+def total_spare():
+    total = 0
+    for bay in all_configs:
+        for e in bay["entries"]:
+            if is_spare(e.get("top")) and (bay.get("single_row") or is_spare(e.get("bottom"))):
+                total += e["width"]
+    return total
+
+
+def build_html():
+    cat_css = "".join(f'[data-cat="{k}"]{{--c:{c}}}' for k, (_, c) in categories.items())
+    bay_count = len(all_configs)
+    return f"""<title>Studio Carquinez Patch Bay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {{
+  --ground: #e6e8e4;
+  --ink: #1a1d1f;
+  --muted: #5c6360;
+  --line: #c9ccc6;
+  --panel: #1d2023;
+  --panel-edge: #33383c;
+  --engrave: #a9b0b4;
+  --tape: #f6f5ef;
+  --tape-ink: #141414;
+  --jack: #0c0d0e;
+  --jack-ring: #6b7278;
+  --spare: #7d8488;
+  --focus: #2b6de0;
+  --norm: #5f666b;
+  --norm-2: #4a5055;
+  --divider: 14px;
+}}
+@media (prefers-color-scheme: dark) {{
+  :root:not([data-theme="light"]) {{
+    --ground: #121416; --ink: #e5e7e4; --muted: #9aa19e; --line: #2c3134;
+    --panel: #1b1e21; --panel-edge: #3a4045; --focus: #78a6ff;
+  }}
+}}
+:root[data-theme="dark"] {{
+  --ground: #121416; --ink: #e5e7e4; --muted: #9aa19e; --line: #2c3134;
+  --panel: #1b1e21; --panel-edge: #3a4045; --focus: #78a6ff;
+}}
+{cat_css}
+[data-cat="spare"] {{ --c: var(--spare); }}
+* {{ box-sizing: border-box; }}
+body {{
+  margin: 0; background: var(--ground); color: var(--ink);
+  font: 14px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+}}
+.wrap {{ max-width: 1280px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }}
+.top {{ display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: end; justify-content: space-between;
+        border-bottom: 1px solid var(--line); padding-bottom: 16px; }}
+h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", sans-serif;
+      letter-spacing: .02em; text-transform: uppercase; margin: 0; text-wrap: balance; }}
+.meta {{ margin: 6px 0 0; color: var(--muted); }}
+.stats {{ display: flex; gap: 24px; margin: 0; font-variant-numeric: tabular-nums; }}
+.stats div {{ display: grid; }}
+.stats dt {{ font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
+.stats dd {{ margin: 0; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }}
+.legend {{ display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 6px; }}
+.chip {{
+  font: 500 12.5px/1 "IBM Plex Sans", sans-serif; color: var(--ink); cursor: pointer;
+  background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px 7px 9px;
+  display: inline-flex; align-items: center; gap: 7px;
+}}
+.chip::before {{ content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }}
+.chip.pending-chip::before {{ background: transparent; border: 1px dashed var(--muted); }}
+.chip.norm-chip::before {{ background: repeating-linear-gradient(-45deg, var(--norm) 0 3px, var(--norm-2) 3px 6px); }}
+.chip.norm-chip.open::before {{ background: transparent; border: 1px dashed var(--muted); }}
+.chip-sep {{ width: 1px; background: var(--line); margin: 2px 6px; }}
+.chip[aria-pressed="true"] {{ border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }}
+.chip:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.hint {{ color: var(--muted); font-size: 12.5px; margin: 0 0 20px; }}
+.racks {{ display: grid; gap: 64px; }}
+.rack-name {{ margin: 0 0 12px; font: 700 15px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); display: flex; align-items: center; gap: 12px; }}
+.rack-name::after {{ content: ""; flex: 1; height: 1px; background: var(--line); }}
+.rack {{ display: grid; gap: 14px; }}
+.bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: stretch; }}
+.bay-head {{ display: flex; flex-direction: column; justify-content: center; }}
+.bay-head h2 {{ margin: 0; font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
+.bay-head p {{ margin: 4px 0 0; font-size: 11.5px; color: var(--muted); line-height: 1.3; }}
+.bay-head b {{ font-weight: 600; color: var(--ink); }}
+.scroll {{ overflow-x: auto; }}
+.panel {{
+  min-width: 980px; display: grid; column-gap: 3px; row-gap: 3px;
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 3px;
+  padding: 6px 10px 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}}
+.num {{ font: 500 9.5px/1 "IBM Plex Mono", monospace; color: var(--engrave); text-align: center; padding: 2px 0 1px;
+        font-variant-numeric: tabular-nums; }}
+.tape {{
+  position: relative; min-height: 36px; display: flex; align-items: center; justify-content: center;
+  background: var(--tape); color: var(--tape-ink); border-radius: 1px;
+  box-shadow: inset 0 3px 0 var(--c, transparent);
+  padding: 5px 3px 3px; text-align: center; overflow: hidden;
+  font: 500 10.5px/1.12 "IBM Plex Mono", "Andale Mono", monospace; letter-spacing: -.01em;
+  transition: opacity .15s;
+}}
+.tape span {{ overflow-wrap: anywhere; }}
+.tape.pending em {{ font: italic 500 10px/1.15 "IBM Plex Sans", sans-serif; color: var(--pc, var(--engrave)); letter-spacing: 0; }}
+.tape.blank {{ background: transparent; box-shadow: inset 0 0 0 1px var(--panel-edge); }}
+.tape.blank.pending {{ box-shadow: none; border: 1px dashed #6b7278; }}
+.flag {{
+  position: absolute; top: 4px; right: 3px; width: 15px; height: 15px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  background: #f0b429; color: #1a1400; font: 700 9.5px/15px "IBM Plex Sans", sans-serif; font-style: normal; text-align: center;
+}}
+.flag:hover {{ filter: brightness(1.1); }}
+.flag:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.pop {{
+  position: fixed; inset: auto; margin: 0; max-width: min(280px, calc(100vw - 32px));
+  background: var(--ground); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid #f0b429;
+  border-radius: 3px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  font: 400 13px/1.45 "IBM Plex Sans", system-ui, sans-serif; text-align: left;
+}}
+.pop b {{ display: block; font: 600 11px/1.3 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }}
+.jack {{
+  justify-self: center; width: 20px; height: 20px; border-radius: 50%; position: relative;
+  background: radial-gradient(circle, var(--jack) 0 36%, #2a2e32 38% 58%, var(--jack-ring) 60% 100%);
+  box-shadow: 0 0 0 2px var(--c, transparent);
+  transition: opacity .15s;
+}}
+.jack.drawn {{ width: 30px; height: 30px; background: none; }}
+.jack.drawn.ethernet {{ width: 30px; height: 28px; border-radius: 2px; }}
+.jack.drawn.switch {{ width: 22px; height: 33px; border-radius: 3px; }}
+.jack.drawn svg {{ display: block; width: 100%; height: 100%; }}
+.jack[data-cat="spare"] {{ box-shadow: none; opacity: .45; }}
+.norm {{
+  height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 2px;
+  font: 600 8.5px/1 "IBM Plex Sans", sans-serif; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; overflow: hidden;
+  transition: opacity .15s;
+}}
+.norm.on {{
+  color: #e2e5e7; background: repeating-linear-gradient(-45deg, var(--norm) 0 5px, var(--norm-2) 5px 10px);
+}}
+.norm.on span {{ background: var(--norm); padding: 1px 4px; border-radius: 2px; }}
+.norm.off {{ height: 8px; align-self: center; border: 1px dashed #3f454a; }}
+.jack[data-norm="normalled"] {{ box-shadow: 0 0 0 2px var(--c), 0 0 0 3.5px var(--norm-2); }}
+.split {{ justify-self: center; width: 1px; background: var(--panel-edge); margin-block: 2px; }}
+body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }}
+body.focusing .hit {{ opacity: 1; }}
+.moves {{ margin-top: 64px; max-width: 980px; }}
+.moves h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.moves .lead {{ margin: 0 0 14px; color: var(--muted); max-width: 68ch; }}
+.moves .lead b {{ color: var(--ink); font-variant-numeric: tabular-nums; }}
+.moves table {{ width: 100%; min-width: 620px; border-collapse: collapse; font-size: 13.5px; }}
+.moves th {{ text-align: left; font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  padding: 8px 10px; border-bottom: 1px solid var(--line); }}
+.moves td {{ padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }}
+.moves td.done-cell {{ width: 34px; text-align: center; }}
+.move-check {{ width: 18px; height: 18px; accent-color: var(--ink); cursor: pointer; margin: 1px 0 0; }}
+.move-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.moves .nothing {{ color: var(--muted); }}
+.moves tr.done td:not(.done-cell) {{ opacity: .45; }}
+.moves tr.done td:nth-child(2) b {{ text-decoration: line-through; }}
+.moves label {{ cursor: pointer; }}
+.progress {{ margin: 0 0 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }}
+.progress b {{ color: var(--ink); }}
+.visually-hidden {{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }}
+.moves td small {{ display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }}
+.moves tr.stays td:nth-child(2) {{ color: var(--muted); }}
+.flip {{ display: inline-block; margin: 0 6px 4px 0; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-variant-numeric: tabular-nums; }}
+.flip.on {{ background: repeating-linear-gradient(-45deg, var(--norm) 0 5px, var(--norm-2) 5px 10px); color: #e2e5e7; }}
+.flip.off {{ border: 1px dashed var(--muted); }}
+.flip.check {{ border: 1px solid #b8923a; color: var(--ink); }}
+.flip.none {{ color: var(--muted); padding-left: 0; }}
+.gear {{ margin-top: 64px; display: grid; gap: 48px; }}
+.elevation {{
+  --u: 38px; display: grid; row-gap: 2px; max-width: 760px;
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 3px; padding: 8px 10px;
+}}
+.ru {{ display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; }}
+.ru-num {{ font: 500 10px/1 "IBM Plex Mono", monospace; color: var(--engrave); align-self: center; font-variant-numeric: tabular-nums; }}
+.face {{
+  background: #2a2e32; border-radius: 2px; padding: 7px 10px; box-shadow: inset 3px 0 0 var(--c, var(--spare));
+  display: grid; gap: 5px; align-content: center; color: #e4e6e3;
+}}
+.ru.empty .face {{ background: transparent; box-shadow: none; border: 1px dashed #4a5157; color: var(--engrave); }}
+.face-main {{ display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }}
+.face-main b {{ font: 600 14px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }}
+.badge {{ font: 500 11px/1.2 "IBM Plex Sans", sans-serif; padding: 2px 7px; border-radius: 999px; }}
+.badge.move {{ border: 1px dashed #8a9197; color: #c3c8cb; }}
+.badge.plan {{ background: #34404d; color: #cfe0f2; }}
+.badge.q {{ background: #4a3d17; color: #f6d77a; }}
+.patched {{ margin: 0; font: 400 11px/1.3 "IBM Plex Mono", monospace; color: var(--engrave); }}
+.patched.none {{ opacity: .7; }}
+.slots {{ display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }}
+.slot {{ background: var(--tape); color: var(--tape-ink); font: 500 10px/1 "IBM Plex Mono", monospace; text-align: center; padding: 4px 0; border-radius: 1px; }}
+.slot.tbd {{ background: transparent; color: var(--engrave); border: 1px dashed #4a5157; }}
+.notes {{ margin-top: 36px; border-top: 1px solid var(--line); padding-top: 16px; max-width: 760px; }}
+.notes h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 10px; }}
+.notes ul {{ margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }}
+.notes li {{ display: grid; grid-template-columns: 170px 1fr; gap: 12px; }}
+.notes a {{ color: var(--ink); font-weight: 600; text-decoration-color: var(--line); }}
+.notes span {{ color: var(--muted); }}
+@media (max-width: 640px) {{
+  .bay {{ grid-template-columns: 1fr; gap: 4px; }}
+  .bay-head {{ flex-direction: row; align-items: baseline; gap: 10px; }}
+  .notes li {{ grid-template-columns: 1fr; gap: 0; }}
+}}
+@media (prefers-reduced-motion: reduce) {{ .tape, .flag:hover {{ filter: brightness(1.1); }}
+.flag:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.pop {{
+  position: fixed; inset: auto; margin: 0; max-width: min(280px, calc(100vw - 32px));
+  background: var(--ground); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid #f0b429;
+  border-radius: 3px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  font: 400 13px/1.45 "IBM Plex Sans", system-ui, sans-serif; text-align: left;
+}}
+.pop b {{ display: block; font: 600 11px/1.3 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }}
+.jack {{ transition: none; }} }}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Studio Carquinez Patch Bay</h1>
+      <p class="meta">Front view, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated {date.today().isoformat()} from <code>config.py</code>.</p>
+    </div>
+    <dl class="stats">
+      <div><dt>Bays</dt><dd>{bay_count}</dd></div>
+      <div><dt>Spare ports</dt><dd>{total_spare()}</dd></div>
+    </dl>
+  </div>
+  <div class="legend" role="group" aria-label="Highlight a category">{render_legend()}</div>
+  <p class="hint">Click a category to highlight it. Hover a label for its port range. The strip between the jack rows shows normalling: hatched = normalled (card standard, half-normal), dashed = not normalled (card turned; top and bottom are separate while the rear top jack is wired); <b>?</b> marks an open question.</p>
+  <div class="racks">{render_racks()}</div>
+  {render_moves()}
+  <div class="gear">{''.join(render_gear_rack(r) for r in gear_racks)}</div>
+  <section class="notes">
+    <h2>Open questions</h2>
+    <ul>{render_notes()}</ul>
+  </section>
+</div>
+<script>
+document.querySelectorAll('.chip').forEach(function (chip) {{
+  chip.addEventListener('click', function () {{
+    var on = chip.getAttribute('aria-pressed') !== 'true';
+    document.querySelectorAll('.chip').forEach(function (c) {{ c.setAttribute('aria-pressed', 'false'); }});
+    document.querySelectorAll('.hit').forEach(function (el) {{ el.classList.remove('hit'); }});
+    document.body.classList.toggle('focusing', on);
+    if (!on) return;
+    chip.setAttribute('aria-pressed', 'true');
+    var sel = chip.dataset.flag ? '.panel [data-pending]' : chip.dataset.norm ? '.panel [data-norm="' + chip.dataset.norm + '"]' : '.panel [data-cat="' + chip.dataset.cat + '"]';
+    document.querySelectorAll(sel).forEach(function (el) {{ el.classList.add('hit'); }});
+  }});
+}});
+document.querySelectorAll('.pop').forEach(function (pop) {{
+  pop.addEventListener('toggle', function (e) {{
+    if (e.newState !== 'open') return;
+    var btn = document.querySelector('[popovertarget="' + pop.id + '"]');
+    var r = btn.getBoundingClientRect();
+    var w = pop.offsetWidth, h = pop.offsetHeight;
+    var left = Math.min(Math.max(16, r.left + r.width / 2 - w / 2), window.innerWidth - w - 16);
+    var top = r.bottom + 8;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  }});
+}});
+window.addEventListener('scroll', function () {{
+  document.querySelectorAll('.pop:popover-open').forEach(function (p) {{ p.hidePopover(); }});
+}}, {{ passive: true, capture: true }});
+// Move checklist: saved in the artifact's shared store when available, else this browser.
+(function () {{
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.move-check'));
+  var progress = document.getElementById('move-progress');
+  var store = null;
+  function paint() {{
+    var done = 0;
+    boxes.forEach(function (b) {{
+      b.closest('tr').classList.toggle('done', b.checked);
+      if (b.checked) done++;
+    }});
+    if (progress) progress.querySelector('b').textContent = done;
+  }}
+  function localLoad() {{
+    try {{ return JSON.parse(localStorage.getItem('patchbay-moves') || '{{}}'); }} catch (e) {{ return {{}}; }}
+  }}
+  function localSave() {{
+    try {{
+      var state = {{}};
+      boxes.forEach(function (b) {{ state[b.dataset.task] = b.checked; }});
+      localStorage.setItem('patchbay-moves', JSON.stringify(state));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  boxes.forEach(function (b) {{ b.checked = !!saved[b.dataset.task]; }});
+  paint();
+  boxes.forEach(function (b) {{
+    b.addEventListener('change', function () {{
+      paint();
+      localSave();
+      if (store) {{
+        store.collection('moves').doc(b.dataset.task).set({{ done: b.checked }}).catch(function () {{}});
+      }}
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('moves').onSnapshot(function (snap) {{
+        var state = {{}};
+        snap.docs.forEach(function (d) {{ state[d.id] = !!(d.data() || {{}}).done; }});
+        boxes.forEach(function (b) {{ if (b.dataset.task in state) b.checked = state[b.dataset.task]; }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+</script>
+"""
+
+
+if __name__ == "__main__":
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w") as f:
+        f.write(build_html())
+    print(f"HTML view saved to {output_path}")
