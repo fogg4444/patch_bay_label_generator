@@ -181,9 +181,17 @@ config = [
     "single_row": True,
     "port_count": 10,
     "entries": [
-        {"normalled": False, "top": f"Switch {n}", "width": 1, "category": Category.POWER,
-         **({"note": "Label what each of the 10 power switches turns on"} if n == 1 else {})}
-        for n in range(1, 11)
+        {"normalled": False, "top": "Monitors",   "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "-",          "width": 1},
+        {"normalled": False, "top": "API 2500",   "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "D-Comp",     "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "dbx 902",    "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "PCM 60",     "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "SDE 1000",   "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "dbx 160 #1", "width": 1, "category": Category.POWER,
+         "note": "Assumed each dbx 160 has its own switch, then the EMT remote - confirm"},
+        {"normalled": False, "top": "dbx 160 #2", "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "EMT remote", "width": 1, "category": Category.POWER},
     ]
   },
 ]
