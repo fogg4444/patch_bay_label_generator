@@ -61,8 +61,8 @@ config = [
         {"normalled": True, "top": "Aux 2 Out", "bottom": "PCM60 In", "width": 1, "category": Category.FX},
         {"normalled": True, "top": "Aux 3 Out", "bottom": "SDE 1000 In", "width": 1, "category": Category.FX},
         {"normalled": True, "top": "Aux 4 Out", "bottom": "Moog DLY In", "width": 1, "category": Category.FX},
-        {"normalled": False, "top": "Aux 5 / 6 Out", "bottom": "-", "width": 2, "category": Category.FX},
-        {"normalled": False, "top": "Aux 7 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
+        {"normalled": True, "top": "Aux 5 / 6 Out", "bottom": "-", "width": 2, "category": Category.FX},
+        {"normalled": True, "top": "Aux 7 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
     ]
   },
   {
