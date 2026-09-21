@@ -188,10 +188,9 @@ config = [
         {"normalled": False, "top": "dbx 902",    "width": 1, "category": Category.POWER},
         {"normalled": False, "top": "PCM 60",     "width": 1, "category": Category.POWER},
         {"normalled": False, "top": "SDE 1000",   "width": 1, "category": Category.POWER},
-        {"normalled": False, "top": "dbx 160 #1", "width": 1, "category": Category.POWER,
-         "note": "Assumed each dbx 160 has its own switch, then the EMT remote - confirm"},
+        {"normalled": False, "top": "dbx 160 #1", "width": 1, "category": Category.POWER},
         {"normalled": False, "top": "dbx 160 #2", "width": 1, "category": Category.POWER},
-        {"normalled": False, "top": "EMT remote", "width": 1, "category": Category.POWER},
+        {"normalled": False, "top": "Headamp",    "width": 1, "category": Category.POWER},
     ]
   },
 ]
