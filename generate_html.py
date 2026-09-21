@@ -312,10 +312,13 @@ def render_moves():
             work.append(f'<span class="flip on">Ports {port_ranges(to_n)} → normalled</span>')
         if to_t:
             work.append(f'<span class="flip off">Ports {port_ranges(to_t)} → not normalled</span>')
+        def check_text(ports, state):
+            one = len(ports) == 1
+            return f'Check {"port" if one else "ports"} {port_ranges(ports)} {"is" if one else "are"} {state}'
         if check_n:
-            work.append(f'<span class="flip check">Check ports {port_ranges(check_n)} are normalled</span>')
+            work.append(f'<span class="flip check">{check_text(check_n, "normalled")}</span>')
         if check_t:
-            work.append(f'<span class="flip check">Check ports {port_ranges(check_t)} are not normalled</span>')
+            work.append(f'<span class="flip check">{check_text(check_t, "not normalled")}</span>')
         needs_work = moved or to_n or to_t or check_n or check_t
         task_id = f"bay-{pos}-from-{unit}"
         if needs_work:
