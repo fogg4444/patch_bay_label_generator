@@ -71,7 +71,8 @@ def render_bay(bay):
 
     spare_ports = 0
     normalled_ports = 0
-    wiring = bay["label_name"].isdigit() and not single_row  # main rack bays get plugged-in checkboxes
+    # Rear-panel "plugged in" checkboxes: main rack bays by default, others opt in with track_rear
+    wiring = bay.get("track_rear", bay["label_name"].isdigit() and not single_row)
     wired_total = [0]
     port = 1
     for entry in bay["entries"]:
@@ -130,7 +131,7 @@ def render_bay(bay):
             """Unused jacks get no category colour."""
             return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if is_spare(text) else common
 
-        def jack(extra, text, row, c, p, side):
+        def jack(extra, text, row, c, p, side, inner=""):
             """A jack; on wiring bays, a used jack is a toggle for 'plugged in'."""
             area = f'style="grid-area:{row_of[row]} / {c}"'
             if wiring and not is_spare(text):
@@ -140,14 +141,14 @@ def render_bay(bay):
                 where = "top" if side == "t" else "bottom"
                 return (f'<button type="button" class="jack wire{extra}" data-wire="{wire_id}" data-bay="{escape(bay["label_name"])}" '
                         f'aria-pressed="false" aria-label="Bay {escape(bay["label_name"])} {where} port {p} rear: {escape(text)}" '
-                        f'{attrs} {area}></button>')
-            return f'<span class="jack{extra}" {jack_attrs(text)} {area}></span>'
+                        f'{attrs} {area}>{inner}</button>')
+            return f'<span class="jack{extra}" {jack_attrs(text)} {area}>{inner}</span>'
 
         for p in range(port, port + width):
             c = grid_col(p, port_count)
             n = " normalled" if normalled else ""
             if jack_svg:
-                cells.append(f'<span class="jack drawn {jack_kind}" {jack_attrs(top)} style="grid-area:{row_of["jacks-top"]} / {c}">{jack_svg}</span>')
+                cells.append(jack(f" drawn {jack_kind}", top, "jacks-top", c, p, "t", jack_svg))
             else:
                 cells.append(jack(n, top, "jacks-top", c, p, "t"))
             if not single_row:
@@ -594,7 +595,8 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
 .jack.wire:hover {{ filter: brightness(1.35); }}
 .jack.wire:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
-.jack.wire[aria-pressed="true"] {{ background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); }}
+.jack.wire[aria-pressed="true"]:not(.drawn) {{ background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); }}
+.jack.wire.drawn[aria-pressed="true"] {{ box-shadow: 0 0 0 2px var(--plugged); }}
 .jack.wire[aria-pressed="true"]::after {{
   content: "✓"; position: absolute; right: -5px; top: -6px; width: 11px; height: 11px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 8px/11px "IBM Plex Sans", sans-serif; text-align: center;

@@ -8,6 +8,8 @@
 #   pending  - on a spare ("-") entry: what the ports are reserved for. Shown in the HTML view only;
 #              printed labels stay blank.
 #   rack      - (on a bay) starts a new physical rack; following bays stay in it
+#   track_rear - (on a bay) rear-panel "plugged in" checkboxes in the HTML view (on by default for bays 1-10;
+#               ethernet, MIDI and power switches opt in)
 #   jack_type - (on a bay) JackType enum (enums.py): MIDI (5-pin DIN), SWITCH (rocker) or ETHERNET (RJ45)
 #               drawing in the HTML view
 
@@ -144,6 +146,7 @@ config = [
     "label_name": "ethernet",
     "rack": "Ethernet",
     "jack_type": JackType.ETHERNET,
+    "track_rear": True,
     "single_row": True,
     "port_count": 20,
     "entries": [
@@ -158,6 +161,7 @@ config = [
     "label_name": "midi",
     "rack": "MIDI",
     "jack_type": JackType.MIDI,
+    "track_rear": True,
     "single_row": True,
     "port_count": 22,
     "entries": [
@@ -170,6 +174,7 @@ config = [
     "label_name": "power-switches",
     "rack": "Power switches",
     "jack_type": JackType.SWITCH,
+    "track_rear": True,
     "single_row": True,
     "port_count": 10,
     "entries": [

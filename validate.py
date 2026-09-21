@@ -3,7 +3,7 @@ import sys
 
 from enums import Category, JackType, MidiPort, Need
 
-BAY_KEYS = {"label_name", "entries", "port_count", "single_row", "rack", "jack_type"}
+BAY_KEYS = {"label_name", "entries", "port_count", "single_row", "rack", "jack_type", "track_rear"}
 ENTRY_KEYS = {"normalled", "top", "bottom", "width", "category", "note", "pending"}
 UNIT_KEYS = {"u", "size", "name", "category", "patch", "bay", "slots", "movable", "plan", "note", "image"}
 DEFAULT_PORTS = 24
