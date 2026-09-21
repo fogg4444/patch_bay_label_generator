@@ -2,6 +2,9 @@ from datetime import date
 import os
 from PIL import Image, ImageDraw, ImageFont
 from config import config as all_configs
+from validate import validate
+
+validate(all_configs)
 
 print('Creating your patch bay label')
 

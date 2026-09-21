@@ -4,6 +4,7 @@ from html import escape
 import os
 
 from config import config as all_configs, gear_racks, installed_units
+from enums import Category, JackType
 from previous_config import config as previous_configs
 
 output_path = "html_output/patch_bay.html"
@@ -18,21 +19,20 @@ din_svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r
 console_bucket = 16  # left-side console buckets; divider drawn after this port
 
 categories = {
-    "console":     ("Console core",          "#4f86e8"),
-    "rooms":       ("Room sends",            "#ec6a55"),
-    "tielines":    ("Tie lines",             "#6fa3b5"),
-    "outboard":    ("Outboard",              "#e3a02f"),
-    "instruments": ("Instruments & pedals",  "#d467ad"),
-    "fx":          ("Aux sends & FX",        "#2fb39f"),
-    "monitoring":  ("Monitoring",            "#9a73e0"),
-    "twotrack":    ("2-track",               "#8fb935"),
-    "tape":        ("Tape",                  "#b98a5c"),
-    "groups":      ("Groups & mix bus",      "#d8c23a"),
-    "amp":         ("Amp rack",              "#8b929c"),
-    "network":     ("Network",               "#4fb1dc"),
-    "power":       ("Power",                 "#c75a5a"),
-    "computer":    ("Computer",              "#7c8ea3"),
-    "midi":        ("MIDI",                  "#b98a5c"),
+    Category.CONSOLE:     ("Console core",          "#4f86e8"),
+    Category.ROOMS:       ("Room sends",            "#ec6a55"),
+    Category.TIE_LINES:   ("Tie lines",             "#6fa3b5"),
+    Category.OUTBOARD:    ("Outboard",              "#e3a02f"),
+    Category.INSTRUMENTS: ("Instruments & pedals",  "#d467ad"),
+    Category.FX:          ("Aux sends & FX",        "#2fb39f"),
+    Category.MONITORING:  ("Monitoring",            "#9a73e0"),
+    Category.TWO_TRACK:   ("2-track",               "#8fb935"),
+    Category.GROUPS:      ("Groups & mix bus",      "#d8c23a"),
+    Category.AMP:         ("Amp rack",              "#8b929c"),
+    Category.NETWORK:     ("Network",               "#4fb1dc"),
+    Category.POWER:       ("Power",                 "#c75a5a"),
+    Category.COMPUTER:    ("Computer",              "#7c8ea3"),
+    Category.MIDI:        ("MIDI",                  "#b98a5c"),
 }
 
 
@@ -54,7 +54,7 @@ def span(start, width, port_count):
 def render_bay(bay):
     port_count = bay.get("port_count", expected_count)
     single_row = bay.get("single_row", False)
-    jack_svg = {"midi": din_svg, "switch": switch_svg, "ethernet": rj45_svg}.get(bay.get("jack_type"))
+    jack_svg = {JackType.MIDI: din_svg, JackType.SWITCH: switch_svg, JackType.ETHERNET: rj45_svg}.get(bay.get("jack_type"))
     jack_kind = bay.get("jack_type", "")
     has_divider = port_count == expected_count
     template = (f"repeat({console_bucket}, minmax(0, 1fr)) var(--divider) repeat({port_count - console_bucket}, minmax(0, 1fr))"
@@ -142,7 +142,7 @@ def render_bay(bay):
     return f"""
 <section class="bay" id="bay-{escape(bay['label_name'])}">
   <header class="bay-head">
-    <h2>{escape(bay['label_name'].replace('-', ' '))}</h2>
+    <h2{'' if bay['label_name'][0].isdigit() else ' class="named"'}>{escape(bay['label_name'].replace('-', ' '))}</h2>
     <p>{kind} · <b>{spare_ports}</b> spare{"" if single_row else f" · <b>{normalled_ports}</b> normalled"}</p>
   </header>
   <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}" style="grid-template-columns:{template}">
@@ -459,6 +459,7 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 .bay-head {{ display: flex; flex-direction: column; justify-content: center; }}
 .bay-head h2 {{ margin: 0; font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
 .bay-head p {{ margin: 4px 0 0; font-size: 11.5px; color: var(--muted); line-height: 1.3; }}
+.bay-head h2.named {{ font-size: 15px; line-height: 1.05; overflow-wrap: anywhere; }}
 .bay-head b {{ font-weight: 600; color: var(--ink); }}
 .scroll {{ overflow-x: auto; }}
 .panel {{
@@ -578,16 +579,69 @@ body.focusing .hit {{ opacity: 1; }}
   .bay-head {{ flex-direction: row; align-items: baseline; gap: 10px; }}
   .notes li {{ grid-template-columns: 1fr; gap: 0; }}
 }}
-@media (prefers-reduced-motion: reduce) {{ .tape, .flag:hover {{ filter: brightness(1.1); }}
-.flag:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
-.pop {{
-  position: fixed; inset: auto; margin: 0; max-width: min(280px, calc(100vw - 32px));
-  background: var(--ground); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid #f0b429;
-  border-radius: 3px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
-  font: 400 13px/1.45 "IBM Plex Sans", system-ui, sans-serif; text-align: left;
+@media (prefers-reduced-motion: reduce) {{ .tape, .jack, .norm {{ transition: none; }} }}
+@page {{ size: letter landscape; margin: 0.4in; }}
+@media print {{
+  :root, :root[data-theme="dark"] {{
+    --ground: #fff; --ink: #111; --muted: #555; --line: #bbb;
+    --panel: #fff; --panel-edge: #999; --engrave: #444; --tape: #fff; --tape-ink: #111; --spare: #aaa;
+    --norm: #cfcfcf; --norm-2: #e6e6e6;
+  }}
+  * {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+  body {{ font-size: 11px; }}
+  .wrap {{ max-width: none; padding: 0; }}
+  .hint, .flag, .pop, .stats, .chip-sep {{ display: none !important; }}
+  h1 {{ font-size: 20px; }}
+  .meta {{ margin-top: 2px; font-size: 9.5px; }}
+  .top {{ padding-bottom: 4px; }}
+  .legend {{ margin: 4px 0 6px; gap: 3px; }}
+  .chip {{ font-size: 8.5px; padding: 2px 6px 2px 4px; }}
+  .racks {{ gap: 0; }}
+  .rack {{ gap: 4px; }}
+  .rack-name {{ margin: 0 0 6px; font-size: 13px; }}
+  .bay {{ grid-template-columns: 44px minmax(0, 1fr); gap: 6px; break-inside: avoid; }}
+  .bay-head h2 {{ font-size: 18px; }}
+  .bay-head h2.named {{ font-size: 10px; }}
+  .bay-head p {{ font-size: 8.5px; }}
+  .scroll {{ overflow: visible; }}
+  .panel {{ min-width: 0; padding: 3px 5px 4px; row-gap: 2px; column-gap: 2px; box-shadow: none; }}
+  .num {{ font-size: 7.5px; padding: 0; }}
+  .tape {{ min-height: 21px; font-size: 8.5px; padding: 3px 2px 2px; border: 1px solid #333; }}
+  .tape.blank {{ border: 0; box-shadow: inset 0 0 0 1px #ccc; }}
+  .tape.blank.pending {{ box-shadow: none; border: 1px dashed #888; }}
+  .jack {{ width: 11px; height: 11px; background: radial-gradient(circle, #555 0 28%, #fff 32%); border: 1.5px solid #333; }}
+  .jack[data-cat="spare"] {{ border-color: #bbb; background: #fff; opacity: 1; }}
+  .jack.drawn {{ width: 20px; height: 20px; border: 0; background: none; }}
+  .jack.drawn.switch {{ width: 14px; height: 21px; }}
+  .jack.drawn.ethernet {{ width: 20px; height: 18px; }}
+  .norm {{ height: 9px; font-size: 6.5px; }}
+  .norm.on {{ color: #111; }}
+  .norm.on span {{ background: #fff; }}
+  .norm.off {{ height: 5px; border-color: #bbb; }}
+  .racks > .rack-group:first-child .bay:nth-child(5) {{ break-after: page; }}
+  .racks > .rack-group:nth-child(2) {{ break-before: page; }}
+  .racks > .rack-group + .rack-group {{ margin-top: 14px; }}
+  .racks > .rack-group:nth-child(2) {{ margin-top: 0; }}
+  .moves, .gear {{ break-before: page; margin-top: 0; }}
+  .moves table {{ min-width: 0; font-size: 10px; }}
+  .moves td, .moves th {{ padding: 3px 8px; }}
+  .moves .lead {{ max-width: none; font-size: 10px; margin-bottom: 6px; }}
+  .moves td small {{ margin-top: 0; font-size: 9px; }}
+  .flip {{ margin: 0 4px 2px 0; padding: 1px 6px; font-size: 9.5px; }}
+  .move-check {{ width: 13px; height: 13px; }}
+  .flip.on {{ background: #e6e6e6; color: #111; }}
+  .gear {{ gap: 0; }}
+  .elevation {{ --u: 22px; max-width: none; padding: 4px 6px; row-gap: 1px; }}
+  .face {{ background: #f3f3f3; color: #111; padding: 3px 8px; gap: 2px; }}
+  .face-main b {{ font-size: 12px; }}
+  .badge {{ font-size: 9px; padding: 1px 5px; }}
+  .badge.move {{ color: #333; border-color: #777; }}
+  .badge.plan {{ background: #e3ecf5; color: #123; }}
+  .badge.q {{ background: #fbefc8; color: #3a2d00; }}
+  .patched {{ font-size: 9px; color: #444; }}
+  .notes {{ break-inside: avoid; margin-top: 12px; padding-top: 8px; }}
+  .notes li {{ grid-template-columns: 150px 1fr; }}
 }}
-.pop b {{ display: block; font: 600 11px/1.3 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }}
-.jack {{ transition: none; }} }}
 </style>
 
 <div class="wrap">
@@ -693,8 +747,28 @@ window.addEventListener('scroll', function () {{
 """
 
 
+print_pdf_path = "printable_reference/patch_bay_view.pdf"
+chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+
+def render_print_pdf():
+    """Print the HTML view to a letter-landscape PDF with headless Chrome (page breaks come from the print CSS)."""
+    import subprocess
+    if not os.path.exists(chrome_path):
+        print(f"Skipping {print_pdf_path}: Google Chrome not found")
+        return
+    subprocess.run([chrome_path, "--headless", "--disable-gpu", "--no-pdf-header-footer",
+                    "--virtual-time-budget=5000", f"--print-to-pdf={os.path.abspath(print_pdf_path)}",
+                    "file://" + os.path.abspath(output_path)],
+                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(f"Printable view saved to {print_pdf_path}")
+
+
 if __name__ == "__main__":
+    from validate import validate
+    validate(all_configs, gear_racks, installed_units, previous_configs)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         f.write(build_html())
     print(f"HTML view saved to {output_path}")
+    render_print_pdf()
