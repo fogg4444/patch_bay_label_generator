@@ -154,11 +154,17 @@ def render_bay(bay):
         port += width
 
     kind = "Single row" if single_row else f"{port_count} × 2"
+    stats = [kind, f"<b>{spare_ports}</b> spare"]
+    if not single_row:
+        stats.append(f"<b>{normalled_ports}</b> normalled")
+    if wiring:
+        stats.append(f'<b class="wired-count" data-bay="{escape(bay["label_name"])}">0</b>/{wired_total[0]} plugged in')
+    stats_html = "".join(f"<p>{x}</p>" for x in stats)
     return f"""
 <section class="bay" id="bay-{escape(bay['label_name'])}">
   <header class="bay-head">
     <h2{'' if bay['label_name'][0].isdigit() else ' class="named"'}>{escape(bay['label_name'].replace('-', ' '))}</h2>
-    <p>{kind} · <b>{spare_ports}</b> spare{"" if single_row else f" · <b>{normalled_ports}</b> normalled"}{f'<br><b class="wired-count" data-bay="{escape(bay["label_name"])}">0</b>/{wired_total[0]} plugged in' if wiring else ""}</p>
+    {stats_html}
   </header>
   <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}" style="grid-template-columns:{template}">
     {''.join(cells)}
@@ -496,7 +502,8 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 .bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: stretch; }}
 .bay-head {{ display: flex; flex-direction: column; justify-content: center; }}
 .bay-head h2 {{ margin: 0; font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
-.bay-head p {{ margin: 4px 0 0; font-size: 11.5px; color: var(--muted); line-height: 1.3; }}
+.bay-head p {{ margin: 1px 0 0; font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; }}
+.bay-head h2 + p {{ margin-top: 4px; }}
 .bay-head h2.named {{ font-size: 15px; line-height: 1.05; overflow-wrap: anywhere; }}
 .bay-head b {{ font-weight: 600; color: var(--ink); }}
 .scroll {{ overflow-x: auto; }}
