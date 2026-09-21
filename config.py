@@ -11,7 +11,7 @@
 #   rack      - (on a bay) starts a new physical rack; following bays stay in it
 #   in_use   - (on a bay) False: not in use yet; no printed label, marked "Not in use" in the HTML view
 #   track_rear - (on a bay) rear-panel "plugged in" checkboxes in the HTML view (on by default for bays 1-10;
-#               ethernet, MIDI and power switches opt in)
+#               ethernet, MIDI, power switches and the amp rack opt in)
 #   jack_type - (on a bay) JackType enum (enums.py): MIDI (5-pin DIN), SWITCH (rocker) or ETHERNET (RJ45)
 #               drawing in the HTML view
 
@@ -136,6 +136,7 @@ config = [
   {
     "label_name": "11-amp-rack",
     "rack": "Amp rack",
+    "track_rear": True,
     "entries": [
         {"normalled": True, "top": "L / R Audio Source Out", "bottom": "DBX Drive Rack L/R IN", "width": 2, "category": Category.AMP},
         {"normalled": True, "top": "DBX High Out L/R",       "bottom": "High Amp In L/R",       "width": 2, "category": Category.AMP},
