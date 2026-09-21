@@ -70,6 +70,8 @@ def render_bay(bay):
 
     spare_ports = 0
     normalled_ports = 0
+    wiring = bay["label_name"].isdigit() and not single_row  # main rack bays get plugged-in checkboxes
+    wired_total = [0]
     port = 1
     for entry in bay["entries"]:
         width = entry["width"]
@@ -127,15 +129,28 @@ def render_bay(bay):
             """Unused jacks get no category colour."""
             return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if is_spare(text) else common
 
+        def jack(extra, text, row, c, p, side):
+            """A jack; on wiring bays, a used jack is a toggle for 'plugged in'."""
+            area = f'style="grid-area:{row_of[row]} / {c}"'
+            if wiring and not is_spare(text):
+                wire_id = f"bay-{bay['label_name']}-{side}-{p}"
+                attrs = jack_attrs(text).replace('title="', 'title="Click to mark plugged in&#10;', 1)
+                wired_total[0] += 1
+                where = "top" if side == "t" else "bottom"
+                return (f'<button type="button" class="jack wire{extra}" data-wire="{wire_id}" data-bay="{escape(bay["label_name"])}" '
+                        f'aria-pressed="false" aria-label="Bay {escape(bay["label_name"])} {where} port {p}: {escape(text)}" '
+                        f'{attrs} {area}></button>')
+            return f'<span class="jack{extra}" {jack_attrs(text)} {area}></span>'
+
         for p in range(port, port + width):
             c = grid_col(p, port_count)
             n = " normalled" if normalled else ""
             if jack_svg:
                 cells.append(f'<span class="jack drawn {jack_kind}" {jack_attrs(top)} style="grid-area:{row_of["jacks-top"]} / {c}">{jack_svg}</span>')
             else:
-                cells.append(f'<span class="jack{n}" {jack_attrs(top)} style="grid-area:{row_of["jacks-top"]} / {c}"></span>')
+                cells.append(jack(n, top, "jacks-top", c, p, "t"))
             if not single_row:
-                cells.append(f'<span class="jack{n} lower" {jack_attrs(bottom)} style="grid-area:{row_of["jacks-bottom"]} / {c}"></span>')
+                cells.append(jack(n + " lower", bottom, "jacks-bottom", c, p, "b"))
         port += width
 
     kind = "Single row" if single_row else f"{port_count} × 2"
@@ -143,7 +158,7 @@ def render_bay(bay):
 <section class="bay" id="bay-{escape(bay['label_name'])}">
   <header class="bay-head">
     <h2{'' if bay['label_name'][0].isdigit() else ' class="named"'}>{escape(bay['label_name'].replace('-', ' '))}</h2>
-    <p>{kind} · <b>{spare_ports}</b> spare{"" if single_row else f" · <b>{normalled_ports}</b> normalled"}</p>
+    <p>{kind} · <b>{spare_ports}</b> spare{"" if single_row else f" · <b>{normalled_ports}</b> normalled"}{f'<br><b class="wired-count" data-bay="{escape(bay["label_name"])}">0</b>/{wired_total[0]} plugged in' if wiring else ""}</p>
   </header>
   <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}" style="grid-template-columns:{template}">
     {''.join(cells)}
@@ -390,6 +405,7 @@ def render_legend():
              for key, (name, color) in categories.items() if key in used]
     chips.append('<button type="button" class="chip" data-cat="spare" aria-pressed="false" style="--c:var(--spare)">Spare</button>')
     chips.append('<button type="button" class="chip pending-chip" data-flag="pending" aria-pressed="false" style="--c:var(--engrave)">Reserved</button>')
+    chips.append('<button type="button" class="chip" data-flag="unplugged" aria-pressed="false" style="--c:var(--plugged)">Not plugged in yet</button>')
     chips.append('<span class="chip-sep" aria-hidden="true"></span>')
     chips.append('<button type="button" class="chip norm-chip" data-norm="normalled" aria-pressed="false" style="--c:var(--norm)">Normalled</button>')
     chips.append('<button type="button" class="chip norm-chip open" data-norm="open" aria-pressed="false" style="--c:var(--engrave)">Not normalled</button>')
@@ -426,6 +442,7 @@ def build_html():
   --jack-ring: #6b7278;
   --spare: #7d8488;
   --focus: #2b6de0;
+  --plugged: #34a36a;
   --norm: #5f666b;
   --norm-2: #4a5055;
   --divider: 14px;
@@ -527,6 +544,15 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 .jack.drawn.switch {{ width: 22px; height: 33px; border-radius: 3px; }}
 .jack.drawn svg {{ display: block; width: 100%; height: 100%; }}
 .jack[data-cat="spare"] {{ box-shadow: none; opacity: .45; }}
+button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
+.jack.wire:hover {{ filter: brightness(1.35); }}
+.jack.wire:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.jack.wire[aria-pressed="true"] {{ background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); }}
+.jack.wire[aria-pressed="true"]::after {{
+  content: "✓"; position: absolute; right: -5px; top: -6px; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--plugged); color: #fff; font: 700 8px/11px "IBM Plex Sans", sans-serif; text-align: center;
+}}
+.stats dd small {{ font-size: 14px; color: var(--muted); font-weight: 500; }}
 .norm {{
   height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 2px;
   font: 600 8.5px/1 "IBM Plex Sans", sans-serif; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; overflow: hidden;
@@ -683,6 +709,7 @@ body.focusing .hit {{ opacity: 1; }}
     <dl class="stats">
       <div><dt>Bays</dt><dd>{bay_count}</dd></div>
       <div><dt>Spare ports</dt><dd>{total_spare()}</dd></div>
+      <div><dt>Plugged in</dt><dd><span id="wired-total">0</span><small id="wired-of"></small></dd></div>
     </dl>
   </div>
   <div class="legend" role="group" aria-label="Highlight a category">{render_legend()}</div>
@@ -704,7 +731,7 @@ document.querySelectorAll('.chip').forEach(function (chip) {{
     document.body.classList.toggle('focusing', on);
     if (!on) return;
     chip.setAttribute('aria-pressed', 'true');
-    var sel = chip.dataset.flag ? '.panel [data-pending]' : chip.dataset.norm ? '.panel [data-norm="' + chip.dataset.norm + '"]' : '.panel [data-cat="' + chip.dataset.cat + '"]';
+    var sel = chip.dataset.flag === 'unplugged' ? '.panel .wire[aria-pressed="false"]' : chip.dataset.flag ? '.panel [data-pending]' : chip.dataset.norm ? '.panel [data-norm="' + chip.dataset.norm + '"]' : '.panel [data-cat="' + chip.dataset.cat + '"]';
     document.querySelectorAll(sel).forEach(function (el) {{ el.classList.add('hit'); }});
   }});
 }});
@@ -724,6 +751,57 @@ document.querySelectorAll('.pop').forEach(function (pop) {{
 window.addEventListener('scroll', function () {{
   document.querySelectorAll('.pop:popover-open').forEach(function (p) {{ p.hidePopover(); }});
 }}, {{ passive: true, capture: true }});
+// Plugged-in jacks: saved in the artifact's shared store when available, else this browser.
+(function () {{
+  var jacks = Array.prototype.slice.call(document.querySelectorAll('.jack.wire'));
+  if (!jacks.length) return;
+  var total = document.getElementById('wired-total');
+  var of = document.getElementById('wired-of');
+  if (of) of.textContent = ' / ' + jacks.length;
+  var store = null;
+  function paint() {{
+    var perBay = {{}}, all = 0;
+    jacks.forEach(function (j) {{
+      if (j.getAttribute('aria-pressed') === 'true') {{ all++; perBay[j.dataset.bay] = (perBay[j.dataset.bay] || 0) + 1; }}
+    }});
+    if (total) total.textContent = all;
+    document.querySelectorAll('.wired-count').forEach(function (el) {{ el.textContent = perBay[el.dataset.bay] || 0; }});
+  }}
+  function set(j, on) {{ j.setAttribute('aria-pressed', on ? 'true' : 'false'); }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-wired') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      jacks.forEach(function (j) {{ if (j.getAttribute('aria-pressed') === 'true') st[j.dataset.wire] = true; }});
+      localStorage.setItem('patchbay-wired', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  jacks.forEach(function (j) {{ set(j, !!saved[j.dataset.wire]); }});
+  paint();
+  jacks.forEach(function (j) {{
+    j.addEventListener('click', function () {{
+      var on = j.getAttribute('aria-pressed') !== 'true';
+      set(j, on);
+      paint();
+      localSave();
+      if (store) store.collection('wired').doc(j.dataset.wire).set({{ plugged: on }}).catch(function () {{}});
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('wired').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).plugged; }});
+        jacks.forEach(function (j) {{ if (j.dataset.wire in st) set(j, st[j.dataset.wire]); }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
 // Move checklist: saved in the artifact's shared store when available, else this browser.
 (function () {{
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.move-check'));
