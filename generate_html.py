@@ -98,6 +98,8 @@ def render_bay(bay):
             tip += f"\nBottom: {bottom}\n{'Normalled' if normalled else 'Not normalled'}"
         if pending:
             tip += f"\nReserved for: {pending}"
+        if entry.get("in_use") is False:
+            tip += "\nNot in use yet"
         if note:
             tip += f"\nNote: {note}"
         cols = span(port, width, port_count)
@@ -110,7 +112,7 @@ def render_bay(bay):
                     f'<div popover id="{note_id}" class="pop"><b>Bay {escape(bay["label_name"])} · port {port_range}</b>{escape(note)}</div>')
 
         def tape(text, row):
-            cls = "tape blank" if is_spare(text) else "tape"
+            cls = "tape blank" if is_spare(text) else ("tape idle" if entry.get("in_use") is False else "tape")
             label = "" if is_spare(text) else escape(text)
             if is_spare(text) and pending:
                 cls += " pending"
@@ -129,12 +131,13 @@ def render_bay(bay):
                 cells.append(f'<div class="norm off" {common} style="grid-row:{row_of["norm"]};grid-column:{cols}"></div>')
         def jack_attrs(text):
             """Unused jacks get no category colour."""
-            return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if is_spare(text) else common
+            unused = is_spare(text) or entry.get("in_use") is False
+            return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if unused else common
 
         def jack(extra, text, row, c, p, side, inner=""):
             """A jack; on wiring bays, a used jack is a toggle for 'plugged in'."""
             area = f'style="grid-area:{row_of[row]} / {c}"'
-            if wiring and not is_spare(text):
+            if wiring and not is_spare(text) and entry.get("in_use", True):
                 wire_id = f"bay-{bay['label_name']}-{side}-{p}"
                 attrs = jack_attrs(text).replace('title="', 'title="Click to mark the rear jack plugged in&#10;', 1)
                 wired_total[0] += 1
@@ -156,7 +159,8 @@ def render_bay(bay):
         port += width
 
     kind = "Single row" if single_row else f"{port_count} × 2"
-    stats = [kind, f"<b>{spare_ports}</b> spare"]
+    stats = ['<span class="idle-pill">Not in use</span>'] if bay.get("in_use") is False else []
+    stats += [kind, f"<b>{spare_ports}</b> spare"]
     if not single_row:
         stats.append(f"<b>{normalled_ports}</b> normalled")
     if wiring:
@@ -168,7 +172,7 @@ def render_bay(bay):
     <h2{'' if bay['label_name'][0].isdigit() else ' class="named"'}>{escape(bay['label_name'].replace('-', ' '))}</h2>
     {stats_html}
   </header>
-  <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}" style="grid-template-columns:{template}">
+  <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}{' idle' if bay.get('in_use') is False else ''}" style="grid-template-columns:{template}">
     {''.join(cells)}
   </div></div>
 </section>"""
@@ -607,6 +611,9 @@ button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
 .wp-track {{ height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }}
 .wp-fill {{ height: 100%; width: 0; background: var(--plugged); border-radius: 999px; transition: width .3s ease; }}
 @media (prefers-reduced-motion: reduce) {{ .wp-fill {{ transition: none; }} }}
+.idle-pill {{ display: inline-block; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 999px;
+  border: 1px dashed var(--muted); color: var(--muted); margin-bottom: 2px; }}
+.panel.idle .tape, .tape.idle {{ opacity: .45; }}
 .stats dd small {{ font-size: 14px; color: var(--muted); font-weight: 500; }}
 .norm {{
   height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 2px;

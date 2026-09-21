@@ -5,9 +5,11 @@
 # Optional keys (ignored by the label generator, used by generate_html.py):
 #   category - Category enum (enums.py): colour grouping in the HTML view
 #   note     - open question / reminder shown in the HTML view
+#   in_use   - False: labelled but not connected yet (dimmed, no rear checkbox in the HTML view)
 #   pending  - on a spare ("-") entry: what the ports are reserved for. Shown in the HTML view only;
 #              printed labels stay blank.
 #   rack      - (on a bay) starts a new physical rack; following bays stay in it
+#   in_use   - (on a bay) False: not in use yet; no printed label, marked "Not in use" in the HTML view
 #   track_rear - (on a bay) rear-panel "plugged in" checkboxes in the HTML view (on by default for bays 1-10;
 #               ethernet, MIDI and power switches opt in)
 #   jack_type - (on a bay) JackType enum (enums.py): MIDI (5-pin DIN), SWITCH (rocker) or ETHERNET (RJ45)
@@ -152,21 +154,21 @@ config = [
     "entries": [
         {"normalled": False, "top": "Hearback Out 1-8", "width": 8, "category": Category.NETWORK},
     ] + [
-        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK} for room in ROOMS
+        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in ROOMS
     ] + [
         {"normalled": False, "top": "-", "width": 2},
     ]
   },
   {
     "label_name": "midi",
+    "in_use": False,
     "rack": "MIDI",
     "jack_type": JackType.MIDI,
     "track_rear": True,
     "single_row": True,
     "port_count": 22,
     "entries": [
-        {"normalled": False, "top": f"MIDI {n}", "width": 1, "category": Category.MIDI,
-         **({"note": "Channel labels needed for all 22 MIDI jacks"} if n == 1 else {})}
+        {"normalled": False, "top": f"MIDI {n}", "width": 1, "category": Category.MIDI}
         for n in range(1, 23)
     ]
   },

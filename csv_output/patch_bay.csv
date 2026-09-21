@@ -58,10 +58,6 @@ Patch bay: ethernet
 
 Hearback Out 1-8,,,,,,,,Kitchen,Bath Up,Bath Dn,Den,Gallery,Master Bed,Guest Bed,Office,Front Deck,Back Deck,-,
 
-Patch bay: midi
-
-MIDI 1,MIDI 2,MIDI 3,MIDI 4,MIDI 5,MIDI 6,MIDI 7,MIDI 8,MIDI 9,MIDI 10,MIDI 11,MIDI 12,MIDI 13,MIDI 14,MIDI 15,MIDI 16,MIDI 17,MIDI 18,MIDI 19,MIDI 20,MIDI 21,MIDI 22
-
 Patch bay: power-switches
 
 Switch 1,Switch 2,Switch 3,Switch 4,Switch 5,Switch 6,Switch 7,Switch 8,Switch 9,Switch 10

@@ -429,6 +429,9 @@ def generate_reference_sheet(all_configs):
 
 
 def generate_patch_bay_labels_from_json(config, index):
+    if config.get("in_use") is False:
+        print(f"Skipping labels for {config['label_name']}: not in use")
+        return
     port_count = config.get("port_count", expected_count)
     total_width = sum(e['width'] for e in config["entries"])
 
