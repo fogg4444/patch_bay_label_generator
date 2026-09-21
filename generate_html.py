@@ -352,8 +352,8 @@ def render_moves():
           <td>{''.join(work) or '<span class="flip none">No cards to flip</span>'}</td>
         </tr>""")
     return f"""
-<section class="moves" id="moves">
-  <h2>Moving the patch bay units</h2>
+<details class="moves" id="moves">
+  <summary><h2>Moving the patch bay units</h2><span class="archived">Archived · all units in place</span></summary>
   <p class="lead">Move whole units instead of re-setting normalling channel by channel. With the moves below you flip
   <b>{total}</b> normalling cards; keeping every unit in its old position would mean flipping <b>{in_place}</b>.
   Units already in the right place are marked "Already in place"; where units are mounted now comes from
@@ -362,12 +362,12 @@ def render_moves():
   <p class="lead">Reading a card: <b>normalled</b> (standard) has the grey jack on the <b>front bottom</b> row;
   <b>not normalled</b> (turned) has the grey jack on the <b>rear top</b> row. "Check" means the old layout had that
   port unused, so its card position was never recorded. Look at it before mounting the unit.</p>
-  <p class="progress" id="move-progress" data-total="{tasks}"><b>0</b> of {tasks} done</p>
+  {f'<p class="progress" id="move-progress" data-total="{tasks}"><b>0</b> of {tasks} done</p>' if tasks else '<p class="progress">Every unit is mounted and every card is set. Nothing left to do.</p>'}
   <div class="scroll"><table>
     <thead><tr><th><span class="visually-hidden">Done</span></th><th>Position</th><th>Unit to put there</th><th>Normalling cards to flip</th></tr></thead>
     <tbody>{''.join(body)}</tbody>
   </table></div>
-</section>"""
+</details>"""
 
 
 def render_notes():
@@ -542,6 +542,14 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }}
 body.focusing .hit {{ opacity: 1; }}
 .moves {{ margin-top: 64px; max-width: 980px; }}
+.moves summary {{ display: flex; align-items: baseline; gap: 12px; cursor: pointer; list-style: none; padding: 8px 0;
+  border-top: 1px solid var(--line); }}
+.moves summary::-webkit-details-marker {{ display: none; }}
+.moves summary::before {{ content: "▸"; color: var(--muted); font-size: 12px; transition: transform .15s; }}
+.moves[open] summary::before {{ transform: rotate(90deg); }}
+.moves summary:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.moves summary h2 {{ margin: 0; }}
+.moves .archived {{ font-size: 12px; color: var(--muted); }}
 .moves h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .moves .lead {{ margin: 0 0 14px; color: var(--muted); max-width: 68ch; }}
 .moves .lead b {{ color: var(--ink); font-variant-numeric: tabular-nums; }}
@@ -643,7 +651,8 @@ body.focusing .hit {{ opacity: 1; }}
   .racks > .rack-group:nth-child(2) {{ break-before: page; }}
   .racks > .rack-group + .rack-group {{ margin-top: 14px; }}
   .racks > .rack-group:nth-child(2) {{ margin-top: 0; }}
-  .moves, .gear {{ break-before: page; margin-top: 0; }}
+  .moves {{ display: none; }}
+  .gear {{ break-before: page; margin-top: 0; }}
   .moves table {{ min-width: 0; font-size: 10px; }}
   .moves td, .moves th {{ padding: 3px 8px; }}
   .moves .lead {{ max-width: none; font-size: 10px; margin-bottom: 6px; }}
@@ -679,12 +688,12 @@ body.focusing .hit {{ opacity: 1; }}
   <div class="legend" role="group" aria-label="Highlight a category">{render_legend()}</div>
   <p class="hint">Click a category to highlight it. Hover a label for its port range. The strip between the jack rows shows normalling: hatched = normalled (card standard, half-normal), dashed = not normalled (card turned; top and bottom are separate while the rear top jack is wired); <b>?</b> marks an open question.</p>
   <div class="racks">{render_racks()}</div>
-  {render_moves()}
   <div class="gear">{''.join(render_gear_rack(r) for r in gear_racks)}</div>
   <section class="notes">
     <h2>Open questions</h2>
     <ul>{render_notes()}</ul>
   </section>
+  {render_moves()}
 </div>
 <script>
 document.querySelectorAll('.chip').forEach(function (chip) {{
