@@ -599,6 +599,12 @@ button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
   content: "✓"; position: absolute; right: -5px; top: -6px; width: 11px; height: 11px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 8px/11px "IBM Plex Sans", sans-serif; text-align: center;
 }}
+.wire-progress {{ margin: 14px 0 4px; display: grid; gap: 6px; }}
+.wp-label {{ font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }}
+.wp-label b {{ font: 700 22px/1 "Barlow Condensed", sans-serif; color: var(--ink); margin-right: 4px; }}
+.wp-track {{ height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }}
+.wp-fill {{ height: 100%; width: 0; background: var(--plugged); border-radius: 999px; transition: width .3s ease; }}
+@media (prefers-reduced-motion: reduce) {{ .wp-fill {{ transition: none; }} }}
 .stats dd small {{ font-size: 14px; color: var(--muted); font-weight: 500; }}
 .norm {{
   height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 2px;
@@ -712,7 +718,7 @@ body.focusing .hit {{ opacity: 1; }}
   * {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
   body {{ font-size: 11px; }}
   .wrap {{ max-width: none; padding: 0; }}
-  .hint, .flag, .pop, .stats, .chip-sep {{ display: none !important; }}
+  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress {{ display: none !important; }}
   h1 {{ font-size: 20px; }}
   .meta {{ margin-top: 2px; font-size: 9.5px; }}
   .top {{ padding-bottom: 4px; }}
@@ -785,6 +791,12 @@ body.focusing .hit {{ opacity: 1; }}
       <div><dt>Plugged in</dt><dd><span id="wired-total">0</span><small id="wired-of"></small></dd></div>
     </dl>
   </div>
+  <div class="wire-progress" id="wire-progress" hidden>
+    <div class="wp-label"><b id="wp-pct">0%</b> plugged in <span id="wp-count"></span></div>
+    <div class="wp-track" role="progressbar" aria-label="Jacks plugged in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="wp-bar">
+      <div class="wp-fill" id="wp-fill"></div>
+    </div>
+  </div>
   <div class="legend" role="group" aria-label="Highlight a category">{render_legend()}</div>
   <p class="hint">Click a category to highlight it. Hover a label for its port range. The strip between the jack rows shows normalling: hatched = normalled (card standard, half-normal), dashed = not normalled (card turned; top and bottom are separate while the rear top jack is wired); <b>?</b> marks an open question.</p>
   <div class="racks">{render_racks()}</div>
@@ -839,6 +851,15 @@ window.addEventListener('scroll', function () {{
       if (j.getAttribute('aria-pressed') === 'true') {{ all++; perBay[j.dataset.bay] = (perBay[j.dataset.bay] || 0) + 1; }}
     }});
     if (total) total.textContent = all;
+    var pct = Math.round(all / jacks.length * 1000) / 10;
+    var box = document.getElementById('wire-progress');
+    if (box) {{
+      box.hidden = false;
+      document.getElementById('wp-pct').textContent = pct + '%';
+      document.getElementById('wp-count').textContent = '(' + all + ' of ' + jacks.length + ' jacks)';
+      document.getElementById('wp-fill').style.width = pct + '%';
+      document.getElementById('wp-bar').setAttribute('aria-valuenow', pct);
+    }}
     document.querySelectorAll('.wired-count').forEach(function (el) {{ el.textContent = perBay[el.dataset.bay] || 0; }});
   }}
   function set(j, on) {{ j.setAttribute('aria-pressed', on ? 'true' : 'false'); }}
