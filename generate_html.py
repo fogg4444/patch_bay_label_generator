@@ -135,11 +135,11 @@ def render_bay(bay):
             area = f'style="grid-area:{row_of[row]} / {c}"'
             if wiring and not is_spare(text):
                 wire_id = f"bay-{bay['label_name']}-{side}-{p}"
-                attrs = jack_attrs(text).replace('title="', 'title="Click to mark plugged in&#10;', 1)
+                attrs = jack_attrs(text).replace('title="', 'title="Click to mark the rear jack plugged in&#10;', 1)
                 wired_total[0] += 1
                 where = "top" if side == "t" else "bottom"
                 return (f'<button type="button" class="jack wire{extra}" data-wire="{wire_id}" data-bay="{escape(bay["label_name"])}" '
-                        f'aria-pressed="false" aria-label="Bay {escape(bay["label_name"])} {where} port {p}: {escape(text)}" '
+                        f'aria-pressed="false" aria-label="Bay {escape(bay["label_name"])} {where} port {p} rear: {escape(text)}" '
                         f'{attrs} {area}></button>')
             return f'<span class="jack{extra}" {jack_attrs(text)} {area}></span>'
 
@@ -159,7 +159,7 @@ def render_bay(bay):
     if not single_row:
         stats.append(f"<b>{normalled_ports}</b> normalled")
     if wiring:
-        stats.append(f'<b class="wired-count" data-bay="{escape(bay["label_name"])}">0</b>/{wired_total[0]} plugged in')
+        stats.append(f'<b class="wired-count" data-bay="{escape(bay["label_name"])}">0</b>/{wired_total[0]} rear plugged in')
     stats_html = "".join(f"<p>{x}</p>" for x in stats)
     return f"""
 <section class="bay" id="bay-{escape(bay['label_name'])}">
@@ -451,7 +451,7 @@ def render_legend():
              for key, (name, color) in categories.items() if key in used]
     chips.append('<button type="button" class="chip" data-cat="spare" aria-pressed="false" style="--c:var(--spare)">Spare</button>')
     chips.append('<button type="button" class="chip pending-chip" data-flag="pending" aria-pressed="false" style="--c:var(--engrave)">Reserved</button>')
-    chips.append('<button type="button" class="chip" data-flag="unplugged" aria-pressed="false" style="--c:var(--plugged)">Not plugged in yet</button>')
+    chips.append('<button type="button" class="chip" data-flag="unplugged" aria-pressed="false" style="--c:var(--plugged)">Rear not plugged in yet</button>')
     chips.append('<span class="chip-sep" aria-hidden="true"></span>')
     chips.append('<button type="button" class="chip norm-chip" data-norm="normalled" aria-pressed="false" style="--c:var(--norm)">Normalled</button>')
     chips.append('<button type="button" class="chip norm-chip open" data-norm="open" aria-pressed="false" style="--c:var(--engrave)">Not normalled</button>')
@@ -788,12 +788,12 @@ body.focusing .hit {{ opacity: 1; }}
     <dl class="stats">
       <div><dt>Bays</dt><dd>{bay_count}</dd></div>
       <div><dt>Spare ports</dt><dd>{total_spare()}</dd></div>
-      <div><dt>Plugged in</dt><dd><span id="wired-total">0</span><small id="wired-of"></small></dd></div>
+      <div><dt>Rear plugged in</dt><dd><span id="wired-total">0</span><small id="wired-of"></small></dd></div>
     </dl>
   </div>
   <div class="wire-progress" id="wire-progress" hidden>
-    <div class="wp-label"><b id="wp-pct">0%</b> plugged in <span id="wp-count"></span></div>
-    <div class="wp-track" role="progressbar" aria-label="Jacks plugged in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="wp-bar">
+    <div class="wp-label"><b id="wp-pct">0%</b> plugged in (rear panels) <span id="wp-count"></span></div>
+    <div class="wp-track" role="progressbar" aria-label="Rear panel jacks plugged in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="wp-bar">
       <div class="wp-fill" id="wp-fill"></div>
     </div>
   </div>
