@@ -89,10 +89,26 @@ def check_installed(installed, bays, previous_bays):
     return problems
 
 
-def validate(bays, gear_racks=(), installed=None, previous_bays=()):
+def check_card_changes(changes, previous_bays):
+    problems = []
+    sizes = {b["label_name"]: b.get("port_count", DEFAULT_PORTS) for b in previous_bays}
+    for unit, ports in changes.items():
+        if unit not in sizes:
+            problems.append(f"card_changes: unit {unit!r} is not a bay in previous_config")
+            continue
+        for port, normalled in ports.items():
+            if not isinstance(port, int) or not 1 <= port <= sizes[unit]:
+                problems.append(f"card_changes: unit {unit!r} has no port {port!r}")
+            if not isinstance(normalled, bool):
+                problems.append(f"card_changes: unit {unit!r} port {port}: use True or False")
+    return problems
+
+
+def validate(bays, gear_racks=(), installed=None, previous_bays=(), card_changes=None):
     problems = check_bays(bays) + check_gear(gear_racks)
     if installed is not None:
         problems += check_installed(installed, bays, previous_bays)
+    problems += check_card_changes(card_changes or {}, previous_bays)
     if problems:
         print("config.py has problems:", file=sys.stderr)
         for p in problems:

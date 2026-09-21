@@ -2691,14 +2691,14 @@ Top: Switch 10" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="t
 <section class="moves" id="moves">
   <h2>Moving the patch bay units</h2>
   <p class="lead">Move whole units instead of re-setting normalling channel by channel. With the moves below you flip
-  <b>6</b> normalling cards; keeping every unit in its old position would mean flipping <b>59</b>.
+  <b>4</b> normalling cards; keeping every unit in its old position would mean flipping <b>59</b>.
   Units already in the right place are marked "Already in place"; where units are mounted now comes from
   <code>installed_units</code> in <code>config.py</code>.
   Units only move within their own rack, and spare ports don't count.</p>
   <p class="lead">Reading a card: <b>normalled</b> (standard) has the grey jack on the <b>front bottom</b> row;
   <b>not normalled</b> (turned) has the grey jack on the <b>rear top</b> row. "Check" means the old layout had that
   port unused, so its card position was never recorded. Look at it before mounting the unit.</p>
-  <p class="progress" id="move-progress" data-total="9"><b>0</b> of 9 done</p>
+  <p class="progress" id="move-progress" data-total="3"><b>0</b> of 3 done</p>
   <div class="scroll"><table>
     <thead><tr><th><span class="visually-hidden">Done</span></th><th>Position</th><th>Unit to put there</th><th>Normalling cards to flip</th></tr></thead>
     <tbody><tr class="moved">
@@ -2706,46 +2706,46 @@ Top: Switch 10" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="t
           <td><label for="bay-1-from-9"><b>Bay 1</b></label><small>Main rack</small></td>
           <td>Unit from old bay 9<small>not mounted · old layout: Main Insert Send</small></td>
           <td><span class="flip off">Ports 1–2 → not normalled</span><span class="flip check">Check ports 10–16, 18 are not normalled</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-2-from-4" data-task="bay-2-from-4" aria-label="Bay 2 done"></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
           <td><label for="bay-2-from-4"><b>Bay 2</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 4<small>now at bay 3 · old layout: Apollo #2 17-32 Out</small></td>
+          <td>Already in place<small>now at bay 2 · old layout: Apollo #2 17-32 Out</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-3-from-2" data-task="bay-3-from-2" aria-label="Bay 3 done"></td>
-          <td><label for="bay-3-from-2"><b>Bay 3</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 2<small>now at bay 6 · old layout: Worm hole Matched to Left Side Patch bay 1-16 bottom</small></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
+          <td><label for="bay-3-from-6"><b>Bay 3</b></label><small>Main rack</small></td>
+          <td>Already in place<small>now at bay 3 · old layout: Ghost 17-32 Tape Send</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-4-from-1" data-task="bay-4-from-1" aria-label="Bay 4 done"></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
           <td><label for="bay-4-from-1"><b>Bay 4</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 1<small>now at bay 5 · old layout: Worm hole Matched to Left Side Patch bay 1-16 top</small></td>
+          <td>Already in place<small>now at bay 4 · old layout: Worm hole Matched to Left Side Patch bay 1-16 top</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-5-from-7" data-task="bay-5-from-7" aria-label="Bay 5 done"></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
           <td><label for="bay-5-from-7"><b>Bay 5</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 7<small>now at bay 8 · old layout: Ghost Channel Insert Send 1-16</small></td>
+          <td>Already in place<small>now at bay 5 · old layout: Ghost Channel Insert Send 1-16</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-6-from-8" data-task="bay-6-from-8" aria-label="Bay 6 done"></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
           <td><label for="bay-6-from-8"><b>Bay 6</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 8<small>now at bay 9 · old layout: Ghost Channel Insert Send 17-32</small></td>
+          <td>Already in place<small>now at bay 6 · old layout: Ghost Channel Insert Send 17-32</small></td>
           <td><span class="flip none">No cards to flip</span></td>
         </tr><tr class="stays">
           <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
           <td><label for="bay-7-from-3"><b>Bay 7</b></label><small>Main rack</small></td>
           <td>Already in place<small>now at bay 7 · old layout: Apollo #1 1-16 Out</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-8-from-5" data-task="bay-8-from-5" aria-label="Bay 8 done"></td>
-          <td><label for="bay-8-from-5"><b>Bay 8</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 5<small>not mounted · old layout: Ghost 1-16 Tape Send</small></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><span class="nothing" title="Nothing to do">–</span></td>
+          <td><label for="bay-8-from-2"><b>Bay 8</b></label><small>Main rack</small></td>
+          <td>Already in place<small>now at bay 8 · old layout: Worm hole Matched to Left Side Patch bay 1-16 bottom</small></td>
           <td><span class="flip none">No cards to flip</span></td>
-        </tr><tr class="moved">
-          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-9-from-6" data-task="bay-9-from-6" aria-label="Bay 9 done"></td>
-          <td><label for="bay-9-from-6"><b>Bay 9</b></label><small>Main rack</small></td>
-          <td>Unit from old bay 6<small>not mounted · old layout: Ghost 17-32 Tape Send</small></td>
-          <td><span class="flip on">Ports 19–22 → normalled</span><span class="flip check">Check port 23 is not normalled</span></td>
+        </tr><tr class="stays">
+          <td class="done-cell"><input type="checkbox" class="move-check" id="bay-9-from-5" data-task="bay-9-from-5" aria-label="Bay 9 done"></td>
+          <td><label for="bay-9-from-5"><b>Bay 9</b></label><small>Main rack</small></td>
+          <td>Already in place<small>now at bay 9 · old layout: Ghost 1-16 Tape Send</small></td>
+          <td><span class="flip off">Ports 23–24 → not normalled</span></td>
         </tr><tr class="stays">
           <td class="done-cell"><input type="checkbox" class="move-check" id="bay-10-from-10" data-task="bay-10-from-10" aria-label="Bay 10 done"></td>
           <td><label for="bay-10-from-10"><b>Bay 10</b></label><small>Main rack</small></td>

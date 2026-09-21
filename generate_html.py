@@ -3,7 +3,7 @@ from datetime import date
 from html import escape
 import os
 
-from config import config as all_configs, gear_racks, installed_units
+from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes
 from enums import Category, JackType
 from previous_config import config as previous_configs
 
@@ -232,6 +232,14 @@ def normal_states(bay, spare_is_free):
     return states
 
 
+def unit_card_states(unit):
+    """A physical unit's cards now: its original layout plus any recorded card_changes."""
+    states = normal_states(unit, False)
+    for port, normalled in card_changes.get(unit["label_name"], {}).items():
+        states[port - 1] = normalled
+    return states
+
+
 def with_racks(configs):
     rack, out = "Rack", []
     for bay in configs:
@@ -264,12 +272,20 @@ def plan_unit_moves():
             continue
 
         def flips(unit, slot):
-            return [p + 1 for p, (a, b) in enumerate(zip(normal_states(unit, False), normal_states(slot, True)))
+            return [p + 1 for p, (a, b) in enumerate(zip(unit_card_states(unit), normal_states(slot, True)))
                     if b is not None and a != b]
 
         # Fewest card flips first, then fewest units to move from where they're mounted now.
-        cost = [[len(flips(u, sl)) * 1000 + (0 if installed_units.get(sl["label_name"]) == u["label_name"] else 1)
-                 for si, sl in slots] for ui, u in units]
+        mounted = set(installed_units.values())
+
+        def move_cost(u, sl):
+            if installed_units.get(sl["label_name"]) == u["label_name"]:
+                return 0
+            if keep_installed_units and (u["label_name"] in mounted or sl["label_name"] in installed_units):
+                return 10 ** 9  # locked: don't move mounted units or displace them
+            return 1
+
+        cost = [[len(flips(u, sl)) * 1000 + move_cost(u, sl) for si, sl in slots] for ui, u in units]
         best = {0: (0, [])}  # bitmask of used units -> (cost, assignment); slots filled in order
         for k in range(len(slots)):
             nxt = {}
@@ -289,7 +305,9 @@ def plan_unit_moves():
             to_n = [p for p in f if want[p - 1]]
             to_t = [p for p in f if p not in to_n]
             # Ports that were unused in the old layout: their real card position was never recorded.
-            unknown = [i + 1 for i, s in enumerate(normal_states(unit, True)) if s is None and want[i] is not None]
+            known = card_changes.get(unit["label_name"], {})
+            unknown = [i + 1 for i, s in enumerate(normal_states(unit, True))
+                       if s is None and want[i] is not None and (i + 1) not in known]
             check_n = [p for p in unknown if want[p - 1] and p not in f]
             check_t = [p for p in unknown if not want[p - 1] and p not in f]
             total += len(f)
@@ -769,7 +787,7 @@ def render_print_pdf():
 
 if __name__ == "__main__":
     from validate import validate
-    validate(all_configs, gear_racks, installed_units, previous_configs)
+    validate(all_configs, gear_racks, installed_units, previous_configs, card_changes)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         f.write(build_html())

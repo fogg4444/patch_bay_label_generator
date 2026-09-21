@@ -219,12 +219,24 @@ gear_racks = [
 # previous_config.py (its layout before the reorg). Positions not listed are empty; units not
 # listed are out of the rack. Update this as units are moved; the move plan starts from here.
 installed_units = {
-    "3": "4",
-    "5": "1",
-    "6": "2",
+    "2": "4",
+    "3": "6",
+    "4": "1",
+    "5": "7",
+    "6": "8",
     "7": "3",
-    "8": "7",
-    "9": "8",
+    "8": "2",
+    "9": "5",
     "10": "10",
     "11-amp-rack": "11-amp-rack",
+}
+
+# True: never move a unit that is already mounted; the plan only fills empty positions and
+# lists card flips. False: the plan may move mounted units if that saves card flips.
+keep_installed_units = True
+
+# Cards flipped since the original layout: unit (previous_config bay) -> {port: normalled now}.
+# The move plan uses these instead of the original settings for those ports.
+card_changes = {
+    "6": {19: True, 20: True, 21: True, 22: True, 23: True, 24: True},
 }
