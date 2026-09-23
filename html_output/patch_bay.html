@@ -153,6 +153,31 @@ button.jack { border: 0; padding: 0; cursor: pointer; font: inherit; }
 body.focusing .tape, body.focusing .jack, body.focusing .norm { opacity: .15; }
 body.focusing .hit { opacity: 1; }
 .moves { margin-top: 64px; max-width: 980px; }
+.cables { margin-top: 56px; }
+.cables h2 { font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }
+.cables .lead { margin: 0 0 4px; color: var(--muted); max-width: 68ch; }
+.cables .lead b { color: var(--ink); }
+.cables .wire-progress { margin: 10px 0 18px; max-width: 520px; }
+.room-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.room-card { border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }
+.room-card header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 6px; }
+.room-card h3 { margin: 0; font: 600 15px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.room-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.room-card.done { border-color: var(--plugged); }
+.room-card.done .room-count { color: var(--plugged); font-weight: 600; }
+.room-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.room-card li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; }
+.room-card label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; cursor: pointer; font-size: 13px; }
+.room-card label b { font-weight: 600; }
+.room-card label small { flex-basis: 100%; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.kind { font: 600 9.5px/1.4 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  padding: 1px 6px; border-radius: 999px; }
+.kind.xlr { background: #9a73e0; color: #fff; }
+.kind.cat5 { background: #4fb1dc; color: #10222b; }
+.cable-check { width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 2px 0 0; }
+.cable-check:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.room-card li.pulled label b, .room-card li.pulled label small { text-decoration: line-through; opacity: .6; }
 .midi-list { margin-top: 48px; max-width: 820px; }
 .midi-list h2 { font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }
 .midi-list table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }
@@ -300,6 +325,13 @@ body.focusing .hit { opacity: 1; }
   .badge.plan { background: #e3ecf5; color: #123; }
   .badge.q { background: #fbefc8; color: #3a2d00; }
   .patched { font-size: 9px; color: #444; }
+  .cables { break-before: page; margin-top: 0; }
+  .cables .lead { font-size: 10px; max-width: none; }
+  .room-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .room-card { break-inside: avoid; padding: 6px 8px 8px; }
+  .room-card label { font-size: 10px; }
+  .room-card label small { font-size: 8.5px; }
+  .cable-check { width: 12px; height: 12px; }
   .midi-list { break-before: page; margin-top: 0; max-width: none; }
   .midi-list h2 { font-size: 15px; margin-bottom: 4px; }
   .midi-list table { min-width: 0; font-size: 10px; }
@@ -315,7 +347,7 @@ body.focusing .hit { opacity: 1; }
   <div class="top">
     <div>
       <h1>Studio Carquinez Patch Bay</h1>
-      <p class="meta">Front view, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated 2026-09-20 from <code>config.py</code>.</p>
+      <p class="meta">Front view, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated 2026-09-23 from <code>config.py</code>.</p>
     </div>
     <dl class="stats">
       <div><dt>Bays</dt><dd>14</dd></div>
@@ -2896,6 +2928,249 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
     <ul></ul>
   </section>
   
+<section class="cables" id="cables">
+  <h2>Cable pulls to each room</h2>
+  <p class="lead">Two XLR sends, one XLR return and one Cat5 per room — <b>40</b> runs in all.
+  Tick a cable once it is pulled; the destination is where it lands at the rack.</p>
+  <div class="wire-progress">
+    <div class="wp-label"><b id="cable-pct">0%</b> pulled <span id="cable-count"></span></div>
+    <div class="wp-track" role="progressbar" aria-label="Room cables pulled" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cable-bar">
+      <div class="wp-fill" id="cable-fill"></div>
+    </div>
+  </div>
+  <div class="room-grid"><article class="room-card">
+          <header><h3>Kitchen</h3><span class="room-count" data-room="kitchen">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-kitchen-send-l" data-task="kitchen-send-l" data-room="kitchen"
+              aria-label="Kitchen Send L cable pulled">
+            <label for="cable-kitchen-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 1 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-kitchen-send-r" data-task="kitchen-send-r" data-room="kitchen"
+              aria-label="Kitchen Send R cable pulled">
+            <label for="cable-kitchen-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 1 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-kitchen-return" data-task="kitchen-return" data-room="kitchen"
+              aria-label="Kitchen Return cable pulled">
+            <label for="cable-kitchen-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-kitchen-network" data-task="kitchen-network" data-room="kitchen"
+              aria-label="Kitchen Network cable pulled">
+            <label for="cable-kitchen-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 9</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Bath Up</h3><span class="room-count" data-room="bath-up">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-up-send-l" data-task="bath-up-send-l" data-room="bath-up"
+              aria-label="Bath Up Send L cable pulled">
+            <label for="cable-bath-up-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 2 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-up-send-r" data-task="bath-up-send-r" data-room="bath-up"
+              aria-label="Bath Up Send R cable pulled">
+            <label for="cable-bath-up-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 2 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-up-return" data-task="bath-up-return" data-room="bath-up"
+              aria-label="Bath Up Return cable pulled">
+            <label for="cable-bath-up-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-up-network" data-task="bath-up-network" data-room="bath-up"
+              aria-label="Bath Up Network cable pulled">
+            <label for="cable-bath-up-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 10</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Bath Dn</h3><span class="room-count" data-room="bath-dn">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-dn-send-l" data-task="bath-dn-send-l" data-room="bath-dn"
+              aria-label="Bath Dn Send L cable pulled">
+            <label for="cable-bath-dn-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 3 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-dn-send-r" data-task="bath-dn-send-r" data-room="bath-dn"
+              aria-label="Bath Dn Send R cable pulled">
+            <label for="cable-bath-dn-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 3 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-dn-return" data-task="bath-dn-return" data-room="bath-dn"
+              aria-label="Bath Dn Return cable pulled">
+            <label for="cable-bath-dn-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-bath-dn-network" data-task="bath-dn-network" data-room="bath-dn"
+              aria-label="Bath Dn Network cable pulled">
+            <label for="cable-bath-dn-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 11</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Den</h3><span class="room-count" data-room="den">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-den-send-l" data-task="den-send-l" data-room="den"
+              aria-label="Den Send L cable pulled">
+            <label for="cable-den-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 4 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-den-send-r" data-task="den-send-r" data-room="den"
+              aria-label="Den Send R cable pulled">
+            <label for="cable-den-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 4 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-den-return" data-task="den-return" data-room="den"
+              aria-label="Den Return cable pulled">
+            <label for="cable-den-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-den-network" data-task="den-network" data-room="den"
+              aria-label="Den Network cable pulled">
+            <label for="cable-den-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 12</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Gallery</h3><span class="room-count" data-room="gallery">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-gallery-send-l" data-task="gallery-send-l" data-room="gallery"
+              aria-label="Gallery Send L cable pulled">
+            <label for="cable-gallery-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 5 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-gallery-send-r" data-task="gallery-send-r" data-room="gallery"
+              aria-label="Gallery Send R cable pulled">
+            <label for="cable-gallery-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 5 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-gallery-return" data-task="gallery-return" data-room="gallery"
+              aria-label="Gallery Return cable pulled">
+            <label for="cable-gallery-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-gallery-network" data-task="gallery-network" data-room="gallery"
+              aria-label="Gallery Network cable pulled">
+            <label for="cable-gallery-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 13</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Master Bed</h3><span class="room-count" data-room="master-bed">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-master-bed-send-l" data-task="master-bed-send-l" data-room="master-bed"
+              aria-label="Master Bed Send L cable pulled">
+            <label for="cable-master-bed-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 6 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-master-bed-send-r" data-task="master-bed-send-r" data-room="master-bed"
+              aria-label="Master Bed Send R cable pulled">
+            <label for="cable-master-bed-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 6 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-master-bed-return" data-task="master-bed-return" data-room="master-bed"
+              aria-label="Master Bed Return cable pulled">
+            <label for="cable-master-bed-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-master-bed-network" data-task="master-bed-network" data-room="master-bed"
+              aria-label="Master Bed Network cable pulled">
+            <label for="cable-master-bed-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 14</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Guest Bed</h3><span class="room-count" data-room="guest-bed">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-guest-bed-send-l" data-task="guest-bed-send-l" data-room="guest-bed"
+              aria-label="Guest Bed Send L cable pulled">
+            <label for="cable-guest-bed-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 7 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-guest-bed-send-r" data-task="guest-bed-send-r" data-room="guest-bed"
+              aria-label="Guest Bed Send R cable pulled">
+            <label for="cable-guest-bed-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 7 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-guest-bed-return" data-task="guest-bed-return" data-room="guest-bed"
+              aria-label="Guest Bed Return cable pulled">
+            <label for="cable-guest-bed-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-guest-bed-network" data-task="guest-bed-network" data-room="guest-bed"
+              aria-label="Guest Bed Network cable pulled">
+            <label for="cable-guest-bed-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 15</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Office</h3><span class="room-count" data-room="office">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-office-send-l" data-task="office-send-l" data-room="office"
+              aria-label="Office Send L cable pulled">
+            <label for="cable-office-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 8 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-office-send-r" data-task="office-send-r" data-room="office"
+              aria-label="Office Send R cable pulled">
+            <label for="cable-office-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 8 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-office-return" data-task="office-return" data-room="office"
+              aria-label="Office Return cable pulled">
+            <label for="cable-office-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-office-network" data-task="office-network" data-room="office"
+              aria-label="Office Network cable pulled">
+            <label for="cable-office-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 16</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Front Deck</h3><span class="room-count" data-room="front-deck">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-front-deck-send-l" data-task="front-deck-send-l" data-room="front-deck"
+              aria-label="Front Deck Send L cable pulled">
+            <label for="cable-front-deck-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 9 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-front-deck-send-r" data-task="front-deck-send-r" data-room="front-deck"
+              aria-label="Front Deck Send R cable pulled">
+            <label for="cable-front-deck-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 9 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-front-deck-return" data-task="front-deck-return" data-room="front-deck"
+              aria-label="Front Deck Return cable pulled">
+            <label for="cable-front-deck-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-front-deck-network" data-task="front-deck-network" data-room="front-deck"
+              aria-label="Front Deck Network cable pulled">
+            <label for="cable-front-deck-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 17</small></label>
+          </li></ul>
+        </article><article class="room-card">
+          <header><h3>Back Deck</h3><span class="room-count" data-room="back-deck">0/4</span></header>
+          <ul><li>
+            <input type="checkbox" class="cable-check" id="cable-back-deck-send-l" data-task="back-deck-send-l" data-room="back-deck"
+              aria-label="Back Deck Send L cable pulled">
+            <label for="cable-back-deck-send-l"><b>Send L</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 10 top</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-back-deck-send-r" data-task="back-deck-send-r" data-room="back-deck"
+              aria-label="Back Deck Send R cable pulled">
+            <label for="cable-back-deck-send-r"><b>Send R</b><span class="kind xlr">XLR</span>
+              <small>Bay 10 · port 10 bottom</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-back-deck-return" data-task="back-deck-return" data-room="back-deck"
+              aria-label="Back Deck Return cable pulled">
+            <label for="cable-back-deck-return"><b>Return</b><span class="kind xlr">XLR</span>
+              <small>XLR patch bay (not built yet)</small></label>
+          </li><li>
+            <input type="checkbox" class="cable-check" id="cable-back-deck-network" data-task="back-deck-network" data-room="back-deck"
+              aria-label="Back Deck Network cable pulled">
+            <label for="cable-back-deck-network"><b>Network</b><span class="kind cat5">Cat5</span>
+              <small>Ethernet · jack 18</small></label>
+          </li></ul>
+        </article></div>
+</section>
+  
 <section class="midi-list" id="midi-list">
   <h2>MIDI hookups</h2>
   <p class="progress" id="midi-progress"><b>0</b> of 11 connected</p>
@@ -3137,6 +3412,62 @@ window.addEventListener('scroll', function () {
         var st = {};
         snap.docs.forEach(function (d) { st[d.id] = !!(d.data() || {}).plugged; });
         jacks.forEach(function (j) { if (j.dataset.wire in st) set(j, st[j.dataset.wire]); });
+        paint();
+        localSave();
+      }, function () { store = null; });
+    });
+  }
+})();
+// Room cable pulls: saved in the artifact's shared store when available, else this browser.
+(function () {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.cable-check'));
+  if (!boxes.length) return;
+  var store = null;
+  function paint() {
+    var per = {}, all = 0;
+    boxes.forEach(function (b) {
+      b.closest('li').classList.toggle('pulled', b.checked);
+      per[b.dataset.room] = per[b.dataset.room] || [0, 0];
+      per[b.dataset.room][1]++;
+      if (b.checked) { all++; per[b.dataset.room][0]++; }
+    });
+    document.querySelectorAll('.room-count').forEach(function (el) {
+      var c = per[el.dataset.room] || [0, 0];
+      el.textContent = c[0] + '/' + c[1];
+      el.closest('.room-card').classList.toggle('done', c[0] === c[1]);
+    });
+    var pct = Math.round(all / boxes.length * 1000) / 10;
+    document.getElementById('cable-pct').textContent = pct + '%';
+    document.getElementById('cable-count').textContent = '(' + all + ' of ' + boxes.length + ' runs)';
+    document.getElementById('cable-fill').style.width = pct + '%';
+    document.getElementById('cable-bar').setAttribute('aria-valuenow', pct);
+  }
+  function localLoad() { try { return JSON.parse(localStorage.getItem('patchbay-cables') || '{}'); } catch (e) { return {}; } }
+  function localSave() {
+    try {
+      var st = {};
+      boxes.forEach(function (b) { st[b.dataset.task] = b.checked; });
+      localStorage.setItem('patchbay-cables', JSON.stringify(st));
+    } catch (e) {}
+  }
+  var saved = localLoad();
+  boxes.forEach(function (b) { b.checked = !!saved[b.dataset.task]; });
+  paint();
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      paint();
+      localSave();
+      if (store) store.collection('cables').doc(b.dataset.task).set({ pulled: b.checked }).catch(function () {});
+    });
+  });
+  if (window.claude && window.claude.use) {
+    window.claude.use('db').then(function (db) {
+      if (!db) return;
+      store = db;
+      db.collection('cables').onSnapshot(function (snap) {
+        var st = {};
+        snap.docs.forEach(function (d) { st[d.id] = !!(d.data() || {}).pulled; });
+        boxes.forEach(function (b) { if (b.dataset.task in st) b.checked = st[b.dataset.task]; });
         paint();
         localSave();
       }, function () { store = null; });

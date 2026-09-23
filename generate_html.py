@@ -4,7 +4,7 @@ from html import escape
 import re
 import os
 
-from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes, midi_instruments
+from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes, midi_instruments, ROOMS
 from enums import Category, JackType, Need
 from previous_config import config as previous_configs
 
@@ -436,6 +436,63 @@ def render_midi_list():
 </section>"""
 
 
+def find_port(label):
+    """Where a label sits: (bay label_name, port, "top"/"bottom"), or None."""
+    for bay in all_configs:
+        port = 1
+        for e in bay["entries"]:
+            for side in ("top", "bottom"):
+                if e.get(side) == label:
+                    return bay["label_name"], port, side
+            port += e["width"]
+    return None
+
+
+def cable_runs(room):
+    """The cables that have to be pulled to one room."""
+    runs = []
+    for label, kind, wanted in ((f"{room} L", "XLR", "Send L"), (f"{room} R", "XLR", "Send R")):
+        at = find_port(label)
+        where = f"Bay {at[0]} · port {at[1]} {at[2]}" if at else "Not on a bay yet"
+        runs.append((wanted, kind, where))
+    runs.append(("Return", "XLR", "XLR patch bay (not built yet)"))
+    at = find_port(room)
+    runs.append(("Network", "Cat5", f"Ethernet · jack {at[1]}" if at else "Not on the ethernet bay"))
+    return runs
+
+
+def render_room_cables():
+    cards, total = [], 0
+    for room in ROOMS:
+        rows = []
+        for name, kind, where in cable_runs(room):
+            total += 1
+            task = f"{slug(room)}-{slug(name)}"
+            rows.append(f"""<li>
+            <input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" data-room="{slug(room)}"
+              aria-label="{escape(room)} {escape(name)} cable pulled">
+            <label for="cable-{task}"><b>{escape(name)}</b><span class="kind {kind.lower()}">{kind}</span>
+              <small>{escape(where)}</small></label>
+          </li>""")
+        cards.append(f"""<article class="room-card">
+          <header><h3>{escape(room)}</h3><span class="room-count" data-room="{slug(room)}">0/{len(rows)}</span></header>
+          <ul>{''.join(rows)}</ul>
+        </article>""")
+    return f"""
+<section class="cables" id="cables">
+  <h2>Cable pulls to each room</h2>
+  <p class="lead">Two XLR sends, one XLR return and one Cat5 per room — <b>{total}</b> runs in all.
+  Tick a cable once it is pulled; the destination is where it lands at the rack.</p>
+  <div class="wire-progress">
+    <div class="wp-label"><b id="cable-pct">0%</b> pulled <span id="cable-count"></span></div>
+    <div class="wp-track" role="progressbar" aria-label="Room cables pulled" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cable-bar">
+      <div class="wp-fill" id="cable-fill"></div>
+    </div>
+  </div>
+  <div class="room-grid">{''.join(cards)}</div>
+</section>"""
+
+
 def render_notes():
     items = []
     for bay in all_configs:
@@ -630,6 +687,31 @@ button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
 body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }}
 body.focusing .hit {{ opacity: 1; }}
 .moves {{ margin-top: 64px; max-width: 980px; }}
+.cables {{ margin-top: 56px; }}
+.cables h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.cables .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
+.cables .lead b {{ color: var(--ink); }}
+.cables .wire-progress {{ margin: 10px 0 18px; max-width: 520px; }}
+.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }}
+.room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }}
+.room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 6px; }}
+.room-card h3 {{ margin: 0; font: 600 15px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }}
+.room-count {{ font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }}
+.room-card.done {{ border-color: var(--plugged); }}
+.room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
+.room-card ul {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }}
+.room-card li {{ display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; }}
+.room-card label {{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; cursor: pointer; font-size: 13px; }}
+.room-card label b {{ font-weight: 600; }}
+.room-card label small {{ flex-basis: 100%; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }}
+.kind {{ font: 600 9.5px/1.4 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  padding: 1px 6px; border-radius: 999px; }}
+.kind.xlr {{ background: #9a73e0; color: #fff; }}
+.kind.cat5 {{ background: #4fb1dc; color: #10222b; }}
+.cable-check {{ width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 2px 0 0; }}
+.cable-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.room-card li.pulled label b, .room-card li.pulled label small {{ text-decoration: line-through; opacity: .6; }}
 .midi-list {{ margin-top: 48px; max-width: 820px; }}
 .midi-list h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .midi-list table {{ width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }}
@@ -777,6 +859,13 @@ body.focusing .hit {{ opacity: 1; }}
   .badge.plan {{ background: #e3ecf5; color: #123; }}
   .badge.q {{ background: #fbefc8; color: #3a2d00; }}
   .patched {{ font-size: 9px; color: #444; }}
+  .cables {{ break-before: page; margin-top: 0; }}
+  .cables .lead {{ font-size: 10px; max-width: none; }}
+  .room-grid {{ grid-template-columns: repeat(4, 1fr); gap: 8px; }}
+  .room-card {{ break-inside: avoid; padding: 6px 8px 8px; }}
+  .room-card label {{ font-size: 10px; }}
+  .room-card label small {{ font-size: 8.5px; }}
+  .cable-check {{ width: 12px; height: 12px; }}
   .midi-list {{ break-before: page; margin-top: 0; max-width: none; }}
   .midi-list h2 {{ font-size: 15px; margin-bottom: 4px; }}
   .midi-list table {{ min-width: 0; font-size: 10px; }}
@@ -814,6 +903,7 @@ body.focusing .hit {{ opacity: 1; }}
     <h2>Open questions</h2>
     <ul>{render_notes()}</ul>
   </section>
+  {render_room_cables()}
   {render_midi_list()}
   {render_moves()}
 </div>
@@ -900,6 +990,62 @@ window.addEventListener('scroll', function () {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).plugged; }});
         jacks.forEach(function (j) {{ if (j.dataset.wire in st) set(j, st[j.dataset.wire]); }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+// Room cable pulls: saved in the artifact's shared store when available, else this browser.
+(function () {{
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.cable-check'));
+  if (!boxes.length) return;
+  var store = null;
+  function paint() {{
+    var per = {{}}, all = 0;
+    boxes.forEach(function (b) {{
+      b.closest('li').classList.toggle('pulled', b.checked);
+      per[b.dataset.room] = per[b.dataset.room] || [0, 0];
+      per[b.dataset.room][1]++;
+      if (b.checked) {{ all++; per[b.dataset.room][0]++; }}
+    }});
+    document.querySelectorAll('.room-count').forEach(function (el) {{
+      var c = per[el.dataset.room] || [0, 0];
+      el.textContent = c[0] + '/' + c[1];
+      el.closest('.room-card').classList.toggle('done', c[0] === c[1]);
+    }});
+    var pct = Math.round(all / boxes.length * 1000) / 10;
+    document.getElementById('cable-pct').textContent = pct + '%';
+    document.getElementById('cable-count').textContent = '(' + all + ' of ' + boxes.length + ' runs)';
+    document.getElementById('cable-fill').style.width = pct + '%';
+    document.getElementById('cable-bar').setAttribute('aria-valuenow', pct);
+  }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-cables') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      boxes.forEach(function (b) {{ st[b.dataset.task] = b.checked; }});
+      localStorage.setItem('patchbay-cables', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  boxes.forEach(function (b) {{ b.checked = !!saved[b.dataset.task]; }});
+  paint();
+  boxes.forEach(function (b) {{
+    b.addEventListener('change', function () {{
+      paint();
+      localSave();
+      if (store) store.collection('cables').doc(b.dataset.task).set({{ pulled: b.checked }}).catch(function () {{}});
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('cables').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
+        boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
         paint();
         localSave();
       }}, function () {{ store = null; }});
