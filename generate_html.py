@@ -500,8 +500,8 @@ def render_room_cables():
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
-            rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + slug(kind) + '">'
-                        + kind + '</span></th>' + "".join(cells) + '</tr>')
+            rows.append('<tr><th scope="row"><span class="row-label"><b>' + escape(name) + '</b>'
+                        + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{room_total}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
@@ -735,8 +735,11 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 10px 6px 0; border-top: 1px solid var(--line);
   white-space: nowrap; }}
+.room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 8px; }}
+.room-card tbody th .row-label b {{ flex: 1; }}
+.room-card tbody th .kind {{ flex: none; width: 46px; text-align: center; }}
 .room-card tbody td {{ text-align: center; padding: 6px 5px; border-top: 1px solid var(--line); }}
-.room-card tbody th b {{ font-weight: 600; font-size: 13px; margin-right: 5px; }}
+.room-card tbody th b {{ font-weight: 600; font-size: 13px; }}
 .room-card tbody th small {{ display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }}
 .room-card tbody th small.ends {{ font-style: italic; }}
 .kind {{ font: 600 9.5px/1.4 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
@@ -908,6 +911,7 @@ body.focusing .hit {{ opacity: 1; }}
   .room-grid {{ grid-template-columns: repeat(3, 1fr); gap: 8px; }}
   .room-card {{ break-inside: avoid; padding: 6px 8px 8px; }}
   .room-card tbody th b {{ font-size: 10px; }}
+  .room-card tbody th .kind {{ width: 34px; }}
   .room-card tbody th small {{ font-size: 8px; }}
   .room-card thead th {{ font-size: 7.5px; width: 38px; padding: 0 3px 3px; }}
   .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
