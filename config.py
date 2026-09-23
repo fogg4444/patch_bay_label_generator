@@ -28,14 +28,14 @@ SPEAKER_ONLY = ["Front Deck", "Back Deck"]
 open_questions = []
 SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
 
-# Cable runs that aren't a standard room: (name, CableKind, where it lands).
+# Cable runs that aren't a standard room: (name, CableKind, where it lands, does it get patched).
 special_runs = [
     {"name": "Garage (G1) · EMT plate", "runs": [
-        ("Send", CableKind.XLR, "EMT 140 In"),
-        ("Return L", CableKind.XLR, "EMT 140 Return L/R"),
-        ("Return R", CableKind.XLR, "EMT 140 Return L/R"),
-        ("Motor control", CableKind.MULTI, "EMT remote, Rack 1 U13 - two XLR cables make the 7-pin run"),
-        ("Network", CableKind.CAT5, "Garage"),
+        ("Send", CableKind.XLR, "EMT 140 In", True),
+        ("Return L", CableKind.XLR, "EMT 140 Return L/R", True),
+        ("Return R", CableKind.XLR, "EMT 140 Return L/R", True),
+        ("Motor control · 5-pin", CableKind.CAT5, "EMT remote, Rack 1 U13 - Cat5e cable for the 5-pin motor run", False),
+        ("Network", CableKind.CAT5, "Garage", True),
     ]},
 ]
 

@@ -481,8 +481,8 @@ CABLE_STEPS = (("pull", "Pull", "Pull the cable", True),
 def render_room_cables():
     cards, total = [], 0
     places = [(room, cable_runs(room)) for room in ROOMS]
-    places += [(extra["name"], [(n, k, "", "", k not in (CableKind.MULTI, CableKind.SPEAKER))
-                                for n, k, w in extra["runs"]]) for extra in special_runs]
+    places += [(extra["name"], [(n, k, "", "", patched) for n, k, w, patched in extra["runs"]])
+               for extra in special_runs]
     for room, runs in places:
         rows, room_total = [], 0
         for name, kind, where, ends, patched in runs:
