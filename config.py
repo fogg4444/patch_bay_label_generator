@@ -25,18 +25,11 @@ ROOMS = [
 ]
 SPEAKER_ONLY = ["Front Deck", "Back Deck"]
 # Questions with nowhere better to live, shown in the HTML view's open questions.
-open_questions = [
-    "What does G1 mean on the conduit?",
-]
+open_questions = []
 SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
 
 # Cable runs that aren't a standard room: (name, CableKind, where it lands, does it get patched).
 special_runs = [
-    {"name": "G1 · unknown conduit", "runs": [
-        ("XLR 1", CableKind.XLR, "Already pulled - ends and purpose unknown", False),
-        ("XLR 2", CableKind.XLR, "Already pulled - ends and purpose unknown", False),
-        ("Network", CableKind.CAT5, "Already pulled - ends unknown", False),
-    ]},
     {"name": "Reverb · EMT plate", "runs": [
         ("Send", CableKind.XLR, "EMT 140 In", True),
         ("Return L", CableKind.XLR, "EMT 140 Return L/R", True),
