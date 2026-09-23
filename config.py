@@ -25,17 +25,19 @@ ROOMS = [
 ]
 SPEAKER_ONLY = ["Front Deck", "Back Deck"]
 # Questions with nowhere better to live, shown in the HTML view's open questions.
-open_questions = []
+open_questions = [
+    "What does G1 mean on the conduit?",
+]
 SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
 
 # Cable runs that aren't a standard room: (name, CableKind, where it lands, does it get patched).
 special_runs = [
-    {"name": "Garage (G1) · EMT plate", "runs": [
+    {"name": "Reverb · EMT plate", "runs": [
         ("Send", CableKind.XLR, "EMT 140 In", True),
         ("Return L", CableKind.XLR, "EMT 140 Return L/R", True),
         ("Return R", CableKind.XLR, "EMT 140 Return L/R", True),
         ("Motor control · 5-pin", CableKind.CAT5, "EMT remote, Rack 1 U13 - Cat5e cable for the 5-pin motor run", False),
-        ("Network", CableKind.CAT5, "Garage", True),
+        ("Network", CableKind.CAT5, "Reverb", True),
     ]},
 ]
 
@@ -174,7 +176,7 @@ config = [
     ] + [
         {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in SEND_ROOMS
     ] + [
-        {"normalled": False, "top": "Garage", "width": 1, "category": Category.NETWORK, "in_use": False},
+        {"normalled": False, "top": "Reverb", "width": 1, "category": Category.NETWORK, "in_use": False},
         {"normalled": False, "top": "-", "width": 2},
     ]
   },
