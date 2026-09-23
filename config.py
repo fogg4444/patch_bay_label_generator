@@ -15,18 +15,34 @@
 #   jack_type - (on a bay) JackType enum (enums.py): MIDI (5-pin DIN), SWITCH (rocker) or ETHERNET (RJ45)
 #               drawing in the HTML view
 
-from enums import Category, JackType, MidiPort, Need
+from enums import Category, JackType, MidiPort, Need, CableKind
 
+# Every place with a cable run to it. The decks get a speaker cable from an amp, so they have
+# no patch bay send; everything else gets a stereo send, a mono return and a Cat5 drop.
 ROOMS = [
     "Kitchen", "Bath Up", "Bath Dn", "Den", "Gallery",
-    "Master Bed", "Guest Bed", "Office", "Front Deck", "Back Deck",
+    "Master Bed", "Guest Bed", "Office", "Record Player", "Front Deck", "Back Deck",
+]
+SPEAKER_ONLY = ["Front Deck", "Back Deck"]
+# Questions with nowhere better to live, shown in the HTML view's open questions.
+open_questions = []
+SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
+
+# Cable runs that aren't a standard room: (name, CableKind, where it lands).
+special_runs = [
+    {"name": "Garage (G1) · EMT plate", "runs": [
+        ("Send", CableKind.XLR, "EMT 140 In"),
+        ("Return L", CableKind.XLR, "EMT 140 Return L/R"),
+        ("Return R", CableKind.XLR, "EMT 140 Return L/R"),
+        ("Motor control", CableKind.MULTI, "EMT remote, Rack 1 U13 - two XLR cables make the 7-pin run"),
+    ]},
 ]
 
 # Each room: stereo send, L over R in one column. Room mic returns stay off this
 # TRS bay (phantom power) - they'll get their own XLR patch bay later.
 room_sends = [
     {"normalled": False, "top": f"{room} L", "bottom": f"{room} R", "width": 1, "category": Category.ROOMS}
-    for room in ROOMS
+    for room in SEND_ROOMS
 ]
 
 config = [
@@ -129,7 +145,7 @@ config = [
     "label_name": "10",
     "entries": room_sends + [
         {"normalled": False, "top": "Basement Snake A, B, C, D", "bottom": "Basement Snake E, F, G, H", "width": 4, "category": Category.TIE_LINES},
-        {"normalled": False, "top": "-", "bottom": "-", "width": 2},
+        {"normalled": False, "top": "-", "bottom": "-", "width": 3},
         {"normalled": False, "top": "Group 1 - 8 Out", "bottom": "Hearback In 1 - 8", "width": 8, "category": Category.GROUPS},
     ]
   },
@@ -157,7 +173,7 @@ config = [
     ] + [
         {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in ROOMS
     ] + [
-        {"normalled": False, "top": "-", "width": 2},
+        {"normalled": False, "top": "-", "width": 1},
     ]
   },
   {

@@ -44,3 +44,11 @@ class Need(_StrEnum):
     """How much an instrument's MIDI connection matters."""
     REQUIRED = "required"
     LOW = "low priority"
+
+
+class CableKind(_StrEnum):
+    """Type of cable on a run to a room or piece of gear."""
+    XLR = "XLR"
+    CAT5 = "Cat5"
+    SPEAKER = "Speaker"
+    MULTI = "7-pin"

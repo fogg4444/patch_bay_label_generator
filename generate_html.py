@@ -4,8 +4,9 @@ from html import escape
 import re
 import os
 
-from config import config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes, midi_instruments, ROOMS
-from enums import Category, JackType, Need
+from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
+                    midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions)
+from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
 output_path = "html_output/patch_bay.html"
@@ -443,21 +444,29 @@ def find_port(label):
         for e in bay["entries"]:
             for side in ("top", "bottom"):
                 if e.get(side) == label:
-                    return bay["label_name"], port, side
+                    span = f"{port}" if e["width"] == 1 else f"{port}–{port + e['width'] - 1}"
+                    return bay["label_name"], port, side, span
             port += e["width"]
     return None
+
+
+def where_is(label, fallback):
+    at = find_port(label)
+    return f"{bay_title(at[0])} · port {at[3]} {at[2]}" if at else fallback
 
 
 def cable_runs(room):
     """The cables that have to be pulled to one room."""
     runs = []
-    for label, kind, wanted in ((f"{room} L", "XLR", "Send L"), (f"{room} R", "XLR", "Send R")):
-        at = find_port(label)
-        where = f"Bay {at[0]} · port {at[1]} {at[2]}" if at else "Not on a bay yet"
-        runs.append((wanted, kind, where))
-    runs.append(("Return", "XLR", "XLR patch bay (not built yet)"))
+    if room in SPEAKER_ONLY:
+        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay"))
+    else:
+        runs.append(("Send L", CableKind.XLR, where_is(f"{room} L", "Not on a bay yet")))
+        runs.append(("Send R", CableKind.XLR, where_is(f"{room} R", "Not on a bay yet")))
+        runs.append(("Return", CableKind.XLR, "XLR patch bay (not built yet)"))
     at = find_port(room)
-    runs.append(("Network", "Cat5", f"Ethernet · jack {at[1]}" if at else "Not on the ethernet bay"))
+    if at:
+        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}"))
     return runs
 
 
@@ -466,9 +475,11 @@ CABLE_STEPS = (("pull", "Pull"), ("room", "Room end"), ("rack", "Rack end"))
 
 def render_room_cables():
     cards, total = [], 0
-    for room in ROOMS:
+    places = [(room, cable_runs(room)) for room in ROOMS]
+    places += [(extra["name"], [(n, k, where_is(w, w)) for n, k, w in extra["runs"]]) for extra in special_runs]
+    for room, runs in places:
         rows = []
-        for name, kind, where in cable_runs(room):
+        for name, kind, where in runs:
             cells = []
             for step, step_name in CABLE_STEPS:
                 total += 1
@@ -480,7 +491,7 @@ def render_room_cables():
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
-            rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + kind.lower() + '">'
+            rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + slug(kind) + '">'
                         + kind + '</span><small>' + escape(where) + '</small></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
@@ -499,7 +510,7 @@ def render_room_cables():
 
 
 def render_notes():
-    items = []
+    items = [f'<li><span class="q-general">General</span> <span>{escape(q)}</span></li>' for q in open_questions]
     for bay in all_configs:
         port = 1
         for entry in bay["entries"]:
@@ -716,6 +727,8 @@ body.focusing .hit {{ opacity: 1; }}
   padding: 1px 6px; border-radius: 999px; }}
 .kind.xlr {{ background: #9a73e0; color: #fff; }}
 .kind.cat5 {{ background: #4fb1dc; color: #10222b; }}
+.kind.speaker {{ background: #e3a02f; color: #221802; }}
+.kind.7-pin, .kind[class*="pin"] {{ background: #ec6a55; color: #2a0d08; }}
 .cable-check {{ width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 0; }}
 .cable-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .room-card tr.done th b, .room-card tr.done th small {{ text-decoration: line-through; opacity: .6; }}
@@ -800,6 +813,7 @@ body.focusing .hit {{ opacity: 1; }}
 .notes li {{ display: grid; grid-template-columns: 170px 1fr; gap: 12px; }}
 .notes a {{ color: var(--ink); font-weight: 600; text-decoration-color: var(--line); }}
 .notes span {{ color: var(--muted); }}
+.notes .q-general {{ color: var(--ink); font-weight: 600; }}
 @media (max-width: 640px) {{
   .bay {{ grid-template-columns: 1fr; gap: 4px; }}
   .bay-head {{ flex-direction: row; align-items: baseline; gap: 10px; }}
