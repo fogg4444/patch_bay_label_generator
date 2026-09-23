@@ -456,54 +456,62 @@ def where_is(label, fallback):
 
 
 def cable_runs(room):
-    """The cables that have to be pulled to one room: (name, kind, where it lands, how it ends)."""
+    """Cables to one room: (name, kind, where it lands, how it ends, does it get patched)."""
     runs = []
     if room in SPEAKER_ONLY:
-        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", ""))
+        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", "", False))
     else:
         for side, label in (("Send L", f"{room} L"), ("Send R", f"{room} R")):
             runs.append((side, CableKind.XLR, where_is(label, "Not on a bay yet"),
-                         "XLR at the room, TRS into the patch bay"))
-        runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet",
-                     "XLR both ends"))
+                         "XLR at the room, TRS into the patch bay", True))
+        runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet", "XLR both ends", False))
     at = find_port(room)
     if at:
-        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}", ""))
+        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}", "", True))
     return runs
 
 
-CABLE_STEPS = (("pull", "Pull"), ("room", "Room end"), ("rack", "Rack end"))
+CABLE_STEPS = (("pull", "Pull", True), ("room", "Room end", True), ("rack", "Rack end", True),
+               ("patch", "Patched", False))  # last flag: applies to every run, or only patched ones
 
 
 def render_room_cables():
     cards, total = [], 0
     places = [(room, cable_runs(room)) for room in ROOMS]
-    places += [(extra["name"], [(n, k, "", "") for n, k, w in extra["runs"]]) for extra in special_runs]
+    places += [(extra["name"], [(n, k, "", "", k not in (CableKind.MULTI, CableKind.SPEAKER))
+                                for n, k, w in extra["runs"]]) for extra in special_runs]
     for room, runs in places:
-        rows = []
-        for name, kind, where, ends in runs:
+        rows, room_total = [], 0
+        for name, kind, where, ends, patched in runs:
             cells = []
-            for step, step_name in CABLE_STEPS:
+            for step, step_name, always in CABLE_STEPS:
+                if not always and not patched:
+                    cells.append('<td><span class="na" title="Not patched">–</span></td>')
+                    continue
                 total += 1
+                room_total += 1
                 task = f"{slug(room)}-{slug(name)}-{step}"
                 if step == "pull":
                     verb = "Pull the cable"
+                elif step == "patch":
+                    verb = "Plugged into the patch bay"
                 else:
                     verb = ("Solder " if kind == "XLR" else "Terminate ") + step_name.lower()
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + slug(kind) + '">'
-                        + kind + '</span>' + ('<small>' + escape(where) + '</small>' if where else '')
-                        + ('<small class="ends">' + escape(ends) + '</small>' if ends else '') + '</th>' + "".join(cells) + '</tr>')
+                        + kind + '</span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
-                     + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
+                     + f'<span class="room-count" data-room="{slug(room)}">0/{room_total}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
-                       '<th scope="col">Rack</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+                       '<th scope="col">Rack</th>'
+                       '<th scope="col">Patch</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
-    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered to its cable, so each one takes three steps: pull it, "
-            "solder the room end, solder the rack end (Cat5 ends are terminated instead) — <b>%d</b> steps in all. "
+    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered onto its cable: pull it, solder the room end, solder the rack end, "
+            "then patch it (Cat5 ends are terminated instead). Sends land on the patch bay as TRS; the returns "
+            "stay in a loom on the floor, so they have nothing to patch — <b>%d</b> steps in all. "
             "The destination is where the cable lands at the rack." % total)
     return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
             f'<p class="lead">{lead}</p>'
@@ -722,8 +730,9 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done {{ border-color: var(--plugged); }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; }}
-.room-card thead th {{ font: 600 9px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--muted); padding: 0 0 4px; text-align: center; width: 32px; }}
+.room-card thead th {{ font: 600 8.5px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--muted); padding: 0 0 4px; text-align: center; width: 28px; }}
+.room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 5px 6px 5px 0; border-top: 1px solid var(--line); }}
 .room-card tbody td {{ text-align: center; padding: 5px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th b {{ font-weight: 600; font-size: 13px; margin-right: 5px; }}
