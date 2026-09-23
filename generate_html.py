@@ -504,9 +504,9 @@ def render_room_cables():
             "The destination is where the cable lands at the rack." % total)
     return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
             f'<p class="lead">{lead}</p>'
-            '<div class="wire-progress"><div class="wp-label"><b id="cable-pct">0%</b> done '
+            '<div class="wire-progress"><div class="wp-label"><b id="cable-pct">0%</b> of cable tasks done - pulling, soldering the room end, soldering the rack end '
             '<span id="cable-count"></span></div>'
-            '<div class="wp-track" role="progressbar" aria-label="Room cable steps done" aria-valuemin="0" '
+            '<div class="wp-track" role="progressbar" aria-label="Cable tasks done" aria-valuemin="0" '
             'aria-valuemax="100" aria-valuenow="0" id="cable-bar"><div class="wp-fill" id="cable-fill"></div></div></div>'
             f'<div class="room-grid">{"".join(cards)}</div></section>')
 
@@ -709,7 +709,7 @@ body.focusing .hit {{ opacity: 1; }}
 .cables h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .cables .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
 .cables .lead b {{ color: var(--ink); }}
-.cables .wire-progress {{ margin: 10px 0 18px; max-width: 520px; }}
+.cables .wire-progress {{ margin: 10px 0 18px; max-width: 640px; }}
 .room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }}
 .room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
@@ -1050,7 +1050,7 @@ window.addEventListener('scroll', function () {{
     }});
     var pct = Math.round(all / boxes.length * 1000) / 10;
     document.getElementById('cable-pct').textContent = pct + '%';
-    document.getElementById('cable-count').textContent = '(' + all + ' of ' + boxes.length + ' runs)';
+    document.getElementById('cable-count').textContent = '(' + all + ' of ' + boxes.length + ' tasks)';
     document.getElementById('cable-fill').style.width = pct + '%';
     document.getElementById('cable-bar').setAttribute('aria-valuenow', pct);
   }}
