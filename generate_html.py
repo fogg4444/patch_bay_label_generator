@@ -503,7 +503,7 @@ def render_room_cables():
             rows.append('<tr><th scope="row"><span class="row-label"><b>' + escape(name) + '</b>'
                         + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
-                     + f'<span class="room-count" data-room="{slug(room)}">0/{room_total}</span></header>'
+                     + f'<span class="room-count" data-room="{slug(room)}" hidden></span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
                        '<th scope="col">Soldered</th>'
                        '<th scope="col">Patch</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
@@ -1063,7 +1063,6 @@ window.addEventListener('scroll', function () {{
     }});
     document.querySelectorAll('.room-count').forEach(function (el) {{
       var c = per[el.dataset.room] || [0, 0];
-      el.textContent = c[0] + '/' + c[1];
       el.closest('.room-card').classList.toggle('done', c[0] === c[1]);
     }});
     var pct = Math.round(all / boxes.length * 1000) / 10;
