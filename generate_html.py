@@ -456,17 +456,19 @@ def where_is(label, fallback):
 
 
 def cable_runs(room):
-    """The cables that have to be pulled to one room."""
+    """The cables that have to be pulled to one room: (name, kind, where it lands, how it ends)."""
     runs = []
     if room in SPEAKER_ONLY:
-        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay"))
+        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", ""))
     else:
-        runs.append(("Send L", CableKind.XLR, where_is(f"{room} L", "Not on a bay yet")))
-        runs.append(("Send R", CableKind.XLR, where_is(f"{room} R", "Not on a bay yet")))
-        runs.append(("Return", CableKind.XLR, "XLR patch bay (not built yet)"))
+        for side, label in (("Send L", f"{room} L"), ("Send R", f"{room} R")):
+            runs.append((side, CableKind.XLR, where_is(label, "Not on a bay yet"),
+                         "XLR at the room, TRS into the patch bay"))
+        runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet",
+                     "XLR both ends"))
     at = find_port(room)
     if at:
-        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}"))
+        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}", ""))
     return runs
 
 
@@ -476,10 +478,10 @@ CABLE_STEPS = (("pull", "Pull"), ("room", "Room end"), ("rack", "Rack end"))
 def render_room_cables():
     cards, total = [], 0
     places = [(room, cable_runs(room)) for room in ROOMS]
-    places += [(extra["name"], [(n, k, "") for n, k, w in extra["runs"]]) for extra in special_runs]
+    places += [(extra["name"], [(n, k, "", "") for n, k, w in extra["runs"]]) for extra in special_runs]
     for room, runs in places:
         rows = []
-        for name, kind, where in runs:
+        for name, kind, where, ends in runs:
             cells = []
             for step, step_name in CABLE_STEPS:
                 total += 1
@@ -492,15 +494,16 @@ def render_room_cables():
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + slug(kind) + '">'
-                        + kind + '</span>' + ('<small>' + escape(where) + '</small>' if where else '') + '</th>' + "".join(cells) + '</tr>')
+                        + kind + '</span>' + ('<small>' + escape(where) + '</small>' if where else '')
+                        + ('<small class="ends">' + escape(ends) + '</small>' if ends else '') + '</th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
                        '<th scope="col">Rack</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
-    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Each cable takes three steps: pull it, then finish "
-            "the room end and the rack end (solder for XLR, terminate for Cat5) — <b>%d</b> steps in all. "
+    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered to its cable, so each one takes three steps: pull it, "
+            "solder the room end, solder the rack end (Cat5 ends are terminated instead) — <b>%d</b> steps in all. "
             "The destination is where the cable lands at the rack." % total)
     return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
             f'<p class="lead">{lead}</p>'
@@ -725,6 +728,7 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card tbody td {{ text-align: center; padding: 5px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th b {{ font-weight: 600; font-size: 13px; margin-right: 5px; }}
 .room-card tbody th small {{ display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }}
+.room-card tbody th small.ends {{ font-style: italic; }}
 .kind {{ font: 600 9.5px/1.4 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
   padding: 1px 6px; border-radius: 999px; }}
 .kind.xlr {{ background: #9a73e0; color: #fff; }}
