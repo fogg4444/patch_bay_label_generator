@@ -158,7 +158,7 @@ body.focusing .hit { opacity: 1; }
 .cables .lead { margin: 0 0 4px; color: var(--muted); max-width: 68ch; }
 .cables .lead b { color: var(--ink); }
 .cables .wire-progress { margin: 10px 0 18px; max-width: 640px; }
-.room-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.room-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
 .room-card { border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }
 .room-card header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
   border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 6px; }
@@ -167,11 +167,12 @@ body.focusing .hit { opacity: 1; }
 .room-card.done { border-color: var(--plugged); }
 .room-card.done .room-count { color: var(--plugged); font-weight: 600; }
 .room-card table { width: 100%; border-collapse: collapse; }
-.room-card thead th { font: 600 8.5px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .05em; text-transform: uppercase;
-  color: var(--muted); padding: 0 0 4px; text-align: center; width: 28px; }
+.room-card thead th { font: 600 9px/1.25 "IBM Plex Sans", sans-serif; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); padding: 0 5px 5px; text-align: center; width: 54px; white-space: nowrap; }
 .room-card .na { color: var(--muted); opacity: .6; }
-.room-card tbody th { text-align: left; font-weight: 400; padding: 5px 6px 5px 0; border-top: 1px solid var(--line); }
-.room-card tbody td { text-align: center; padding: 5px 0; border-top: 1px solid var(--line); }
+.room-card tbody th { text-align: left; font-weight: 400; padding: 6px 10px 6px 0; border-top: 1px solid var(--line);
+  white-space: nowrap; }
+.room-card tbody td { text-align: center; padding: 6px 5px; border-top: 1px solid var(--line); }
 .room-card tbody th b { font-weight: 600; font-size: 13px; margin-right: 5px; }
 .room-card tbody th small { display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }
 .room-card tbody th small.ends { font-style: italic; }
@@ -341,11 +342,11 @@ body.focusing .hit { opacity: 1; }
   .patched { font-size: 9px; color: #444; }
   .cables { break-before: page; margin-top: 0; }
   .cables .lead { font-size: 10px; max-width: none; }
-  .room-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .room-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .room-card { break-inside: avoid; padding: 6px 8px 8px; }
   .room-card tbody th b { font-size: 10px; }
   .room-card tbody th small { font-size: 8px; }
-  .room-card thead th { font-size: 7.5px; width: 22px; }
+  .room-card thead th { font-size: 7.5px; width: 38px; padding: 0 3px 3px; }
   .room-card tbody th, .room-card tbody td { padding: 2px 4px 2px 0; }
   .room-note { min-height: 26px; margin-top: 5px; font-size: 8.5px; }
   .cable-check { width: 12px; height: 12px; }
