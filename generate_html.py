@@ -461,36 +461,41 @@ def cable_runs(room):
     return runs
 
 
+CABLE_STEPS = (("pull", "Pull"), ("room", "Room end"), ("rack", "Rack end"))
+
+
 def render_room_cables():
     cards, total = [], 0
     for room in ROOMS:
         rows = []
         for name, kind, where in cable_runs(room):
-            total += 1
-            task = f"{slug(room)}-{slug(name)}"
-            rows.append(f"""<li>
-            <input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" data-room="{slug(room)}"
-              aria-label="{escape(room)} {escape(name)} cable pulled">
-            <label for="cable-{task}"><b>{escape(name)}</b><span class="kind {kind.lower()}">{kind}</span>
-              <small>{escape(where)}</small></label>
-          </li>""")
-        cards.append(f"""<article class="room-card">
-          <header><h3>{escape(room)}</h3><span class="room-count" data-room="{slug(room)}">0/{len(rows)}</span></header>
-          <ul>{''.join(rows)}</ul>
-        </article>""")
-    return f"""
-<section class="cables" id="cables">
-  <h2>Cable pulls to each room</h2>
-  <p class="lead">Two XLR sends, one XLR return and one Cat5 per room — <b>{total}</b> runs in all.
-  Tick a cable once it is pulled; the destination is where it lands at the rack.</p>
-  <div class="wire-progress">
-    <div class="wp-label"><b id="cable-pct">0%</b> pulled <span id="cable-count"></span></div>
-    <div class="wp-track" role="progressbar" aria-label="Room cables pulled" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cable-bar">
-      <div class="wp-fill" id="cable-fill"></div>
-    </div>
-  </div>
-  <div class="room-grid">{''.join(cards)}</div>
-</section>"""
+            cells = []
+            for step, step_name in CABLE_STEPS:
+                total += 1
+                task = f"{slug(room)}-{slug(name)}-{step}"
+                if step == "pull":
+                    verb = "Pull the cable"
+                else:
+                    verb = ("Solder " if kind == "XLR" else "Terminate ") + step_name.lower()
+                cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
+                             f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
+                             f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
+            rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + kind.lower() + '">'
+                        + kind + '</span><small>' + escape(where) + '</small></th>' + "".join(cells) + '</tr>')
+        cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
+                     + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
+                     + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
+                       '<th scope="col">Rack</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table></article>')
+    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Each cable takes three steps: pull it, then finish "
+            "the room end and the rack end (solder for XLR, terminate for Cat5) — <b>%d</b> steps in all. "
+            "The destination is where the cable lands at the rack." % total)
+    return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
+            f'<p class="lead">{lead}</p>'
+            '<div class="wire-progress"><div class="wp-label"><b id="cable-pct">0%</b> done '
+            '<span id="cable-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Room cable steps done" aria-valuemin="0" '
+            'aria-valuemax="100" aria-valuenow="0" id="cable-bar"><div class="wp-fill" id="cable-fill"></div></div></div>'
+            f'<div class="room-grid">{"".join(cards)}</div></section>')
 
 
 def render_notes():
@@ -700,18 +705,20 @@ body.focusing .hit {{ opacity: 1; }}
 .room-count {{ font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }}
 .room-card.done {{ border-color: var(--plugged); }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
-.room-card ul {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }}
-.room-card li {{ display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: start; }}
-.room-card label {{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; cursor: pointer; font-size: 13px; }}
-.room-card label b {{ font-weight: 600; }}
-.room-card label small {{ flex-basis: 100%; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }}
+.room-card table {{ width: 100%; border-collapse: collapse; }}
+.room-card thead th {{ font: 600 9px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); padding: 0 0 4px; text-align: center; width: 32px; }}
+.room-card tbody th {{ text-align: left; font-weight: 400; padding: 5px 6px 5px 0; border-top: 1px solid var(--line); }}
+.room-card tbody td {{ text-align: center; padding: 5px 0; border-top: 1px solid var(--line); }}
+.room-card tbody th b {{ font-weight: 600; font-size: 13px; margin-right: 5px; }}
+.room-card tbody th small {{ display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }}
 .kind {{ font: 600 9.5px/1.4 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase;
   padding: 1px 6px; border-radius: 999px; }}
 .kind.xlr {{ background: #9a73e0; color: #fff; }}
 .kind.cat5 {{ background: #4fb1dc; color: #10222b; }}
-.cable-check {{ width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 2px 0 0; }}
+.cable-check {{ width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 0; }}
 .cable-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
-.room-card li.pulled label b, .room-card li.pulled label small {{ text-decoration: line-through; opacity: .6; }}
+.room-card tr.done th b, .room-card tr.done th small {{ text-decoration: line-through; opacity: .6; }}
 .midi-list {{ margin-top: 48px; max-width: 820px; }}
 .midi-list h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .midi-list table {{ width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }}
@@ -863,8 +870,10 @@ body.focusing .hit {{ opacity: 1; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
   .room-grid {{ grid-template-columns: repeat(4, 1fr); gap: 8px; }}
   .room-card {{ break-inside: avoid; padding: 6px 8px 8px; }}
-  .room-card label {{ font-size: 10px; }}
-  .room-card label small {{ font-size: 8.5px; }}
+  .room-card tbody th b {{ font-size: 10px; }}
+  .room-card tbody th small {{ font-size: 8px; }}
+  .room-card thead th {{ font-size: 7.5px; width: 22px; }}
+  .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
   .cable-check {{ width: 12px; height: 12px; }}
   .midi-list {{ break-before: page; margin-top: 0; max-width: none; }}
   .midi-list h2 {{ font-size: 15px; margin-bottom: 4px; }}
@@ -1004,7 +1013,8 @@ window.addEventListener('scroll', function () {{
   function paint() {{
     var per = {{}}, all = 0;
     boxes.forEach(function (b) {{
-      b.closest('li').classList.toggle('pulled', b.checked);
+      var row = b.closest('tr');
+      if (row) row.classList.toggle('done', Array.prototype.every.call(row.querySelectorAll('.cable-check'), function (x) {{ return x.checked; }}));
       per[b.dataset.room] = per[b.dataset.room] || [0, 0];
       per[b.dataset.room][1]++;
       if (b.checked) {{ all++; per[b.dataset.room][0]++; }}
