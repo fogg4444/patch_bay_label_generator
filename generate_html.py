@@ -496,7 +496,9 @@ def render_room_cables():
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
-                       '<th scope="col">Rack</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table></article>')
+                       '<th scope="col">Rack</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+                     + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
+                       f'aria-label="Notes for {escape(room)}"></textarea></article>')
     lead = ("Two XLR sends, one XLR return and one Cat5 per room. Each cable takes three steps: pull it, then finish "
             "the room end and the rack end (solder for XLR, terminate for Cat5) — <b>%d</b> steps in all. "
             "The destination is where the cable lands at the rack." % total)
@@ -732,6 +734,13 @@ body.focusing .hit {{ opacity: 1; }}
 .cable-check {{ width: 16px; height: 16px; accent-color: var(--plugged); cursor: pointer; margin: 0; }}
 .cable-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .room-card tr.done th b, .room-card tr.done th small {{ text-decoration: line-through; opacity: .6; }}
+.room-note {{
+  width: 100%; margin-top: 8px; resize: vertical; min-height: 40px; border: 1px dashed var(--line); border-radius: 3px;
+  background: transparent; color: var(--ink); padding: 5px 6px; font: 400 12px/1.4 "IBM Plex Sans", system-ui, sans-serif;
+}}
+.room-note::placeholder {{ color: var(--muted); }}
+.room-note:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 1px; border-style: solid; }}
+.room-note.saving {{ border-color: var(--plugged); }}
 .midi-list {{ margin-top: 48px; max-width: 820px; }}
 .midi-list h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .midi-list table {{ width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }}
@@ -888,6 +897,7 @@ body.focusing .hit {{ opacity: 1; }}
   .room-card tbody th small {{ font-size: 8px; }}
   .room-card thead th {{ font-size: 7.5px; width: 22px; }}
   .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
+  .room-note {{ min-height: 26px; margin-top: 5px; font-size: 8.5px; }}
   .cable-check {{ width: 12px; height: 12px; }}
   .midi-list {{ break-before: page; margin-top: 0; max-width: none; }}
   .midi-list h2 {{ font-size: 15px; margin-bottom: 4px; }}
@@ -1071,6 +1081,48 @@ window.addEventListener('scroll', function () {{
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
         boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
         paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+// Room notes: free text per room, saved in the artifact's store (else this browser).
+(function () {{
+  var notes = Array.prototype.slice.call(document.querySelectorAll('.room-note'));
+  if (!notes.length) return;
+  var store = null, timers = {{}};
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-notes') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      notes.forEach(function (n) {{ if (n.value) st[n.dataset.room] = n.value; }});
+      localStorage.setItem('patchbay-notes', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  notes.forEach(function (n) {{ if (saved[n.dataset.room]) n.value = saved[n.dataset.room]; }});
+  notes.forEach(function (n) {{
+    n.addEventListener('input', function () {{
+      localSave();
+      clearTimeout(timers[n.dataset.room]);
+      n.classList.add('saving');
+      timers[n.dataset.room] = setTimeout(function () {{
+        n.classList.remove('saving');
+        if (store) store.collection('room_notes').doc(n.dataset.room).set({{ text: n.value }}).catch(function () {{}});
+      }}, 700);
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('room_notes').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = (d.data() || {{}}).text || ''; }});
+        notes.forEach(function (n) {{
+          if (n === document.activeElement) return;
+          if (n.dataset.room in st && n.value !== st[n.dataset.room]) n.value = st[n.dataset.room];
+        }});
         localSave();
       }}, function () {{ store = null; }});
     }});
