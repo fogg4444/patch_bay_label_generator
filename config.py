@@ -18,7 +18,7 @@
 from enums import Category, JackType, MidiPort, Need, CableKind
 
 # Every place with a cable run to it. The decks get a speaker cable from an amp, so they have
-# no patch bay send; everything else gets a stereo send, a mono return and a Cat5 drop.
+# no patch bay send and no network drop; everything else gets a stereo send, a mono return and Cat5.
 ROOMS = [
     "Kitchen", "Bath Up", "Bath Dn", "Den", "Gallery",
     "Master Bed", "Guest Bed", "Office", "Record Player", "Front Deck", "Back Deck",
@@ -171,9 +171,9 @@ config = [
     "entries": [
         {"normalled": False, "top": "Hearback Out 1-8", "width": 8, "category": Category.NETWORK},
     ] + [
-        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in ROOMS
+        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in SEND_ROOMS
     ] + [
-        {"normalled": False, "top": "-", "width": 1},
+        {"normalled": False, "top": "-", "width": 3},
     ]
   },
   {
