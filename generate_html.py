@@ -505,7 +505,7 @@ def render_room_cables():
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{room_total}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
-                       '<th scope="col">Rack</th>'
+                       '<th scope="col">Soldered</th>'
                        '<th scope="col">Patch</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
