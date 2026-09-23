@@ -445,14 +445,14 @@ def find_port(label):
             for side in ("top", "bottom"):
                 if e.get(side) == label:
                     span = f"{port}" if e["width"] == 1 else f"{port}–{port + e['width'] - 1}"
-                    return bay["label_name"], port, side, span
+                    return bay["label_name"], port, "" if bay.get("single_row") else side, span
             port += e["width"]
     return None
 
 
 def where_is(label, fallback):
     at = find_port(label)
-    return f"{bay_title(at[0])} · port {at[3]} {at[2]}" if at else fallback
+    return f"{bay_title(at[0])} · port {at[3]} {at[2]}".rstrip() if at else fallback
 
 
 def cable_runs(room):
@@ -476,7 +476,7 @@ CABLE_STEPS = (("pull", "Pull"), ("room", "Room end"), ("rack", "Rack end"))
 def render_room_cables():
     cards, total = [], 0
     places = [(room, cable_runs(room)) for room in ROOMS]
-    places += [(extra["name"], [(n, k, where_is(w, w)) for n, k, w in extra["runs"]]) for extra in special_runs]
+    places += [(extra["name"], [(n, k, "") for n, k, w in extra["runs"]]) for extra in special_runs]
     for room, runs in places:
         rows = []
         for name, kind, where in runs:
@@ -492,7 +492,7 @@ def render_room_cables():
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><b>' + escape(name) + '</b> <span class="kind ' + slug(kind) + '">'
-                        + kind + '</span><small>' + escape(where) + '</small></th>' + "".join(cells) + '</tr>')
+                        + kind + '</span>' + ('<small>' + escape(where) + '</small>' if where else '') + '</th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}">0/{len(rows) * 3}</span></header>'
                      + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'

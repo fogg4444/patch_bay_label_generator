@@ -35,6 +35,7 @@ special_runs = [
         ("Return L", CableKind.XLR, "EMT 140 Return L/R"),
         ("Return R", CableKind.XLR, "EMT 140 Return L/R"),
         ("Motor control", CableKind.MULTI, "EMT remote, Rack 1 U13 - two XLR cables make the 7-pin run"),
+        ("Network", CableKind.CAT5, "Garage"),
     ]},
 ]
 
@@ -173,7 +174,8 @@ config = [
     ] + [
         {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in SEND_ROOMS
     ] + [
-        {"normalled": False, "top": "-", "width": 3},
+        {"normalled": False, "top": "Garage", "width": 1, "category": Category.NETWORK, "in_use": False},
+        {"normalled": False, "top": "-", "width": 2},
     ]
   },
   {
