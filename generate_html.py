@@ -471,8 +471,11 @@ def cable_runs(room):
     return runs
 
 
-CABLE_STEPS = (("pull", "Pull", True), ("room", "Room end", True), ("rack", "Rack end", True),
-               ("patch", "Patched", False))  # last flag: applies to every run, or only patched ones
+# (id, column heading, tooltip verb, applies to every run or only to patched ones)
+CABLE_STEPS = (("pull", "Pull", "Pull the cable", True),
+               ("room", "Solder room", "Solder the room end", True),
+               ("rack", "Solder console", "Solder the console end", True),
+               ("patch", "Patch", "Plug into the patch bay", False))
 
 
 def render_room_cables():
@@ -484,19 +487,15 @@ def render_room_cables():
         rows, room_total = [], 0
         for name, kind, where, ends, patched in runs:
             cells = []
-            for step, step_name, always in CABLE_STEPS:
+            for step, step_name, verb, always in CABLE_STEPS:
                 if not always and not patched:
                     cells.append('<td><span class="na" title="Not patched">–</span></td>')
                     continue
                 total += 1
                 room_total += 1
                 task = f"{slug(room)}-{slug(name)}-{step}"
-                if step == "pull":
-                    verb = "Pull the cable"
-                elif step == "patch":
-                    verb = "Plugged into the patch bay"
-                else:
-                    verb = ("Solder " if kind == "XLR" else "Terminate ") + step_name.lower()
+                if kind == CableKind.CAT5:
+                    verb = verb.replace("Solder", "Terminate")
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
@@ -504,9 +503,7 @@ def render_room_cables():
                         + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}" hidden></span></header>'
-                     + '<table><thead><tr><td></td><th scope="col">Pull</th><th scope="col">Room</th>'
-                       '<th scope="col">Soldered</th>'
-                       '<th scope="col">Patch</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+                     + '<table><thead><tr><td></td>' + "".join(f'<th scope="col">{escape(h)}</th>' for _, h, _, _ in CABLE_STEPS) + '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
     lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered onto its cable: pull it, solder the room end, solder the rack end, "
@@ -731,7 +728,7 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; }}
 .room-card thead th {{ font: 600 9px/1.25 "IBM Plex Sans", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--muted); padding: 0 5px 5px; text-align: center; width: 54px; white-space: nowrap; }}
+  color: var(--muted); padding: 0 5px 5px; text-align: center; width: 58px; }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 10px 6px 0; border-top: 1px solid var(--line);
   white-space: nowrap; }}
