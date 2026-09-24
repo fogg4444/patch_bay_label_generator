@@ -827,11 +827,18 @@ body.focusing .hit {{ opacity: 1; }}
 .gj-group li.connected b::after {{ content: " ✓"; color: var(--plugged); font-size: 11px; }}
 .gj-group li.connected {{ opacity: 1; }}
 .tape.flash {{ animation: tape-flash 1.6s ease; }}
+.jack.flash {{ animation: jack-flash 1.6s ease; }}
+@keyframes jack-flash {{
+  0%, 55% {{ box-shadow: 0 0 0 3px var(--accent); transform: scale(1.25); }}
+  100% {{ transform: scale(1); }}
+}}
 @keyframes tape-flash {{
   0%, 55% {{ box-shadow: 0 0 0 3px var(--accent), inset 0 3px 0 var(--c, transparent); }}
   100% {{ box-shadow: inset 0 3px 0 var(--c, transparent); }}
 }}
-@media (prefers-reduced-motion: reduce) {{ .tape.flash {{ animation: none; outline: 2px solid var(--accent); }} }}
+@media (prefers-reduced-motion: reduce) {{
+  .tape.flash, .jack.flash {{ animation: none; outline: 2px solid var(--accent); }}
+}}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1133,6 +1140,12 @@ body.focusing .hit {{ opacity: 1; }}
       e.preventDefault();
       el.scrollIntoView({{ behavior: 'smooth', block: 'center', inline: 'center' }});
       flash(el);
+      var li = a.closest('li');
+      (li && li.dataset.wires ? li.dataset.wires.split(',') : []).forEach(function (id) {{
+        flash(document.querySelector('[data-wire="' + id + '"]'));
+        var other = id.replace(/-(t|b)-/, id.indexOf('-t-') > -1 ? '-b-' : '-t-');
+        flash(document.querySelector('[data-wire="' + other + '"]'));
+      }});
     }});
   }});
 }})();
