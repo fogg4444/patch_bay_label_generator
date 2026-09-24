@@ -562,12 +562,19 @@ def render_ghost_rear():
                 + (f'<small><a href="#port-{at[0]}-{at[1]}">{escape(to)}</a></small>'
                    if at else f'<small>{escape(to)}</small>')
                 + '</li>')
-        groups.append(f'<div class="gj-group"><h3>{escape(block["group"])}</h3><ul>{"".join(jacks)}</ul></div>')
+        gid = slug(block["group"])
+        groups.append(f'<div class="gj-group" id="gj-{gid}" data-group="{gid}">'
+                      f'<h3>{escape(block["group"])}</h3><ul>{"".join(jacks)}</ul></div>')
+    tabs = "".join(
+        f'<button type="button" class="gj-tab" data-show="{slug(b["group"])}" aria-pressed="false">'
+        f'{escape(b["group"])}</button>' for b in ghost_rear)
+    tabs += '<button type="button" class="gj-tab" data-show="all" aria-pressed="true">All</button>'
     return f"""
 <section class="ghost" id="ghost-rear">
   <h2>Soundcraft Ghost · centre section rear</h2>
   <p class="lead">Every jack on the master section's rear panel, in the order the manual lists them - all ¼".
   Grey means nothing on the patch bay carries it yet.</p>
+  <div class="gj-tabs" role="group" aria-label="Which jacks to show">{tabs}</div>
   <div class="gj-panel">{''.join(groups)}</div>
 </section>"""
 
@@ -804,6 +811,13 @@ body.focusing .hit {{ opacity: 1; }}
 .ghost h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 8px; }}
 .ghost .lead {{ margin: 0 0 14px; color: var(--muted); max-width: 68ch; }}
+.gj-tabs {{ display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }}
+.gj-tab {{
+  font: 600 12px/1 "Nunito", system-ui, sans-serif; color: var(--ink); background: transparent; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px;
+}}
+.gj-tab[aria-pressed="true"] {{ background: var(--ink); color: var(--ground); border-color: var(--ink); }}
+.gj-tab:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .gj-panel {{
   display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px; padding: 14px 16px 16px;
@@ -1052,6 +1066,7 @@ body.focusing .hit {{ opacity: 1; }}
   .patched {{ font-size: 9px; color: #444; }}
   .ghost {{ break-before: page; margin-top: 0; }}
   .gj-panel {{ background: #fff; border-color: #999; }}
+  .gj-tabs {{ display: none; }}
   .gj-group li, .gj-group small {{ color: #111; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
@@ -1150,6 +1165,20 @@ body.focusing .hit {{ opacity: 1; }}
         flash(document.querySelector('[data-wire="' + id + '"]'));
         var other = id.replace(/-(t|b)-/, id.indexOf('-t-') > -1 ? '-b-' : '-t-');
         flash(document.querySelector('[data-wire="' + other + '"]'));
+      }});
+    }});
+  }});
+}})();
+// Ghost rear panel: show one group at a time.
+(function () {{
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.gj-tab'));
+  if (!tabs.length) return;
+  tabs.forEach(function (tab) {{
+    tab.addEventListener('click', function () {{
+      var show = tab.dataset.show;
+      tabs.forEach(function (t) {{ t.setAttribute('aria-pressed', t === tab ? 'true' : 'false'); }});
+      document.querySelectorAll('.gj-group').forEach(function (g) {{
+        g.hidden = show !== 'all' && g.dataset.group !== show;
       }});
     }});
   }});
