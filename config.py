@@ -185,8 +185,8 @@ config = [
     "single_row": True,
     "port_count": 22,
     "entries": [
-        {"normalled": False, "top": f"MIDI {n}", "width": 1, "category": Category.MIDI}
-        for n in range(1, 23)
+        {"normalled": False, "top": "-", "width": 22, "category": Category.MIDI,
+         "pending": "MIDI patch bay - label it once the instruments are installed"},
     ]
   },
   {

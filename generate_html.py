@@ -580,7 +580,7 @@ def build_html():
     bay_count = len(all_configs)
     return f"""<title>Studio Carquinez Patch Bay</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Bungee+Tint&family=IBM+Plex+Mono:wght@400;500&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <style>
 :root {{
   --ground: #e6e8e4;
@@ -596,6 +596,8 @@ def build_html():
   --jack-ring: #6b7278;
   --spare: #7d8488;
   --focus: #2b6de0;
+  --display: #754f3b;
+  --accent: #b8705a;
   --plugged: #34a36a;
   --norm: #5f666b;
   --norm-2: #4a5055;
@@ -603,26 +605,28 @@ def build_html():
 }}
 @media (prefers-color-scheme: dark) {{
   :root:not([data-theme="light"]) {{
-    --ground: #121416; --ink: #e5e7e4; --muted: #9aa19e; --line: #2c3134;
-    --panel: #1b1e21; --panel-edge: #3a4045; --focus: #78a6ff;
+    --ground: #202020; --ink: #ece7e4; --muted: #a49c98; --line: #343130;
+    --panel: #1b1b1b; --panel-edge: #403c3a; --focus: #ffb787;
+    --display: #e4bcbc; --accent: #ffb787;
   }}
 }}
 :root[data-theme="dark"] {{
-  --ground: #121416; --ink: #e5e7e4; --muted: #9aa19e; --line: #2c3134;
-  --panel: #1b1e21; --panel-edge: #3a4045; --focus: #78a6ff;
+  --ground: #202020; --ink: #ece7e4; --muted: #a49c98; --line: #343130;
+  --panel: #1b1b1b; --panel-edge: #403c3a; --focus: #ffb787;
+  --display: #e4bcbc; --accent: #ffb787;
 }}
 {cat_css}
 [data-cat="spare"] {{ --c: var(--spare); }}
 * {{ box-sizing: border-box; }}
 body {{
   margin: 0; background: var(--ground); color: var(--ink);
-  font: 14px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+  font: 14.5px/1.55 "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }}
 .wrap {{ max-width: 1280px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }}
 .top {{ display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: end; justify-content: space-between;
         border-bottom: 1px solid var(--line); padding-bottom: 16px; }}
-h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", sans-serif;
-      letter-spacing: .02em; text-transform: uppercase; margin: 0; text-wrap: balance; }}
+h1 {{ font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed", sans-serif;
+      letter-spacing: .01em; margin: 0; text-wrap: balance; color: var(--display); }}
 .meta {{ margin: 6px 0 0; color: var(--muted); }}
 .stats {{ display: flex; gap: 24px; margin: 0; font-variant-numeric: tabular-nums; }}
 .stats div {{ display: grid; }}
@@ -643,13 +647,13 @@ h1 {{ font: 700 clamp(28px, 4vw, 40px)/1 "Barlow Condensed", "Arial Narrow", san
 .chip:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .hint {{ color: var(--muted); font-size: 12.5px; margin: 0 0 20px; }}
 .racks {{ display: grid; gap: 64px; }}
-.rack-name {{ margin: 0 0 12px; font: 700 15px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase;
+.rack-name {{ color: var(--accent); margin: 0 0 12px; font: 700 15px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); display: flex; align-items: center; gap: 12px; }}
 .rack-name::after {{ content: ""; flex: 1; height: 1px; background: var(--line); }}
 .rack {{ display: grid; gap: 14px; }}
 .bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: stretch; }}
 .bay-head {{ display: flex; flex-direction: column; justify-content: center; }}
-.bay-head h2 {{ margin: 0; font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
+.bay-head h2 {{ margin: 0; color: var(--ink); font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
 .bay-head p {{ margin: 1px 0 0; font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; }}
 .bay-head h2 + p {{ margin-top: 4px; }}
 .bay-head h2.named {{ font-size: 15px; line-height: 1.05; overflow-wrap: anywhere; }}
@@ -734,7 +738,7 @@ body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }
 body.focusing .hit {{ opacity: 1; }}
 .moves {{ margin-top: 64px; max-width: 980px; }}
 .cables {{ margin-top: 56px; }}
-.cables h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.cables h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .cables .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
 .cables .lead b {{ color: var(--ink); }}
 .cable-bars {{ display: grid; gap: 12px 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -781,7 +785,7 @@ body.focusing .hit {{ opacity: 1; }}
 .room-note:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 1px; border-style: solid; }}
 .room-note.saving {{ border-color: var(--plugged); }}
 .midi-list {{ margin-top: 48px; max-width: 820px; }}
-.midi-list h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.midi-list h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .midi-list table {{ width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }}
 .midi-list th {{ text-align: left; font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase;
   color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }}
@@ -806,7 +810,7 @@ body.focusing .hit {{ opacity: 1; }}
 .moves summary:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .moves summary h2 {{ margin: 0; }}
 .moves .archived {{ font-size: 12px; color: var(--muted); }}
-.moves h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
+.moves h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .moves .lead {{ margin: 0 0 14px; color: var(--muted); max-width: 68ch; }}
 .moves .lead b {{ color: var(--ink); font-variant-numeric: tabular-nums; }}
 .moves table {{ width: 100%; min-width: 620px; border-collapse: collapse; font-size: 13.5px; }}
@@ -856,7 +860,7 @@ body.focusing .hit {{ opacity: 1; }}
 .slot {{ background: var(--tape); color: var(--tape-ink); font: 500 10px/1 "IBM Plex Mono", monospace; text-align: center; padding: 4px 0; border-radius: 1px; }}
 .slot.tbd {{ background: transparent; color: var(--engrave); border: 1px dashed #4a5157; }}
 .notes {{ margin-top: 36px; border-top: 1px solid var(--line); padding-top: 16px; max-width: 760px; }}
-.notes h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 10px; }}
+.notes h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 10px; }}
 .notes ul {{ margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }}
 .notes li {{ display: grid; grid-template-columns: 170px 1fr; gap: 12px; }}
 .notes a {{ color: var(--ink); font-weight: 600; text-decoration-color: var(--line); }}
@@ -879,7 +883,8 @@ body.focusing .hit {{ opacity: 1; }}
   body {{ font-size: 11px; }}
   .wrap {{ max-width: none; padding: 0; }}
   .hint, .flag, .pop, .stats, .chip-sep, .wire-progress {{ display: none !important; }}
-  h1 {{ font-size: 20px; }}
+  h1 {{ font-size: 19px; color: #111; }}
+  .rack-name, .cables h2, .midi-list h2, .moves h2, .notes h2 {{ color: #111; }}
   .meta {{ margin-top: 2px; font-size: 9.5px; }}
   .top {{ padding-bottom: 4px; }}
   .legend {{ margin: 4px 0 6px; gap: 3px; }}
