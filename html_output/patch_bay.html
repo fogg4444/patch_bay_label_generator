@@ -186,7 +186,7 @@ body.focusing .hit { opacity: 1; }
 .gj-group li { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; color: #e4e6e3; }
 .gj-jacks { display: flex; gap: 3px; grid-row: span 2; }
 .gj-jacks i {
-  width: 14px; height: 14px; border-radius: 50%;
+  position: relative; width: 14px; height: 14px; border-radius: 50%;
   background: radial-gradient(circle, var(--jack) 0 36%, #2a2e32 38% 58%, var(--jack-ring) 60% 100%);
   box-shadow: 0 0 0 1.5px var(--c, var(--spare));
 }
@@ -195,8 +195,13 @@ body.focusing .hit { opacity: 1; }
 .gj-group li[title$="not patched"] { opacity: .6; }
 .gj-group small a { color: inherit; text-decoration-color: var(--panel-edge); }
 .gj-group small a:hover { color: var(--accent); }
-.gj-group li.connected .gj-jacks i { box-shadow: 0 0 0 2px var(--plugged); }
-.gj-group li.connected b::after { content: " ✓"; color: var(--plugged); font-size: 11px; }
+.gj-group li.connected .gj-jacks i {
+  background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); box-shadow: 0 0 0 1.5px var(--plugged);
+}
+.gj-group li.connected .gj-jacks i::after {
+  content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
+}
 .gj-group li.connected { opacity: 1; }
 .tape.flash { animation: tape-flash 1.6s ease; }
 .jack.flash { animation: jack-flash 1.6s ease; }
