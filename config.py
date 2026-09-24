@@ -293,3 +293,40 @@ midi_instruments = [
     {"name": "Oberheim OB-X8", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.REQUIRED)]},
     {"name": "Oberheim OB-6", "ports": [(MidiPort.IN, Need.REQUIRED), (MidiPort.OUT, Need.REQUIRED)]},
 ]
+
+
+# Soundcraft Ghost centre (master) section rear panel, in the order the manual lists it.
+# All jacks are 1/4"; "wired" is the patch bay label this jack goes to, if any.
+ghost_rear = [
+    {"group": "Inputs", "jacks": [
+        {"label": "FX 1 L/R", "category": Category.FX, "wired": "FX 1 In L/R"},
+        {"label": "FX 2 L/R", "category": Category.FX, "wired": "FX 2 In L/R"},
+        {"label": "FX 3 L/R", "category": Category.FX, "wired": "FX 3 In L/R"},
+        {"label": "FX 4 L/R", "category": Category.FX, "wired": "FX 4 In L/R"},
+        {"label": "2TK A I/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost 2 Track A Input"},
+        {"label": "2TK B I/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost 2 Track B Input"},
+    ]},
+    {"group": "Outputs", "jacks": [
+        {"label": "GRP 1-8", "category": Category.GROUPS, "wired": "Group 1 - 8 Out", "count": 8},
+        {"label": "AUX 1-6", "category": Category.FX, "count": 6},
+        {"label": "AUX 7 L/R", "category": Category.FX},
+        {"label": "AUX 8 L/R", "category": Category.FX, "wired": "Aux 8 Out L/R"},
+        {"label": "MIX O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost Mix Out L/R"},
+        {"label": "MIX B O/P L/R", "category": Category.TWO_TRACK},
+        {"label": "CRM O/P L/R", "category": Category.MONITORING, "wired": "Control Room Out L/R"},
+        {"label": "ALT O/P L/R", "category": Category.MONITORING, "wired": "Alt CRM Out L"},
+        {"label": "STU O/P A L/R", "category": Category.MONITORING, "wired": "Studio A O/P L/R"},
+        {"label": "STU PHNS B L/R", "category": Category.MONITORING, "wired": "Studio Phones B L/R Out"},
+    ]},
+    {"group": "Inserts", "jacks": [
+        {"label": "GRP INS 1-8", "category": Category.GROUPS, "wired": "Group 1 - 8 Insert Send", "count": 8},
+        {"label": "MIX INS L/R", "category": Category.CONSOLE, "wired": "Main Insert Send"},
+    ]},
+]
+
+# Odd jobs that don't belong to a bay, a cable run or a rack unit.
+todos = [
+    "Find the screws for all the cover plates",
+    "Gather every cover plate in one place",
+    "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
+]

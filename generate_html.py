@@ -5,7 +5,8 @@ import re
 import os
 
 from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
-                    midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions)
+                    midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions,
+                    ghost_rear, todos)
 from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
@@ -539,6 +540,43 @@ def render_room_cables():
             f'<div class="room-grid">{"".join(cards)}</div></section>')
 
 
+def render_ghost_rear():
+    groups = []
+    for block in ghost_rear:
+        jacks = []
+        for j in block["jacks"]:
+            count = j.get("count", 2 if "L/R" in j["label"] else 1)
+            at = find_port(j["wired"]) if j.get("wired") else None
+            to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
+            jacks.append(
+                f'<li data-cat="{j.get("category", "spare")}" title="{escape(j["label"])} - {escape(to)}">'
+                + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
+                + f'<b>{escape(j["label"])}</b><small>{escape(to)}</small></li>')
+        groups.append(f'<div class="gj-group"><h3>{escape(block["group"])}</h3><ul>{"".join(jacks)}</ul></div>')
+    return f"""
+<section class="ghost" id="ghost-rear">
+  <h2>Soundcraft Ghost · centre section rear</h2>
+  <p class="lead">Every jack on the master section's rear panel, in the order the manual lists them - all ¼".
+  Grey means nothing on the patch bay carries it yet.</p>
+  <div class="gj-panel">{''.join(groups)}</div>
+</section>"""
+
+
+def render_todos():
+    items = "".join(
+        f'<li><input type="checkbox" class="todo-check" id="todo-{i}" data-task="todo-{i}">'
+        + f'<label for="todo-{i}">{escape(t)}</label></li>'
+        for i, t in enumerate(todos))
+    return f"""
+<section class="todos" id="todos">
+  <h2>To do</h2>
+  <p class="progress" id="todo-progress"><b>0</b> of {len(todos)} done</p>
+  <ul class="todo-list">{items}</ul>
+  <textarea class="room-note todo-note" data-room="general" rows="3" placeholder="Anything else…"
+    aria-label="General notes"></textarea>
+</section>"""
+
+
 def render_notes():
     items = [f'<li><span class="q-general">General</span> <span>{escape(q)}</span></li>' for q in open_questions]
     for bay in all_configs:
@@ -752,6 +790,37 @@ button.jack {{ border: 0; padding: 0; cursor: pointer; font: inherit; }}
 body.focusing .tape, body.focusing .jack, body.focusing .norm {{ opacity: .15; }}
 body.focusing .hit {{ opacity: 1; }}
 .moves {{ margin-top: 64px; max-width: 980px; }}
+.ghost {{ margin-top: 56px; }}
+.ghost h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 8px; }}
+.ghost .lead {{ margin: 0 0 14px; color: var(--muted); max-width: 68ch; }}
+.gj-panel {{
+  display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px; padding: 14px 16px 16px;
+}}
+.gj-group h3 {{ margin: 0 0 8px; font: 700 12px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--engrave); }}
+.gj-group ul {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }}
+.gj-group li {{ display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; color: #e4e6e3; }}
+.gj-jacks {{ display: flex; gap: 3px; grid-row: span 2; }}
+.gj-jacks i {{
+  width: 14px; height: 14px; border-radius: 50%;
+  background: radial-gradient(circle, var(--jack) 0 36%, #2a2e32 38% 58%, var(--jack-ring) 60% 100%);
+  box-shadow: 0 0 0 1.5px var(--c, var(--spare));
+}}
+.gj-group b {{ font: 600 12.5px/1.2 "IBM Plex Mono", monospace; align-self: end; }}
+.gj-group small {{ font-size: 10.5px; color: var(--engrave); align-self: start; }}
+.gj-group li[title$="not patched"] {{ opacity: .6; }}
+.todos {{ margin-top: 56px; max-width: 680px; }}
+.todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }}
+.todo-list {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }}
+.todo-list li {{ display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; }}
+.todo-list label {{ cursor: pointer; font-size: 14px; }}
+.todo-list li.done label {{ text-decoration: line-through; opacity: .55; }}
+.todo-check {{ width: 17px; height: 17px; accent-color: var(--plugged); cursor: pointer; margin: 2px 0 0; }}
+.todo-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.todo-note {{ margin-top: 14px; min-height: 66px; }}
 .cables {{ margin-top: 56px; }}
 .cables h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .cables .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
@@ -948,6 +1017,11 @@ body.focusing .hit {{ opacity: 1; }}
   .badge.plan {{ background: #e3ecf5; color: #123; }}
   .badge.q {{ background: #fbefc8; color: #3a2d00; }}
   .patched {{ font-size: 9px; color: #444; }}
+  .ghost {{ break-before: page; margin-top: 0; }}
+  .gj-panel {{ background: #fff; border-color: #999; }}
+  .gj-group li, .gj-group small {{ color: #111; }}
+  .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
+  .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
   .room-grid {{ grid-template-columns: repeat(3, 1fr); gap: 8px; }}
@@ -1002,7 +1076,9 @@ body.focusing .hit {{ opacity: 1; }}
     <h2>Open questions</h2>
     <ul>{render_notes()}</ul>
   </section>
+  {render_ghost_rear()}
   {render_room_cables()}
+  {render_todos()}
   {render_midi_list()}
   {render_moves()}
 </div>
@@ -1165,6 +1241,49 @@ window.addEventListener('scroll', function () {{
       db.collection('cables').onSnapshot(function (snap) {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
+        boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+// To do list: saved in the artifact's store (else this browser).
+(function () {{
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.todo-check'));
+  if (!boxes.length) return;
+  var progress = document.getElementById('todo-progress');
+  var store = null;
+  function paint() {{
+    var done = 0;
+    boxes.forEach(function (b) {{ b.closest('li').classList.toggle('done', b.checked); if (b.checked) done++; }});
+    if (progress) progress.querySelector('b').textContent = done;
+  }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-todos') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      boxes.forEach(function (b) {{ st[b.dataset.task] = b.checked; }});
+      localStorage.setItem('patchbay-todos', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  boxes.forEach(function (b) {{ b.checked = !!saved[b.dataset.task]; }});
+  paint();
+  boxes.forEach(function (b) {{
+    b.addEventListener('change', function () {{
+      paint();
+      localSave();
+      if (store) store.collection('todos').doc(b.dataset.task).set({{ done: b.checked }}).catch(function () {{}});
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('todos').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).done; }});
         boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
         paint();
         localSave();
