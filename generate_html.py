@@ -473,8 +473,8 @@ def cable_runs(room):
 
 # (id, column heading, tooltip verb, applies to every run or only to patched ones)
 CABLE_STEPS = (("pull", "Pull", "Pull the cable", True),
-               ("room", "Solder room", "Solder the room end", True),
-               ("rack", "Solder console", "Solder the console end", True),
+               ("room", "Room", "Solder the room end", True),
+               ("rack", "Console", "Solder the console end", True),
                ("patch", "Patch", "Plug into the patch bay", False))
 
 
@@ -505,7 +505,7 @@ def render_room_cables():
                         + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}" hidden></span></header>'
-                     + '<table><thead><tr><td></td>' + "".join(f'<th scope="col">{escape(h)}</th>' for _, h, _, _ in CABLE_STEPS) + '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+                     + '<table><thead><tr><td></td>' + "".join(f'<th scope="col" title="{escape(v)}">{escape(h)}</th>' for _, h, v, _ in CABLE_STEPS) + '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
     lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered onto its cable: pull it, solder the room end, solder the rack end, "
@@ -744,24 +744,24 @@ body.focusing .hit {{ opacity: 1; }}
 .cables .wp-label b {{ font-size: 18px; }}
 .cables .wire-progress.total .wp-label b {{ color: var(--plugged); }}
 .room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }}
-.room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }}
+.room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground);
+  min-width: 0; overflow: hidden; }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
   border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 6px; }}
 .room-card h3 {{ margin: 0; font: 600 15px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }}
 .room-count {{ font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }}
 .room-card.done {{ border-color: var(--plugged); }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
-.room-card table {{ width: 100%; border-collapse: collapse; }}
+.room-card table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 .room-card thead th {{ font: 600 9px/1.25 "IBM Plex Sans", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--muted); padding: 0 5px 5px; text-align: center; width: 58px; }}
+  color: var(--muted); padding: 0 3px 5px; text-align: center; width: 46px; }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
-.room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 10px 6px 0; border-top: 1px solid var(--line);
-  white-space: nowrap; }}
-.room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 8px; }}
+.room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 8px 6px 0; border-top: 1px solid var(--line); }}
+.room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 6px; min-width: 0; }}
 .room-card tbody th .row-label b {{ flex: 1; }}
-.room-card tbody th .kind {{ flex: none; width: 54px; text-align: center; }}
+.room-card tbody th .kind {{ flex: none; width: 52px; text-align: center; }}
 .room-card tbody td {{ text-align: center; padding: 6px 5px; border-top: 1px solid var(--line); }}
-.room-card tbody th b {{ font-weight: 600; font-size: 13px; }}
+.room-card tbody th b {{ font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
 .room-card tbody th small {{ display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }}
 .room-card tbody th small.ends {{ font-style: italic; }}
 .kind {{ font: 600 9px/1.6 "IBM Plex Sans", sans-serif; letter-spacing: .03em; text-transform: uppercase;
@@ -935,7 +935,7 @@ body.focusing .hit {{ opacity: 1; }}
   .room-card tbody th b {{ font-size: 10px; }}
   .room-card tbody th .kind {{ width: 40px; font-size: 7.5px; }}
   .room-card tbody th small {{ font-size: 8px; }}
-  .room-card thead th {{ font-size: 7.5px; width: 38px; padding: 0 3px 3px; }}
+  .room-card thead th {{ font-size: 7.5px; width: 32px; padding: 0 2px 3px; }}
   .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
   .room-note {{ min-height: 26px; margin-top: 5px; font-size: 8.5px; }}
   .cable-check {{ width: 12px; height: 12px; }}
