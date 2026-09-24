@@ -35,7 +35,6 @@ special_runs = [
         ("Return L", CableKind.XLR, "EMT 140 Return L/R", True),
         ("Return R", CableKind.XLR, "EMT 140 Return L/R", True),
         ("Motor control · 5-pin", CableKind.CAT5, "EMT remote, Rack 1 U13 - Cat5e cable for the 5-pin motor run", False),
-        ("Network", CableKind.CAT5, "Reverb", True),
     ]},
 ]
 
@@ -174,8 +173,7 @@ config = [
     ] + [
         {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in SEND_ROOMS
     ] + [
-        {"normalled": False, "top": "Reverb", "width": 1, "category": Category.NETWORK, "in_use": False},
-        {"normalled": False, "top": "-", "width": 2},
+        {"normalled": False, "top": "-", "width": 3},
     ]
   },
   {
