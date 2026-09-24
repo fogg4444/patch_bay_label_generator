@@ -3239,6 +3239,16 @@ window.addEventListener('scroll', function () {
       if (j.getAttribute('aria-pressed') === 'true') { all++; perBay[j.dataset.bay] = (perBay[j.dataset.bay] || 0) + 1; }
     });
     if (total) total.textContent = all;
+    document.querySelectorAll('.wired-count').forEach(function (el) { el.textContent = perBay[el.dataset.bay] || 0; });
+    var pct = Math.round(all / jacks.length * 1000) / 10;
+    var box = document.getElementById('wire-progress');
+    if (box) {
+      box.hidden = false;
+      document.getElementById('wp-pct').textContent = pct + '%';
+      document.getElementById('wp-count').textContent = '(' + all + ' of ' + jacks.length + ' jacks)';
+      document.getElementById('wp-fill').style.width = pct + '%';
+      document.getElementById('wp-bar').setAttribute('aria-valuenow', pct);
+    }
   }
   function set(j, on) { j.setAttribute('aria-pressed', on ? 'true' : 'false'); }
   function localLoad() { try { return JSON.parse(localStorage.getItem('patchbay-wired') || '{}'); } catch (e) { return {}; } }
