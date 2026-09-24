@@ -632,7 +632,18 @@ h1 {{ font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed",
 .stats div {{ display: grid; }}
 .stats dt {{ font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
 .stats dd {{ margin: 0; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }}
-.legend {{ display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 6px; }}
+.view-toggle {{ display: flex; align-items: center; gap: 12px; margin: 16px 0 2px; flex-wrap: wrap; }}
+.flip-btn {{
+  font: 600 13px/1 "Nunito", system-ui, sans-serif; color: var(--ground); background: var(--ink); cursor: pointer;
+  border: 0; border-radius: 999px; padding: 9px 16px; display: inline-flex; align-items: center; gap: 8px;
+}}
+.flip-btn:hover {{ background: var(--accent); }}
+.flip-btn:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.flip-btn .flip-icon {{ font-size: 15px; display: inline-block; transition: transform .5s ease; }}
+body.rear .flip-btn {{ background: var(--accent); color: #221008; }}
+body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
+.view-state {{ font-size: 12.5px; color: var(--muted); }}
+.legend {{ display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 6px; }}
 .chip {{
   font: 500 12.5px/1 "IBM Plex Sans", sans-serif; color: var(--ink); cursor: pointer;
   background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px 7px 9px;
@@ -658,13 +669,17 @@ h1 {{ font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed",
 .bay-head h2 + p {{ margin-top: 4px; }}
 .bay-head h2.named {{ font-size: 15px; line-height: 1.05; overflow-wrap: anywhere; }}
 .bay-head b {{ font-weight: 600; color: var(--ink); }}
-.scroll {{ overflow-x: auto; }}
+.scroll {{ overflow-x: auto; perspective: 1400px; }}
 .panel {{
+  transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4, 0, .2, 1);
   min-width: 980px; display: grid; column-gap: 3px; row-gap: 3px;
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 3px;
   padding: 6px 10px 8px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
 }}
+body.rear .panel {{ transform: rotateY(180deg); }}
+.panel > * {{ transition: transform .55s cubic-bezier(.4, 0, .2, 1); }}
+body.rear .panel > * {{ transform: rotateY(180deg); }}
 .num {{ font: 500 9.5px/1 "IBM Plex Mono", monospace; color: var(--engrave); text-align: center; padding: 2px 0 1px;
         font-variant-numeric: tabular-nums; }}
 .tape {{
@@ -871,7 +886,7 @@ body.focusing .hit {{ opacity: 1; }}
   .bay-head {{ flex-direction: row; align-items: baseline; gap: 10px; }}
   .notes li {{ grid-template-columns: 1fr; gap: 0; }}
 }}
-@media (prefers-reduced-motion: reduce) {{ .tape, .jack, .norm {{ transition: none; }} }}
+@media (prefers-reduced-motion: reduce) {{ .tape, .jack, .norm, .panel, .panel > *, .flip-icon {{ transition: none; }} }}
 @page {{ size: letter landscape; margin: 0.4in; }}
 @media print {{
   :root, :root[data-theme="dark"] {{
@@ -882,7 +897,7 @@ body.focusing .hit {{ opacity: 1; }}
   * {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
   body {{ font-size: 11px; }}
   .wrap {{ max-width: none; padding: 0; }}
-  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress {{ display: none !important; }}
+  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle {{ display: none !important; }}
   h1 {{ font-size: 19px; color: #111; }}
   .rack-name, .cables h2, .midi-list h2, .moves h2, .notes h2 {{ color: #111; }}
   .meta {{ margin-top: 2px; font-size: 9.5px; }}
@@ -959,7 +974,7 @@ body.focusing .hit {{ opacity: 1; }}
   <div class="top">
     <div>
       <h1>Studio Carquinez Patch Bay</h1>
-      <p class="meta">Front view, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated {date.today().isoformat()} from <code>config.py</code>.</p>
+      <p class="meta"><span id="view-name">Front view</span>, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated {date.today().isoformat()} from <code>config.py</code>.</p>
     </div>
     <dl class="stats">
       <div><dt>Bays</dt><dd>{bay_count}</dd></div>
@@ -972,6 +987,12 @@ body.focusing .hit {{ opacity: 1; }}
     <div class="wp-track" role="progressbar" aria-label="Rear panel jacks plugged in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="wp-bar">
       <div class="wp-fill" id="wp-fill"></div>
     </div>
+  </div>
+  <div class="view-toggle">
+    <button type="button" id="flip-view" class="flip-btn" aria-pressed="false">
+      <span class="flip-icon" aria-hidden="true">⟲</span> Flip patch bay
+    </button>
+    <span class="view-state" id="view-state">Looking at the front</span>
   </div>
   <div class="legend" role="group" aria-label="Highlight a category">{render_legend()}</div>
   <p class="hint">Click a category to highlight it. Hover a label for its port range. The strip between the jack rows shows normalling: hatched = normalled (card standard, half-normal), dashed = not normalled (card turned; top and bottom are separate while the rear top jack is wired); <b>?</b> marks an open question.</p>
@@ -986,6 +1007,19 @@ body.focusing .hit {{ opacity: 1; }}
   {render_moves()}
 </div>
 <script>
+(function () {{
+  var btn = document.getElementById('flip-view');
+  if (!btn) return;
+  btn.addEventListener('click', function () {{
+    var rear = !document.body.classList.contains('rear');
+    document.body.classList.toggle('rear', rear);
+    btn.setAttribute('aria-pressed', rear ? 'true' : 'false');
+    document.getElementById('view-name').textContent = rear ? 'Rear view' : 'Front view';
+    document.getElementById('view-state').textContent = rear
+      ? 'Looking at the back - port 1 is on the right'
+      : 'Looking at the front';
+  }});
+}})();
 document.querySelectorAll('.chip').forEach(function (chip) {{
   chip.addEventListener('click', function () {{
     var on = chip.getAttribute('aria-pressed') !== 'true';
