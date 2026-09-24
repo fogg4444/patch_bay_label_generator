@@ -498,7 +498,7 @@ def render_room_cables():
                     verb = verb.replace("Solder", "Terminate")
                 group = "solder" if step in ("room", "rack") else step
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
-                             f'data-room="{slug(room)}" data-group="{group}" '
+                             f'data-room="{slug(room)}" data-group="{group}" data-kind="{slug(kind)}" '
                              f'title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><span class="row-label"><b>' + escape(name) + '</b>'
@@ -518,6 +518,10 @@ def render_room_cables():
             '<div class="wire-progress" data-group="pull">'
             '<div class="wp-label"><b class="wp-pct">0%</b> cable runs pulled <span class="wp-count"></span></div>'
             '<div class="wp-track" role="progressbar" aria-label="Cable runs pulled" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '<div class="wire-progress" data-group="pull" data-kind="xlr">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> XLR runs pulled <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="XLR runs pulled" aria-valuemin="0" aria-valuemax="100" '
             'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
             '<div class="wire-progress" data-group="solder">'
             '<div class="wp-label"><b class="wp-pct">0%</b> ends soldered <span class="wp-count"></span></div>'
@@ -1085,7 +1089,10 @@ window.addEventListener('scroll', function () {{
     }});
     document.querySelectorAll('.cable-bars .wire-progress').forEach(function (bar) {{
       var g = bar.dataset.group;
-      var mine = boxes.filter(function (b) {{ return g === 'all' || b.dataset.group === g; }});
+      var kind = bar.dataset.kind;
+      var mine = boxes.filter(function (b) {{
+        return (g === 'all' || b.dataset.group === g) && (!kind || b.dataset.kind === kind);
+      }});
       var done = mine.filter(function (b) {{ return b.checked; }}).length;
       var pct = mine.length ? Math.round(done / mine.length * 1000) / 10 : 0;
       bar.querySelector('.wp-pct').textContent = pct + '%';
