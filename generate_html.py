@@ -120,7 +120,9 @@ def render_bay(bay):
                 cls += " pending"
                 pc = categories.get(entry.get("category"), ("", "var(--spare)"))[1]
                 label = f'<em style="--pc:{pc}">Reserved · {escape(pending)}</em>'
-            return f'<div class="{cls}" {common} style="grid-row:{row_of[row]};grid-column:{cols}"><span>{label}</span>{flag if row == "tape-top" else ""}</div>'
+            anchor = f' id="port-{bay["label_name"]}-{port}"' if row == "tape-top" else ""
+            return (f'<div class="{cls}"{anchor} {common} style="grid-row:{row_of[row]};grid-column:{cols}">'
+                    f'<span>{label}</span>{flag if row == "tape-top" else ""}</div>')
 
         cells.append(tape(top, "tape-top"))
         if not single_row:
@@ -548,10 +550,18 @@ def render_ghost_rear():
             count = j.get("count", 2 if "L/R" in j["label"] else 1)
             at = find_port(j["wired"]) if j.get("wired") else None
             to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
+            wires = ""
+            if at:
+                side = "b" if at[2] == "bottom" else "t"
+                span = range(at[1], at[1] + count)
+                wires = ' data-wires="' + ",".join(f"bay-{at[0]}-{side}-{p}" for p in span) + '"' 
             jacks.append(
-                f'<li data-cat="{j.get("category", "spare")}" title="{escape(j["label"])} - {escape(to)}">'
+                f'<li data-cat="{j.get("category", "spare")}"{wires} title="{escape(j["label"])} - {escape(to)}">'
                 + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
-                + f'<b>{escape(j["label"])}</b><small>{escape(to)}</small></li>')
+                + f'<b>{escape(j["label"])}</b>'
+                + (f'<small><a href="#port-{at[0]}-{at[1]}">{escape(to)}</a></small>'
+                   if at else f'<small>{escape(to)}</small>')
+                + '</li>')
         groups.append(f'<div class="gj-group"><h3>{escape(block["group"])}</h3><ul>{"".join(jacks)}</ul></div>')
     return f"""
 <section class="ghost" id="ghost-rear">
@@ -811,6 +821,17 @@ body.focusing .hit {{ opacity: 1; }}
 .gj-group b {{ font: 600 12.5px/1.2 "IBM Plex Mono", monospace; align-self: end; }}
 .gj-group small {{ font-size: 10.5px; color: var(--engrave); align-self: start; }}
 .gj-group li[title$="not patched"] {{ opacity: .6; }}
+.gj-group small a {{ color: inherit; text-decoration-color: var(--panel-edge); }}
+.gj-group small a:hover {{ color: var(--accent); }}
+.gj-group li.connected .gj-jacks i {{ box-shadow: 0 0 0 2px var(--plugged); }}
+.gj-group li.connected b::after {{ content: " ✓"; color: var(--plugged); font-size: 11px; }}
+.gj-group li.connected {{ opacity: 1; }}
+.tape.flash {{ animation: tape-flash 1.6s ease; }}
+@keyframes tape-flash {{
+  0%, 55% {{ box-shadow: 0 0 0 3px var(--accent), inset 0 3px 0 var(--c, transparent); }}
+  100% {{ box-shadow: inset 0 3px 0 var(--c, transparent); }}
+}}
+@media (prefers-reduced-motion: reduce) {{ .tape.flash {{ animation: none; outline: 2px solid var(--accent); }} }}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1096,6 +1117,25 @@ body.focusing .hit {{ opacity: 1; }}
       : 'Looking at the front';
   }});
 }})();
+// Jump from the console panel to a spot on a bay, and flash it.
+(function () {{
+  function flash(el) {{
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+    setTimeout(function () {{ el.classList.remove('flash'); }}, 1800);
+  }}
+  document.querySelectorAll('.gj-group a[href^="#port-"]').forEach(function (a) {{
+    a.addEventListener('click', function (e) {{
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      el.scrollIntoView({{ behavior: 'smooth', block: 'center', inline: 'center' }});
+      flash(el);
+    }});
+  }});
+}})();
 document.querySelectorAll('.chip').forEach(function (chip) {{
   chip.addEventListener('click', function () {{
     var on = chip.getAttribute('aria-pressed') !== 'true';
@@ -1138,6 +1178,15 @@ window.addEventListener('scroll', function () {{
       if (j.getAttribute('aria-pressed') === 'true') {{ all++; perBay[j.dataset.bay] = (perBay[j.dataset.bay] || 0) + 1; }}
     }});
     if (total) total.textContent = all;
+    var on = {{}};
+    jacks.forEach(function (j) {{ on[j.dataset.wire] = j.getAttribute('aria-pressed') === 'true'; }});
+    document.querySelectorAll('.gj-group li[data-wires]').forEach(function (li) {{
+      var ids = li.dataset.wires.split(',');
+      var done = ids.every(function (id) {{ return on[id]; }});
+      li.classList.toggle('connected', done);
+      var base = li.title.split(' - ')[0] + ' - ' + li.title.split(' - ').slice(1).join(' - ');
+      li.title = base.replace(/ \(plugged in\)$/, '') + (done ? ' (plugged in)' : '');
+    }});
     var pct = Math.round(all / jacks.length * 1000) / 10;
     var box = document.getElementById('wire-progress');
     if (box) {{
