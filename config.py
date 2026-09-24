@@ -138,7 +138,7 @@ config = [
         {"normalled": True, "top": "Apollo 2 Track Out", "bottom": "Ghost 2 Track A Input", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": True, "top": "Ghost MIX O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
-        {"normalled": False, "top": "Ghost MIX B O/P L/R", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.TWO_TRACK},
+        {"normalled": True, "top": "Ghost MIX B O/P L/R", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.TWO_TRACK},
     ]
   },
   {
