@@ -137,8 +137,8 @@ config = [
         {"normalled": True, "top": "Ghost 17-32 Tape Send", "bottom": "Apollo #2 17-32 In", "width": 16, "category": Category.CONSOLE},
         {"normalled": True, "top": "Apollo 2 Track Out", "bottom": "Ghost 2 Track A Input", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK},
-        {"normalled": True, "top": "Ghost Mix Out L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
-        {"normalled": False, "top": "-", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.MONITORING},
+        {"normalled": True, "top": "Ghost MIX O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
+        {"normalled": False, "top": "Ghost MIX B O/P L/R", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.TWO_TRACK},
     ]
   },
   {
@@ -315,8 +315,8 @@ ghost_rear = [
         {"label": "AUX 5 / 6", "category": Category.FX, "wired": "Aux 5 / 6 Out", "count": 2},
         {"label": "AUX 7 L/R", "category": Category.FX, "wired": "Aux 7 Out L/R"},
         {"label": "AUX 8 L/R", "category": Category.FX, "wired": "Aux 8 Out L/R"},
-        {"label": "MIX O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost Mix Out L/R"},
-        {"label": "MIX B O/P L/R", "category": Category.TWO_TRACK},
+        {"label": "MIX O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost MIX O/P L/R"},
+        {"label": "MIX B O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost MIX B O/P L/R"},
         {"label": "CRM O/P L/R", "category": Category.MONITORING, "wired": "Control Room Out L/R"},
         {"label": "ALT O/P L/R", "category": Category.MONITORING, "wired": "Alt CRM Out L"},
         {"label": "STU O/P A L/R", "category": Category.MONITORING, "wired": "Studio A O/P L/R"},
