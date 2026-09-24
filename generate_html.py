@@ -550,17 +550,12 @@ def render_ghost_rear():
             count = j.get("count", 2 if "L/R" in j["label"] else 1)
             at = find_port(j["wired"]) if j.get("wired") else None
             to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
-            wires = ""
-            if at:
-                side = "b" if at[2] == "bottom" else "t"
-                span = range(at[1], at[1] + count)
-                wires = ' data-wires="' + ",".join(f"bay-{at[0]}-{side}-{p}" for p in span) + '"' 
+
             jacks.append(
-                f'<li data-cat="{j.get("category", "spare")}"{wires} title="{escape(j["label"])} - {escape(to)}">'
+                f'<li data-cat="{j.get("category", "spare")}" title="{escape(j["label"])} - {escape(to)}">'
                 + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
                 + f'<b>{escape(j["label"])}</b>'
-                + (f'<small><a href="#port-{at[0]}-{at[1]}">{escape(to)}</a></small>'
-                   if at else f'<small>{escape(to)}</small>')
+                + f'<small>{escape(to)}</small>'
                 + '</li>')
         gid = slug(block["group"])
         groups.append(f'<div class="gj-group" id="gj-{gid}" data-group="{gid}">'
@@ -835,29 +830,6 @@ body.focusing .hit {{ opacity: 1; }}
 .gj-group b {{ font: 600 12.5px/1.2 "IBM Plex Mono", monospace; align-self: end; }}
 .gj-group small {{ font-size: 10.5px; color: var(--engrave); align-self: start; }}
 .gj-group li[title$="not patched"] {{ opacity: .6; }}
-.gj-group small a {{ color: inherit; text-decoration-color: var(--panel-edge); }}
-.gj-group small a:hover {{ color: var(--accent); }}
-.gj-group li.connected .gj-jacks i {{
-  background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); box-shadow: 0 0 0 1.5px var(--plugged);
-}}
-.gj-group li.connected .gj-jacks i::after {{
-  content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
-  background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
-}}
-.gj-group li.connected {{ opacity: 1; }}
-.tape.flash {{ animation: tape-flash 1.6s ease; }}
-.jack.flash {{ animation: jack-flash 1.6s ease; }}
-@keyframes jack-flash {{
-  0%, 55% {{ box-shadow: 0 0 0 3px var(--accent); transform: scale(1.25); }}
-  100% {{ transform: scale(1); }}
-}}
-@keyframes tape-flash {{
-  0%, 55% {{ box-shadow: 0 0 0 3px var(--accent), inset 0 3px 0 var(--c, transparent); }}
-  100% {{ box-shadow: inset 0 3px 0 var(--c, transparent); }}
-}}
-@media (prefers-reduced-motion: reduce) {{
-  .tape.flash, .jack.flash {{ animation: none; outline: 2px solid var(--accent); }}
-}}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1144,45 +1116,6 @@ body.focusing .hit {{ opacity: 1; }}
       : 'Looking at the front';
   }});
 }})();
-// Jump from the console panel to a spot on a bay, and flash it.
-(function () {{
-  function flash(el) {{
-    if (!el) return;
-    el.classList.remove('flash');
-    void el.offsetWidth;
-    el.classList.add('flash');
-    setTimeout(function () {{ el.classList.remove('flash'); }}, 1800);
-  }}
-  document.querySelectorAll('.gj-group a[href^="#port-"]').forEach(function (a) {{
-    a.addEventListener('click', function (e) {{
-      var el = document.getElementById(a.getAttribute('href').slice(1));
-      if (!el) return;
-      e.preventDefault();
-      el.scrollIntoView({{ behavior: 'smooth', block: 'center', inline: 'center' }});
-      flash(el);
-      var li = a.closest('li');
-      (li && li.dataset.wires ? li.dataset.wires.split(',') : []).forEach(function (id) {{
-        flash(document.querySelector('[data-wire="' + id + '"]'));
-        var other = id.replace(/-(t|b)-/, id.indexOf('-t-') > -1 ? '-b-' : '-t-');
-        flash(document.querySelector('[data-wire="' + other + '"]'));
-      }});
-    }});
-  }});
-}})();
-// Ghost rear panel: show one group at a time.
-(function () {{
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.gj-tab'));
-  if (!tabs.length) return;
-  tabs.forEach(function (tab) {{
-    tab.addEventListener('click', function () {{
-      var show = tab.dataset.show;
-      tabs.forEach(function (t) {{ t.setAttribute('aria-pressed', t === tab ? 'true' : 'false'); }});
-      document.querySelectorAll('.gj-group').forEach(function (g) {{
-        g.hidden = show !== 'all' && g.dataset.group !== show;
-      }});
-    }});
-  }});
-}})();
 document.querySelectorAll('.chip').forEach(function (chip) {{
   chip.addEventListener('click', function () {{
     var on = chip.getAttribute('aria-pressed') !== 'true';
@@ -1225,25 +1158,6 @@ window.addEventListener('scroll', function () {{
       if (j.getAttribute('aria-pressed') === 'true') {{ all++; perBay[j.dataset.bay] = (perBay[j.dataset.bay] || 0) + 1; }}
     }});
     if (total) total.textContent = all;
-    var on = {{}};
-    jacks.forEach(function (j) {{ on[j.dataset.wire] = j.getAttribute('aria-pressed') === 'true'; }});
-    document.querySelectorAll('.gj-group li[data-wires]').forEach(function (li) {{
-      var ids = li.dataset.wires.split(',');
-      var done = ids.every(function (id) {{ return on[id]; }});
-      li.classList.toggle('connected', done);
-      var base = li.title.split(' - ')[0] + ' - ' + li.title.split(' - ').slice(1).join(' - ');
-      li.title = base.replace(/ \(plugged in\)$/, '') + (done ? ' (plugged in)' : '');
-    }});
-    var pct = Math.round(all / jacks.length * 1000) / 10;
-    var box = document.getElementById('wire-progress');
-    if (box) {{
-      box.hidden = false;
-      document.getElementById('wp-pct').textContent = pct + '%';
-      document.getElementById('wp-count').textContent = '(' + all + ' of ' + jacks.length + ' jacks)';
-      document.getElementById('wp-fill').style.width = pct + '%';
-      document.getElementById('wp-bar').setAttribute('aria-valuenow', pct);
-    }}
-    document.querySelectorAll('.wired-count').forEach(function (el) {{ el.textContent = perBay[el.dataset.bay] || 0; }});
   }}
   function set(j, on) {{ j.setAttribute('aria-pressed', on ? 'true' : 'false'); }}
   function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-wired') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
