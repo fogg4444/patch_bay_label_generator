@@ -496,8 +496,10 @@ def render_room_cables():
                 task = f"{slug(room)}-{slug(name)}-{step}"
                 if kind == CableKind.CAT5:
                     verb = verb.replace("Solder", "Terminate")
+                group = "solder" if step in ("room", "rack") else step
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
-                             f'data-room="{slug(room)}" title="{escape(room)} · {escape(name)} · {escape(verb)}" '
+                             f'data-room="{slug(room)}" data-group="{group}" '
+                             f'title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><span class="row-label"><b>' + escape(name) + '</b>'
                         + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
@@ -512,10 +514,24 @@ def render_room_cables():
             "The destination is where the cable lands at the rack." % total)
     return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
             f'<p class="lead">{lead}</p>'
-            '<div class="wire-progress"><div class="wp-label"><b id="cable-pct">0%</b> of cable tasks done - pulling, soldering the room end, soldering the rack end '
-            '<span id="cable-count"></span></div>'
-            '<div class="wp-track" role="progressbar" aria-label="Cable tasks done" aria-valuemin="0" '
-            'aria-valuemax="100" aria-valuenow="0" id="cable-bar"><div class="wp-fill" id="cable-fill"></div></div></div>'
+            '<div class="cable-bars">'
+            '<div class="wire-progress" data-group="pull">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> cable runs pulled <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Cable runs pulled" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '<div class="wire-progress" data-group="solder">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> ends soldered <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Cable ends soldered" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '<div class="wire-progress" data-group="patch">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> patched in <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Cables patched in" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '<div class="wire-progress total" data-group="all">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> of everything <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="All cable tasks" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '</div>'
             f'<div class="room-grid">{"".join(cards)}</div></section>')
 
 
@@ -717,7 +733,12 @@ body.focusing .hit {{ opacity: 1; }}
 .cables h2 {{ font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 8px; }}
 .cables .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
 .cables .lead b {{ color: var(--ink); }}
-.cables .wire-progress {{ margin: 10px 0 18px; max-width: 640px; }}
+.cable-bars {{ display: grid; gap: 12px 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin: 14px 0 20px; max-width: 900px; }}
+.cables .wire-progress {{ margin: 0; gap: 4px; }}
+.cables .wp-label {{ font-size: 12.5px; }}
+.cables .wp-label b {{ font-size: 18px; }}
+.cables .wire-progress.total .wp-label b {{ color: var(--plugged); }}
 .room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }}
 .room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground); }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
@@ -1062,11 +1083,16 @@ window.addEventListener('scroll', function () {{
       var c = per[el.dataset.room] || [0, 0];
       el.closest('.room-card').classList.toggle('done', c[0] === c[1]);
     }});
-    var pct = Math.round(all / boxes.length * 1000) / 10;
-    document.getElementById('cable-pct').textContent = pct + '%';
-    document.getElementById('cable-count').textContent = '(' + all + ' of ' + boxes.length + ' tasks)';
-    document.getElementById('cable-fill').style.width = pct + '%';
-    document.getElementById('cable-bar').setAttribute('aria-valuenow', pct);
+    document.querySelectorAll('.cable-bars .wire-progress').forEach(function (bar) {{
+      var g = bar.dataset.group;
+      var mine = boxes.filter(function (b) {{ return g === 'all' || b.dataset.group === g; }});
+      var done = mine.filter(function (b) {{ return b.checked; }}).length;
+      var pct = mine.length ? Math.round(done / mine.length * 1000) / 10 : 0;
+      bar.querySelector('.wp-pct').textContent = pct + '%';
+      bar.querySelector('.wp-count').textContent = '(' + done + ' of ' + mine.length + ')';
+      bar.querySelector('.wp-fill').style.width = pct + '%';
+      bar.querySelector('.wp-track').setAttribute('aria-valuenow', pct);
+    }});
   }}
   function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-cables') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
   function localSave() {{
