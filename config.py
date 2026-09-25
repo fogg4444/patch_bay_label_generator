@@ -342,3 +342,8 @@ todos = [
     "Gather every cover plate in one place",
     "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
 ]
+
+
+# Compromises made during the build that aren't tied to one port. Anything with an "info"
+# key on a patch bay entry is listed alongside these automatically.
+compromises = []

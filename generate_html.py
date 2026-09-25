@@ -6,7 +6,7 @@ import os
 
 from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
                     midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions,
-                    ghost_rear, todos)
+                    ghost_rear, todos, compromises)
 from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
@@ -592,6 +592,30 @@ def render_ghost_rear():
 </section>"""
 
 
+def render_compromises():
+    """Every shortcut taken in the build: the info markers on the bays, plus anything in config."""
+    items = []
+    for bay in all_configs:
+        port = 1
+        for e in bay["entries"]:
+            if e.get("info"):
+                w = e["width"]
+                rng = f"{port}" if w == 1 else f"{port}–{port + w - 1}"
+                items.append((f'{bay_title(bay["label_name"])} · port {rng}', e["info"]))
+            port += e["width"]
+    items += [(c.get("where", "Elsewhere"), c["what"]) for c in compromises]
+    if not items:
+        return ""
+    rows = "".join(f'<li><b>{escape(where)}</b><span>{escape(text)}</span></li>' for where, text in items)
+    return f"""
+<section class="crimes" id="crimes">
+  <h2>Imperfect crimes</h2>
+  <p class="lead">Shortcuts taken during the build, so nobody has to rediscover them with a meter.
+  Ones tied to a port also show as an <b>i</b> on that bay.</p>
+  <ul class="crime-list">{rows}</ul>
+</section>"""
+
+
 def render_todos():
     items = "".join(
         f'<li><input type="checkbox" class="todo-check" id="todo-{i}" data-task="todo-{i}">'
@@ -735,7 +759,8 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .cables:has(> .sec-head[aria-expanded="false"]),
 .midi-list:has(> .sec-head[aria-expanded="false"]),
 .todos:has(> .sec-head[aria-expanded="false"]),
-.notes:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 14px; padding-top: 0; }}
+.notes:has(> .sec-head[aria-expanded="false"]),
+.crimes:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 14px; padding-top: 0; }}
 .sec-head[aria-expanded="false"] {{ margin-bottom: 0; }}
 .racks > .rack-group + .rack-group:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 10px; }}
 .sec-head::before {{ content: "▾"; display: inline-block; width: 14px; font-size: .75em; color: var(--muted);
@@ -907,6 +932,16 @@ body.focusing .hit {{ opacity: 1; }}
   content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
 }}
+.crimes {{ margin-top: 56px; max-width: 760px; }}
+.crimes h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }}
+.crimes .lead {{ margin: 0 0 12px; color: var(--muted); max-width: 68ch; }}
+.crime-list {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }}
+.crime-list li {{ display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line); }}
+.crime-list b {{ font: 600 12.5px/1.4 "IBM Plex Mono", monospace; color: var(--ink); }}
+.crime-list span {{ color: var(--muted); font-size: 13.5px; }}
+@media (max-width: 640px) {{ .crime-list li {{ grid-template-columns: 1fr; gap: 2px; }} }}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1125,6 +1160,8 @@ body.focusing .hit {{ opacity: 1; }}
   .gj-tabs {{ display: none; }}
   .gj-group li, .gj-group small {{ color: #111; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
+  .crimes {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
+  .crime-list li {{ grid-template-columns: 150px 1fr; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
@@ -1182,6 +1219,7 @@ body.focusing .hit {{ opacity: 1; }}
   </section>
   {render_ghost_rear()}
   {render_room_cables()}
+  {render_compromises()}
   {render_todos()}
   {render_midi_list()}
   {render_moves()}
@@ -1226,7 +1264,7 @@ body.focusing .hit {{ opacity: 1; }}
     }} catch (e) {{}}
   }}
   var saved = state();
-  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .todos, .notes');
+  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .crimes, .todos, .notes');
   Array.prototype.forEach.call(blocks, function (block, i) {{
     var head = block.querySelector('h2');
     if (!head) return;
