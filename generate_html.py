@@ -487,12 +487,30 @@ def cable_runs(room):
 
 
 # (id, column heading, tooltip verb, applies to every run or only to patched ones)
-# (id, column heading, tooltip, when it applies: always / "console" / "room")
-CABLE_STEPS = (("pull", "Pull", "Pull the cable", "always"),
-               ("room", "Terminated room end", "Room end soldered onto its connector", "always"),
-               ("rack", "Terminated console end", "Console end soldered onto its connector", "always"),
-               ("patch-room", "Patched room side", "Plugged in at the room plate", "room"),
-               ("patch", "Patched console side", "Plugged into the patch bay", "console"))
+# (id, header group, column heading, tooltip, when it applies: always / "console" / "room")
+CABLE_STEPS = (("pull", "", "Pulled", "Cable pulled through", "always"),
+               ("room", "Terminated", "Room", "Room end soldered onto its connector", "always"),
+               ("rack", "Terminated", "Console", "Console end soldered onto its connector", "always"),
+               ("patch-room", "Patched", "Room", "Plugged in at the room plate", "room"),
+               ("patch", "Patched", "Console", "Plugged into the patch bay", "console"))
+
+
+def cable_header():
+    """Two header rows: the group name above, the side below."""
+    top, bottom = ['<td></td>'], []
+    i = 0
+    while i < len(CABLE_STEPS):
+        group = CABLE_STEPS[i][1]
+        if not group:
+            top.append(f'<th scope="col" rowspan="2" title="{escape(CABLE_STEPS[i][3])}">{escape(CABLE_STEPS[i][2])}</th>')
+            i += 1
+            continue
+        span = sum(1 for st in CABLE_STEPS if st[1] == group)
+        top.append(f'<th scope="colgroup" colspan="{span}" class="grp">{escape(group)}</th>')
+        for st in CABLE_STEPS[i:i + span]:
+            bottom.append(f'<th scope="col" title="{escape(st[3])}">{escape(st[2])}</th>')
+        i += span
+    return '<tr>' + "".join(top) + '</tr><tr>' + "".join(bottom) + '</tr></thead>'
 
 
 def render_room_cables():
@@ -504,7 +522,7 @@ def render_room_cables():
         rows, room_total = [], 0
         for name, kind, where, ends, patched, patched_room in runs:
             cells = []
-            for step, step_name, verb, applies in CABLE_STEPS:
+            for step, group_name, step_name, verb, applies in CABLE_STEPS:
                 if (applies == "console" and not patched) or (applies == "room" and not patched_room):
                     cells.append('<td><span class="na" title="Nothing to patch here">–</span></td>')
                     continue
@@ -513,7 +531,7 @@ def render_room_cables():
                 task = f"{slug(room)}-{slug(name)}-{step}"
                 if kind == CableKind.CAT5:
                     verb = verb.replace("Solder", "Terminate")
-                group = "solder" if step in ("room", "rack") else ("patch" if step.startswith("patch") else step)
+                group = {"Terminated": "solder", "Patched": "patch"}.get(group_name, step)
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" data-group="{group}" data-kind="{slug(kind)}" '
                              f'title="{escape(room)} · {escape(name)} · {escape(verb)}" '
@@ -522,7 +540,7 @@ def render_room_cables():
                         + '<span class="kind ' + slug(kind) + '">' + kind + '</span></span></th>' + "".join(cells) + '</tr>')
         cards.append('<article class="room-card"><header><h3>' + escape(room) + '</h3>'
                      + f'<span class="room-count" data-room="{slug(room)}" hidden></span></header>'
-                     + '<table><thead><tr><td></td>' + "".join(f'<th scope="col" title="{escape(v)}">{escape(h)}</th>' for _, h, v, _ in CABLE_STEPS) + '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+                     + '<table><thead>' + cable_header() + '<tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
     lead = ("Two XLR sends, one XLR return and one Cat5 per room. Each cable: pull it, terminate both ends "
@@ -1085,7 +1103,7 @@ body.focusing .hit {{ opacity: 1; }}
 .cables .wp-label {{ font-size: 12.5px; }}
 .cables .wp-label b {{ font-size: 18px; }}
 .cables .wire-progress.total .wp-label b {{ color: var(--plugged); }}
-.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }}
+.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }}
 .room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground);
   min-width: 0; overflow: hidden; }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
@@ -1095,8 +1113,10 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done {{ border-color: var(--plugged); }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
-.room-card thead th {{ font: 600 9px/1.25 "IBM Plex Sans", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--muted); padding: 0 4px 5px; text-align: center; width: 58px; line-height: 1.25; }}
+.room-card thead th {{ font: 600 9px/1.25 "Nunito", sans-serif; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); padding: 0 4px 4px; text-align: center; width: 52px; }}
+.room-card thead th.grp {{ color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 3px; }}
+.room-card thead tr + tr th {{ padding-top: 3px; font-weight: 500; }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 8px 6px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 6px; min-width: 0; }}
@@ -1290,12 +1310,12 @@ body.focusing .hit {{ opacity: 1; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
-  .room-grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
+  .room-grid {{ grid-template-columns: repeat(3, 1fr); gap: 8px; }}
   .room-card {{ break-inside: avoid; padding: 6px 8px 8px; }}
   .room-card tbody th b {{ font-size: 10px; }}
   .room-card tbody th .kind {{ width: 40px; font-size: 7.5px; }}
   .room-card tbody th small {{ font-size: 8px; }}
-  .room-card thead th {{ font-size: 7px; width: 40px; padding: 0 2px 3px; }}
+  .room-card thead th {{ font-size: 7px; width: 34px; padding: 0 2px 2px; }}
   .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
   .room-note {{ min-height: 26px; margin-top: 5px; font-size: 8.5px; }}
   .cable-check {{ width: 12px; height: 12px; }}
