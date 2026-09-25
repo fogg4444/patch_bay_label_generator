@@ -179,6 +179,8 @@ def render_bay(bay):
   <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}{' idle' if bay.get('in_use') is False else ''}" style="grid-template-columns:{template}">
     {''.join(cells)}
   </div></div>
+  <textarea class="bay-note" data-bay="{escape(bay['label_name'])}" rows="1" placeholder="Notes for this bay…"
+    aria-label="Notes for bay {escape(bay['label_name'])}"></textarea>
 </section>"""
 
 
@@ -711,8 +713,20 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .rack-name {{ color: var(--accent); margin: 0 0 12px; font: 700 15px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); display: flex; align-items: center; gap: 12px; }}
 .rack-name::after {{ content: ""; flex: 1; height: 1px; background: var(--line); }}
-.rack {{ display: grid; gap: 14px; }}
-.bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: stretch; }}
+.rack {{ display: grid; gap: 0; }}
+.rack .bay {{ padding: 14px 0 16px; border-bottom: 2px solid var(--line); }}
+.rack .bay:first-child {{ padding-top: 4px; }}
+.rack .bay:last-child {{ border-bottom: 0; }}
+.bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 12px; align-items: stretch; }}
+.bay-note {{
+  grid-column: 2; width: 100%; resize: vertical; min-height: 30px; border: 1px dashed var(--panel-edge);
+  border-radius: 3px; background: transparent; color: var(--ink); padding: 4px 7px;
+  font: 400 12px/1.4 "Nunito", system-ui, sans-serif;
+}}
+.bay-note::placeholder {{ color: var(--muted); opacity: .7; }}
+.bay-note:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 1px; border-style: solid; }}
+.bay-note.saving {{ border-color: var(--plugged); }}
+.bay-note:placeholder-shown {{ min-height: 26px; }}
 .bay-head {{ display: flex; flex-direction: column; justify-content: center; }}
 .bay-head h2 {{ margin: 0; color: var(--ink); font: 700 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; }}
 .bay-head p {{ margin: 1px 0 0; font-size: 11px; color: var(--muted); line-height: 1.3; white-space: nowrap; }}
@@ -993,9 +1007,11 @@ body.focusing .hit {{ opacity: 1; }}
   .legend {{ margin: 4px 0 6px; gap: 3px; }}
   .chip {{ font-size: 8.5px; padding: 2px 6px 2px 4px; }}
   .racks {{ gap: 0; }}
-  .rack {{ gap: 4px; }}
+  .rack {{ gap: 0; }}
+  .rack .bay {{ padding: 5px 0 6px; border-bottom: 1px solid #bbb; }}
   .rack-name {{ margin: 0 0 6px; font-size: 13px; }}
-  .bay {{ grid-template-columns: 44px minmax(0, 1fr); gap: 6px; break-inside: avoid; }}
+  .bay {{ grid-template-columns: 44px minmax(0, 1fr); gap: 3px 6px; break-inside: avoid; }}
+  .bay-note {{ min-height: 16px; font-size: 8px; padding: 2px 4px; }}
   .bay-head h2 {{ font-size: 18px; }}
   .bay-head h2.named {{ font-size: 10px; }}
   .bay-head p {{ font-size: 8.5px; }}
@@ -1267,7 +1283,9 @@ window.addEventListener('scroll', function () {{
       }}, function () {{ store = null; }});
     }});
   }}
-}})();
+}}
+setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
+setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
 // To do list: saved in the artifact's store (else this browser).
 (function () {{
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.todo-check'));
@@ -1311,29 +1329,30 @@ window.addEventListener('scroll', function () {{
     }});
   }}
 }})();
-// Room notes: free text per room, saved in the artifact's store (else this browser).
-(function () {{
-  var notes = Array.prototype.slice.call(document.querySelectorAll('.room-note'));
+// Free-text notes: room cards and each patch bay, saved in the artifact's store (else this browser).
+function setupNotes(selector, collection, key, attr) {{
+  var notes = Array.prototype.slice.call(document.querySelectorAll(selector));
   if (!notes.length) return;
   var store = null, timers = {{}};
-  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-notes') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  var id = function (n) {{ return n.dataset[attr]; }};
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem(key) || '{{}}'); }} catch (e) {{ return {{}}; }} }}
   function localSave() {{
     try {{
       var st = {{}};
-      notes.forEach(function (n) {{ if (n.value) st[n.dataset.room] = n.value; }});
-      localStorage.setItem('patchbay-notes', JSON.stringify(st));
+      notes.forEach(function (n) {{ if (n.value) st[id(n)] = n.value; }});
+      localStorage.setItem(key, JSON.stringify(st));
     }} catch (e) {{}}
   }}
   var saved = localLoad();
-  notes.forEach(function (n) {{ if (saved[n.dataset.room]) n.value = saved[n.dataset.room]; }});
+  notes.forEach(function (n) {{ if (saved[id(n)]) n.value = saved[id(n)]; }});
   notes.forEach(function (n) {{
     n.addEventListener('input', function () {{
       localSave();
-      clearTimeout(timers[n.dataset.room]);
+      clearTimeout(timers[id(n)]);
       n.classList.add('saving');
-      timers[n.dataset.room] = setTimeout(function () {{
+      timers[id(n)] = setTimeout(function () {{
         n.classList.remove('saving');
-        if (store) store.collection('room_notes').doc(n.dataset.room).set({{ text: n.value }}).catch(function () {{}});
+        if (store) store.collection(collection).doc(id(n)).set({{ text: n.value }}).catch(function () {{}});
       }}, 700);
     }});
   }});
@@ -1341,12 +1360,12 @@ window.addEventListener('scroll', function () {{
     window.claude.use('db').then(function (db) {{
       if (!db) return;
       store = db;
-      db.collection('room_notes').onSnapshot(function (snap) {{
+      db.collection(collection).onSnapshot(function (snap) {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = (d.data() || {{}}).text || ''; }});
         notes.forEach(function (n) {{
           if (n === document.activeElement) return;
-          if (n.dataset.room in st && n.value !== st[n.dataset.room]) n.value = st[n.dataset.room];
+          if (id(n) in st && n.value !== st[id(n)]) n.value = st[id(n)];
         }});
         localSave();
       }}, function () {{ store = null; }});
