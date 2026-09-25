@@ -362,3 +362,11 @@ compromises = [
         "without a black flag was soldered and jacked into the patch bay as it was pulled. So: black flag = "
         "still to terminate."},
 ]
+
+
+# Faults to work through in a console service session. Tick them off in the HTML view.
+console_issues = [
+    {"where": "Channel 6", "noticed": "2026-09-25",
+     "symptom": "Intermittent - passes no signal unless the source is hot, and tapping the channel brings it "
+                "back. Suspect a dry solder joint or dirty contact rather than a dead stage."},
+]

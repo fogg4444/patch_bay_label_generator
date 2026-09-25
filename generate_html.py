@@ -6,7 +6,7 @@ import os
 
 from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
                     midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions,
-                    ghost_rear, todos, compromises)
+                    ghost_rear, todos, compromises, console_issues)
 from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
@@ -714,6 +714,25 @@ def render_solder():
 </section>"""
 
 
+def render_console_issues():
+    """Faults to hand to whoever services the console."""
+    if not console_issues:
+        return ""
+    rows = "".join(
+        f'<li><input type="checkbox" class="fault-check" id="fault-{i}" data-task="fault-{i}">'
+        + f'<label for="fault-{i}"><b>{escape(c["where"])}</b>'
+        + (f'<span class="when">noticed {escape(c["noticed"])}</span>' if c.get("noticed") else '')
+        + f'<span class="what">{escape(c["symptom"])}</span></label></li>'
+        for i, c in enumerate(console_issues))
+    return f"""
+<section class="faults" id="faults">
+  <h2>Console faults</h2>
+  <p class="lead">Running list for the next service session. Tick one when it is sorted.</p>
+  <p class="progress" id="fault-progress"><b>0</b> of {len(console_issues)} sorted</p>
+  <ul class="fault-list">{rows}</ul>
+</section>"""
+
+
 def render_compromises():
     """Every shortcut taken in the build: the info markers on the bays, plus anything in config."""
     items = []
@@ -885,6 +904,7 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .todos:has(> .sec-head[aria-expanded="false"]),
 .notes:has(> .sec-head[aria-expanded="false"]),
 .crimes:has(> .sec-head[aria-expanded="false"]),
+.faults:has(> .sec-head[aria-expanded="false"]),
 .solder:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 14px; padding-top: 0; }}
 .sec-head[aria-expanded="false"] {{ margin-bottom: 0; }}
 .racks > .rack-group + .rack-group:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 10px; }}
@@ -1085,6 +1105,20 @@ body.focusing .hit {{ opacity: 1; }}
 .solder-notes li {{ color: var(--muted); font-size: 13.5px; padding-left: 14px; position: relative; }}
 .solder-notes li::before {{ content: "–"; position: absolute; left: 0; color: var(--accent); }}
 .solder-notes b {{ color: var(--ink); }}
+.faults {{ margin-top: 56px; max-width: 760px; }}
+.faults h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }}
+.faults .lead {{ margin: 0 0 4px; color: var(--muted); max-width: 68ch; }}
+.fault-list {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }}
+.fault-list li {{ display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; }}
+.fault-list label {{ cursor: pointer; display: grid; gap: 2px; }}
+.fault-list b {{ font-size: 14px; }}
+.fault-list .when {{ font: 400 11px/1.3 "IBM Plex Mono", monospace; color: var(--muted); }}
+.fault-list .what {{ color: var(--muted); font-size: 13.5px; }}
+.fault-list li.done label {{ opacity: .5; }}
+.fault-list li.done b {{ text-decoration: line-through; }}
+.fault-check {{ width: 17px; height: 17px; accent-color: var(--plugged); cursor: pointer; margin: 3px 0 0; }}
+.fault-check:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .crimes {{ margin-top: 56px; max-width: 760px; }}
 .crimes h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1325,6 +1359,7 @@ body.focusing .hit {{ opacity: 1; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
   .solder {{ break-before: page; margin-top: 0; max-width: none; }}
   .solder svg {{ max-width: 520px; }}
+  .faults {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
   .crimes {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
   .crime-list li {{ grid-template-columns: 150px 1fr; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
@@ -1385,6 +1420,7 @@ body.focusing .hit {{ opacity: 1; }}
   {render_room_cables()}
   {render_ghost_rear()}
   {render_solder()}
+  {render_console_issues()}
   {render_compromises()}
   {render_todos()}
   {render_midi_list()}
@@ -1459,7 +1495,7 @@ body.focusing .hit {{ opacity: 1; }}
     }} catch (e) {{}}
   }}
   var saved = state();
-  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .solder, .crimes, .todos, .notes');
+  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .solder, .faults, .crimes, .todos, .notes');
   Array.prototype.forEach.call(blocks, function (block, i) {{
     var head = block.querySelector('h2');
     if (!head) return;
@@ -1641,6 +1677,49 @@ window.addEventListener('scroll', function () {{
       db.collection('cables').onSnapshot(function (snap) {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
+        boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+// Console faults: saved in the artifact's store (else this browser).
+(function () {{
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.fault-check'));
+  if (!boxes.length) return;
+  var progress = document.getElementById('fault-progress');
+  var store = null;
+  function paint() {{
+    var done = 0;
+    boxes.forEach(function (b) {{ b.closest('li').classList.toggle('done', b.checked); if (b.checked) done++; }});
+    if (progress) progress.querySelector('b').textContent = done;
+  }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-faults') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      boxes.forEach(function (b) {{ st[b.dataset.task] = b.checked; }});
+      localStorage.setItem('patchbay-faults', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  boxes.forEach(function (b) {{ b.checked = !!saved[b.dataset.task]; }});
+  paint();
+  boxes.forEach(function (b) {{
+    b.addEventListener('change', function () {{
+      paint();
+      localSave();
+      if (store) store.collection('faults').doc(b.dataset.task).set({{ done: b.checked }}).catch(function () {{}});
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('faults').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).done; }});
         boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
         paint();
         localSave();

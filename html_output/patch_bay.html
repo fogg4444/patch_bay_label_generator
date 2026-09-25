@@ -90,6 +90,7 @@ body.rear .flip-btn .flip-icon { transform: rotate(180deg); }
 .todos:has(> .sec-head[aria-expanded="false"]),
 .notes:has(> .sec-head[aria-expanded="false"]),
 .crimes:has(> .sec-head[aria-expanded="false"]),
+.faults:has(> .sec-head[aria-expanded="false"]),
 .solder:has(> .sec-head[aria-expanded="false"]) { margin-top: 14px; padding-top: 0; }
 .sec-head[aria-expanded="false"] { margin-bottom: 0; }
 .racks > .rack-group + .rack-group:has(> .sec-head[aria-expanded="false"]) { margin-top: 10px; }
@@ -290,6 +291,20 @@ body.focusing .hit { opacity: 1; }
 .solder-notes li { color: var(--muted); font-size: 13.5px; padding-left: 14px; position: relative; }
 .solder-notes li::before { content: "–"; position: absolute; left: 0; color: var(--accent); }
 .solder-notes b { color: var(--ink); }
+.faults { margin-top: 56px; max-width: 760px; }
+.faults h2 { color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }
+.faults .lead { margin: 0 0 4px; color: var(--muted); max-width: 68ch; }
+.fault-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.fault-list li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; }
+.fault-list label { cursor: pointer; display: grid; gap: 2px; }
+.fault-list b { font-size: 14px; }
+.fault-list .when { font: 400 11px/1.3 "IBM Plex Mono", monospace; color: var(--muted); }
+.fault-list .what { color: var(--muted); font-size: 13.5px; }
+.fault-list li.done label { opacity: .5; }
+.fault-list li.done b { text-decoration: line-through; }
+.fault-check { width: 17px; height: 17px; accent-color: var(--plugged); cursor: pointer; margin: 3px 0 0; }
+.fault-check:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .crimes { margin-top: 56px; max-width: 760px; }
 .crimes h2 { color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }
@@ -530,6 +545,7 @@ body.focusing .hit { opacity: 1; }
   .gj-jacks i { background: #fff; border: 1.2px solid #333; box-shadow: none; }
   .solder { break-before: page; margin-top: 0; max-width: none; }
   .solder svg { max-width: 520px; }
+  .faults { break-inside: avoid; margin-top: 18px; max-width: none; }
   .crimes { break-inside: avoid; margin-top: 18px; max-width: none; }
   .crime-list li { grid-template-columns: 150px 1fr; }
   .todos { break-inside: avoid; margin-top: 18px; }
@@ -3285,6 +3301,13 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
   </ul>
 </section>
   
+<section class="faults" id="faults">
+  <h2>Console faults</h2>
+  <p class="lead">Running list for the next service session. Tick one when it is sorted.</p>
+  <p class="progress" id="fault-progress"><b>0</b> of 1 sorted</p>
+  <ul class="fault-list"><li><input type="checkbox" class="fault-check" id="fault-0" data-task="fault-0"><label for="fault-0"><b>Channel 6</b><span class="when">noticed 2026-09-25</span><span class="what">Intermittent - passes no signal unless the source is hot, and tapping the channel brings it back. Suspect a dry solder joint or dirty contact rather than a dead stage.</span></label></li></ul>
+</section>
+  
 <section class="crimes" id="crimes">
   <h2>Imperfect crimes</h2>
   <p class="lead">Shortcuts taken during the build, so nobody has to rediscover them with a meter.
@@ -3527,7 +3550,7 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
     } catch (e) {}
   }
   var saved = state();
-  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .solder, .crimes, .todos, .notes');
+  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .solder, .faults, .crimes, .todos, .notes');
   Array.prototype.forEach.call(blocks, function (block, i) {
     var head = block.querySelector('h2');
     if (!head) return;
@@ -3709,6 +3732,49 @@ window.addEventListener('scroll', function () {
       db.collection('cables').onSnapshot(function (snap) {
         var st = {};
         snap.docs.forEach(function (d) { st[d.id] = !!(d.data() || {}).pulled; });
+        boxes.forEach(function (b) { if (b.dataset.task in st) b.checked = st[b.dataset.task]; });
+        paint();
+        localSave();
+      }, function () { store = null; });
+    });
+  }
+})();
+// Console faults: saved in the artifact's store (else this browser).
+(function () {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.fault-check'));
+  if (!boxes.length) return;
+  var progress = document.getElementById('fault-progress');
+  var store = null;
+  function paint() {
+    var done = 0;
+    boxes.forEach(function (b) { b.closest('li').classList.toggle('done', b.checked); if (b.checked) done++; });
+    if (progress) progress.querySelector('b').textContent = done;
+  }
+  function localLoad() { try { return JSON.parse(localStorage.getItem('patchbay-faults') || '{}'); } catch (e) { return {}; } }
+  function localSave() {
+    try {
+      var st = {};
+      boxes.forEach(function (b) { st[b.dataset.task] = b.checked; });
+      localStorage.setItem('patchbay-faults', JSON.stringify(st));
+    } catch (e) {}
+  }
+  var saved = localLoad();
+  boxes.forEach(function (b) { b.checked = !!saved[b.dataset.task]; });
+  paint();
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      paint();
+      localSave();
+      if (store) store.collection('faults').doc(b.dataset.task).set({ done: b.checked }).catch(function () {});
+    });
+  });
+  if (window.claude && window.claude.use) {
+    window.claude.use('db').then(function (db) {
+      if (!db) return;
+      store = db;
+      db.collection('faults').onSnapshot(function (snap) {
+        var st = {};
+        snap.docs.forEach(function (d) { st[d.id] = !!(d.data() || {}).done; });
         boxes.forEach(function (b) { if (b.dataset.task in st) b.checked = st[b.dataset.task]; });
         paint();
         localSave();
