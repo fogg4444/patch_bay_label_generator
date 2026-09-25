@@ -594,6 +594,101 @@ def render_ghost_rear():
 </section>"""
 
 
+XLR_VIEWS = [
+    ("Male · front", "pins facing you", {"tl": 1, "tr": 2, "b": 3}),
+    ("Male · solder side", "cups facing you", {"tl": 2, "tr": 1, "b": 3}),
+    ("Female · front", "holes facing you", {"tl": 2, "tr": 1, "b": 3}),
+    ("Female · solder side", "cups facing you", {"tl": 1, "tr": 2, "b": 3}),
+]
+PIN_FILL = {1: "var(--pin-gnd)", 2: "var(--pin-hot)", 3: "var(--pin-cold)"}
+
+
+def xlr_figure():
+    parts = []
+    for i, (title, sub, pins) in enumerate(XLR_VIEWS):
+        cx, cy = 88 + i * 168, 104
+        parts.append(f'<circle cx="{cx}" cy="{cy}" r="56" fill="none" stroke="currentColor" stroke-width="2"/>')
+        parts.append(f'<rect x="{cx - 13}" y="{cy - 58}" width="26" height="9" rx="3" fill="currentColor" opacity=".35"/>')
+        for key, (dx, dy) in (("tl", (-27, -19)), ("tr", (27, -19)), ("b", (0, 35))):
+            n = pins[key]
+            parts.append(f'<circle cx="{cx + dx}" cy="{cy + dy}" r="17" fill="{PIN_FILL[n]}" stroke="currentColor" stroke-width="1.5"/>')
+            parts.append(f'<text x="{cx + dx}" y="{cy + dy + 5}" text-anchor="middle" font-size="15" font-weight="700" fill="#10151a">{n}</text>')
+        parts.append(f'<text x="{cx}" y="188" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">{title}</text>')
+        parts.append(f'<text x="{cx}" y="205" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".7">{sub}</text>')
+    return "".join(parts)
+
+
+def trs_figure():
+    return (
+        '<line x1="34" y1="70" x2="470" y2="70" stroke="currentColor" stroke-width="1" opacity=".25"/>'
+        '<path d="M34 70 q10 -21 28 -21 h16 v42 h-16 q-18 0 -28 -21 z" fill="var(--pin-hot)" stroke="currentColor" stroke-width="1.5"/>'
+        '<rect x="78" y="49" width="10" height="42" fill="currentColor" opacity=".35"/>'
+        '<rect x="88" y="49" width="40" height="42" fill="var(--pin-cold)" stroke="currentColor" stroke-width="1.5"/>'
+        '<rect x="128" y="49" width="10" height="42" fill="currentColor" opacity=".35"/>'
+        '<rect x="138" y="49" width="118" height="42" fill="var(--pin-gnd)" stroke="currentColor" stroke-width="1.5"/>'
+        '<rect x="256" y="40" width="150" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>'
+        '<text x="331" y="75" text-anchor="middle" font-size="12" fill="currentColor">solder lugs</text>'
+        '<line x1="56" y1="44" x2="56" y2="22" stroke="currentColor" stroke-width="1.2"/>'
+        '<text x="56" y="16" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Tip</text>'
+        '<line x1="108" y1="44" x2="108" y2="22" stroke="currentColor" stroke-width="1.2"/>'
+        '<text x="108" y="16" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Ring</text>'
+        '<line x1="197" y1="96" x2="197" y2="120" stroke="currentColor" stroke-width="1.2"/>'
+        '<text x="197" y="134" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Sleeve</text>'
+        '<text x="331" y="120" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".75">tip · ring · sleeve lugs inside</text>'
+    )
+
+
+def render_solder():
+    """Pinouts for the XLR-to-TRS cables, for anyone with an iron in hand."""
+    xlr_fig = xlr_figure()
+    trs_fig = trs_figure()
+    return f"""
+<section class="solder" id="solder">
+  <h2>Soldering · XLR to TRS</h2>
+  <p class="lead">Hot is XLR pin 2 to the tip, cold is pin 3 to the ring, shield is pin 1 to the sleeve.
+  Hold a connector with the two pins up and the single pin down, and read the view that matches what you are
+  looking at - the solder side is the mirror of the front. Every connector has the numbers moulded beside
+  each contact; trust those over any drawing.</p>
+  <p class="pin-key">
+    <span class="pk hot">2 · hot (+)</span>
+    <span class="pk cold">3 · cold (−)</span>
+    <span class="pk gnd">1 · shield</span>
+  </p>
+  <figure>
+    <svg viewBox="0 0 680 215" role="img"
+         aria-label="XLR 3-pin numbering seen from the front and from the solder side, for male and female connectors">
+      {xlr_fig}
+    </svg>
+    <figcaption>XLR numbering flips left to right between the front of a connector and its solder side.</figcaption>
+  </figure>
+  <figure>
+    <svg viewBox="0 0 490 145" role="img"
+         aria-label="A quarter-inch TRS plug: tip is hot, ring is cold, sleeve is shield">
+      {trs_fig}
+    </svg>
+    <figcaption>A ¼" TRS plug, tip first. The sleeve lug is the big one nearest the cable clamp.</figcaption>
+  </figure>
+  <table class="solder-map">
+    <thead><tr><th>XLR</th><th>Signal</th><th>TRS</th><th>Wire</th></tr></thead>
+    <tbody>
+      <tr><td>Pin 2</td><td>Hot, +</td><td>Tip</td><td>Usually red or white</td></tr>
+      <tr><td>Pin 3</td><td>Cold, −</td><td>Ring</td><td>Usually black or blue</td></tr>
+      <tr><td>Pin 1</td><td>Shield</td><td>Sleeve</td><td>Braid or drain wire</td></tr>
+    </tbody>
+  </table>
+  <ul class="solder-notes">
+    <li><b>Ghost inserts are backwards from most desks:</b> tip is RETURN and ring is SEND on GRP INS and MIX INS.
+      An insert cable built for another console will have send and return swapped here.</li>
+    <li><b>Ghost outputs are ground compensated:</b> tip signal +, ring ground sense, sleeve ground. Wire them as TRS;
+      a TS plug shorts the ring and throws that away. CRM, ALT and STU PHNS B are the plain unbalanced exceptions.</li>
+    <li><b>Going unbalanced on purpose?</b> Leave the ring unconnected at the source end rather than shorting it
+      to sleeve, and keep the shield on sleeve at both ends.</li>
+    <li><b>Check before you trust it:</b> buzz tip, ring and sleeve against pins 2, 3 and 1 with a meter once the
+      first cable is done, then build the rest to match.</li>
+  </ul>
+</section>"""
+
+
 def render_compromises():
     """Every shortcut taken in the build: the info markers on the bays, plus anything in config."""
     items = []
@@ -763,7 +858,8 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .midi-list:has(> .sec-head[aria-expanded="false"]),
 .todos:has(> .sec-head[aria-expanded="false"]),
 .notes:has(> .sec-head[aria-expanded="false"]),
-.crimes:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 14px; padding-top: 0; }}
+.crimes:has(> .sec-head[aria-expanded="false"]),
+.solder:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 14px; padding-top: 0; }}
 .sec-head[aria-expanded="false"] {{ margin-bottom: 0; }}
 .racks > .rack-group + .rack-group:has(> .sec-head[aria-expanded="false"]) {{ margin-top: 10px; }}
 .sec-head::before {{ content: "▾"; display: inline-block; width: 14px; font-size: .75em; color: var(--muted);
@@ -937,6 +1033,26 @@ body.focusing .hit {{ opacity: 1; }}
   content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
 }}
+.solder {{ margin-top: 56px; max-width: 760px; --pin-hot: #e8836a; --pin-cold: #79c2e4; --pin-gnd: #c9ccc6; }}
+.solder h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }}
+.solder .lead {{ margin: 0 0 10px; color: var(--muted); max-width: 68ch; }}
+.pin-key {{ display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }}
+.pk {{ font: 600 11.5px/1 "Nunito", sans-serif; padding: 5px 10px; border-radius: 999px; color: #10151a; }}
+.pk.hot {{ background: var(--pin-hot); }}
+.pk.cold {{ background: var(--pin-cold); }}
+.pk.gnd {{ background: var(--pin-gnd); }}
+.solder figure {{ margin: 0 0 18px; }}
+.solder svg {{ width: 100%; max-width: 680px; height: auto; color: var(--ink); }}
+.solder figcaption {{ margin-top: 4px; font-size: 12px; color: var(--muted); }}
+.solder-map {{ border-collapse: collapse; width: 100%; max-width: 520px; font-size: 13.5px; margin-bottom: 16px; }}
+.solder-map th {{ text-align: left; font: 600 11px/1.2 "Nunito", sans-serif; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--line); }}
+.solder-map td {{ padding: 7px 10px; border-bottom: 1px solid var(--line); }}
+.solder-notes {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; max-width: 68ch; }}
+.solder-notes li {{ color: var(--muted); font-size: 13.5px; padding-left: 14px; position: relative; }}
+.solder-notes li::before {{ content: "–"; position: absolute; left: 0; color: var(--accent); }}
+.solder-notes b {{ color: var(--ink); }}
 .crimes {{ margin-top: 56px; max-width: 760px; }}
 .crimes h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1165,6 +1281,8 @@ body.focusing .hit {{ opacity: 1; }}
   .gj-tabs {{ display: none; }}
   .gj-group li, .gj-group small {{ color: #111; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
+  .solder {{ break-before: page; margin-top: 0; max-width: none; }}
+  .solder svg {{ max-width: 520px; }}
   .crimes {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
   .crime-list li {{ grid-template-columns: 150px 1fr; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
@@ -1224,6 +1342,7 @@ body.focusing .hit {{ opacity: 1; }}
   </section>
   {render_ghost_rear()}
   {render_room_cables()}
+  {render_solder()}
   {render_compromises()}
   {render_todos()}
   {render_midi_list()}
@@ -1269,7 +1388,7 @@ body.focusing .hit {{ opacity: 1; }}
     }} catch (e) {{}}
   }}
   var saved = state();
-  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .crimes, .todos, .notes');
+  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .solder, .crimes, .todos, .notes');
   Array.prototype.forEach.call(blocks, function (block, i) {{
     var head = block.querySelector('h2');
     if (!head) return;
