@@ -497,7 +497,7 @@ CABLE_STEPS = (("pull", "", "Pulled", "Cable pulled through", "always"),
 
 def cable_header():
     """Two header rows: the group name above, the side below."""
-    top, bottom = ['<td></td>'], []
+    top, bottom = ['<td rowspan="2"></td>'], []
     i = 0
     while i < len(CABLE_STEPS):
         group = CABLE_STEPS[i][1]
@@ -788,7 +788,8 @@ def total_spare():
 def build_html():
     cat_css = "".join(f'[data-cat="{k}"]{{--c:{c}}}' for k, (_, c) in categories.items())
     bay_count = len(all_configs)
-    return f"""<title>Studio Carquinez Patch Bay</title>
+    return f"""<meta charset="utf-8">
+<title>Studio Carquinez Patch Bay</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Bungee+Tint&family=IBM+Plex+Mono:wght@400;500&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <style>
@@ -1114,8 +1115,9 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 .room-card thead th {{ font: 600 9.5px/1.3 "Nunito", sans-serif; letter-spacing: .05em; text-transform: uppercase;
-  color: var(--muted); padding: 0 6px 6px; text-align: center; width: 56px; }}
-.room-card thead th.grp {{ color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 5px; }}
+  color: var(--muted); padding: 0 3px 6px; text-align: center; width: 60px; letter-spacing: .02em; }}
+.room-card thead th.grp {{ color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 5px;
+  width: 132px; }}
 .room-card thead tr + tr th {{ padding-top: 6px; font-weight: 500; }}
 /* a gap between the two groups, and after the name column */
 .room-card th:nth-child(2), .room-card td:nth-child(2) {{ padding-left: 14px; }}
