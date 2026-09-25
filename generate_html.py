@@ -555,9 +555,14 @@ def render_ghost_rear():
             count = j.get("count", 2 if "L/R" in j["label"] else 1)
             at = find_port(j["wired"]) if j.get("wired") else None
             to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
+            wires = ""
+            if at:
+                side = "b" if at[2] == "bottom" else "t"
+                wires = ' data-wires="' + ",".join(
+                    f"bay-{at[0]}-{side}-{n}" for n in range(at[1], at[1] + count)) + '"' 
 
             jacks.append(
-                f'<li data-cat="{j.get("category", "spare")}" title="{escape(j["label"])} - {escape(to)}">'
+                f'<li data-cat="{j.get("category", "spare")}"{wires} title="{escape(j["label"])} - {escape(to)}">'
                 + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
                 + f'<b>{escape(j["label"])}</b>'
                 + f'<small>{escape(to)}</small>'
@@ -860,6 +865,13 @@ body.focusing .hit {{ opacity: 1; }}
 .gj-group b {{ font: 600 12.5px/1.2 "IBM Plex Mono", monospace; align-self: end; }}
 .gj-group small {{ font-size: 10.5px; color: var(--engrave); align-self: start; }}
 .gj-group li[title$="not patched"] {{ opacity: .6; }}
+.gj-group li.connected .gj-jacks i {{
+  background: radial-gradient(circle, #eaf7ef 0 30%, var(--plugged) 34% 100%); box-shadow: 0 0 0 1.5px var(--plugged);
+}}
+.gj-group li.connected .gj-jacks i::after {{
+  content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
+}}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1193,6 +1205,11 @@ window.addEventListener('scroll', function () {{
     }});
     if (total) total.textContent = all;
     document.querySelectorAll('.wired-count').forEach(function (el) {{ el.textContent = perBay[el.dataset.bay] || 0; }});
+    var on = {{}};
+    jacks.forEach(function (j) {{ on[j.dataset.wire] = j.getAttribute('aria-pressed') === 'true'; }});
+    document.querySelectorAll('.gj-group li[data-wires]').forEach(function (li) {{
+      li.classList.toggle('connected', li.dataset.wires.split(',').every(function (id) {{ return on[id]; }}));
+    }});
     var pct = Math.round(all / jacks.length * 1000) / 10;
     var box = document.getElementById('wire-progress');
     if (box) {{
