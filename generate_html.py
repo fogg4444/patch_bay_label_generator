@@ -111,8 +111,8 @@ def render_bay(bay):
         norm_state = "spare" if spare else ("normalled" if normalled else "open")
         common = f'data-cat="{cat}" data-norm="{norm_state}"{" data-pending" if pending else ""} title="{escape(tip)}"'
         flag = ""
-        if info:
-            flag = f'<i class="info-mark" title="{escape(info)}" aria-label="{escape(info)}">i</i>'
+        info_row = "tape-bottom" if entry.get("info_at") == "bottom" else "tape-top"
+        info_mark = f'<i class="info-mark" title="{escape(info)}" aria-label="{escape(info)}">i</i>' if info else ""
         if note:
             note_id = f"note-{bay['label_name']}-{port}"
             flag = (f'<button type="button" class="flag" popovertarget="{note_id}" aria-label="Open question">?</button>'
@@ -126,8 +126,9 @@ def render_bay(bay):
                 pc = categories.get(entry.get("category"), ("", "var(--spare)"))[1]
                 label = f'<em style="--pc:{pc}">Reserved · {escape(pending)}</em>'
             anchor = f' id="port-{bay["label_name"]}-{port}"' if row == "tape-top" else ""
+            marks = (flag if row == "tape-top" else "") + (info_mark if row == info_row else "")
             return (f'<div class="{cls}"{anchor} {common} style="grid-row:{row_of[row]};grid-column:{cols}">'
-                    f'<span>{label}</span>{flag if row == "tape-top" else ""}</div>')
+                    f'<span>{label}</span>{marks}</div>')
 
         cells.append(tape(top, "tape-top"))
         if not single_row:
@@ -601,7 +602,8 @@ def render_compromises():
             if e.get("info"):
                 w = e["width"]
                 rng = f"{port}" if w == 1 else f"{port}–{port + w - 1}"
-                items.append((f'{bay_title(bay["label_name"])} · port {rng}', e["info"]))
+                side = " bottom" if e.get("info_at") == "bottom" else " top"
+                items.append((f'{bay_title(bay["label_name"])} · port {rng}{side}', e["info"]))
             port += e["width"]
     items += [(c.get("where", "Elsewhere"), c["what"]) for c in compromises]
     if not items:

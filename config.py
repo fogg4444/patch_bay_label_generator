@@ -6,6 +6,7 @@
 #   category - Category enum (enums.py): colour grouping in the HTML view
 #   note     - open question / reminder shown in the HTML view
 #   info     - a plain fact about this port, shown as a marker and in the hover text
+#   info_at  - which row carries the info marker: "top" (default) or "bottom"
 #   in_use   - False: labelled but not connected yet (dimmed, no rear checkbox in the HTML view)
 #   pending  - on a spare ("-") entry: what the ports are reserved for. Shown in the HTML view only;
 #              printed labels stay blank.
@@ -137,8 +138,8 @@ config = [
     "entries": [
         {"normalled": True, "top": "Ghost 17-32 Tape Send", "bottom": "Apollo #2 17-32 In", "width": 16, "category": Category.CONSOLE},
         {"normalled": True, "top": "Apollo 2 Track Out", "bottom": "Ghost 2 Track A Input", "width": 2, "category": Category.TWO_TRACK,
-         "info": "Wired with standard unbalanced 1/4\" cable from the bay to the Ghost 2 Track A input - "
-                 "6 ft inside the rack. Ring left unconnected at the Apollo end; about 6 dB lower than balanced."},
+         "info": "Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack.",
+         "info_at": "bottom"},
         {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": True, "top": "Ghost MIX O/P L/R", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": False, "top": "Ghost MIX B O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
