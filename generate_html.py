@@ -6,7 +6,7 @@ import os
 
 from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
                     midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions,
-                    ghost_rear, todos, cable_stock)
+                    ghost_rear, todos)
 from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
@@ -587,41 +587,6 @@ def render_ghost_rear():
 </section>"""
 
 
-def render_stock():
-    """What cables the job needs, and how many are on hand."""
-    need_by_kind = {}
-    for room in ROOMS:
-        for _, kind, _, _, _ in cable_runs(room):
-            need_by_kind[kind] = need_by_kind.get(kind, 0) + 1
-    for extra in special_runs:
-        for _, kind, _, _ in extra["runs"]:
-            need_by_kind[kind] = need_by_kind.get(kind, 0) + 1
-
-    rows = []
-    for i, item in enumerate(cable_stock):
-        need = need_by_kind.get(item.get("kind"), 0) if item.get("auto") else item.get("need", 0)
-        rows.append(
-            '<tr>'
-            + f'<th scope="row"><b>{escape(item["name"])}</b>'
-            + (f'<small>{escape(item["note"])}</small>' if item.get("note") else '')
-            + '</th>'
-            + f'<td class="need" data-need="{need}">{need}</td>'
-            + f'<td><input type="number" class="stock-have" min="0" step="1" inputmode="numeric" '
-              f'id="stock-{i}" data-task="stock-{i}" aria-label="{escape(item["name"])} on hand"></td>'
-            + f'<td class="short" data-for="stock-{i}">–</td>'
-            + '</tr>')
-    return f"""
-<section class="stock" id="stock">
-  <h2>Cables on hand</h2>
-  <p class="lead">Type in how many you have; the gap updates as you go. The first three counts come straight
-  from the room runs, so they follow any change to the layout.</p>
-  <div class="scroll"><table>
-    <thead><tr><th>Cable</th><th>Need</th><th>Have</th><th>Short</th></tr></thead>
-    <tbody>{''.join(rows)}</tbody>
-  </table></div>
-</section>"""
-
-
 def render_todos():
     items = "".join(
         f'<li><input type="checkbox" class="todo-check" id="todo-{i}" data-task="todo-{i}">'
@@ -756,6 +721,12 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .chip:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .hint {{ color: var(--muted); font-size: 12.5px; margin: 0 0 20px; }}
 .racks {{ display: grid; gap: 64px; }}
+.sec-head {{ cursor: pointer; user-select: none; }}
+.sec-head::before {{ content: "▾"; display: inline-block; width: 14px; font-size: .75em; color: var(--muted);
+  transition: transform .15s; }}
+.sec-head[aria-expanded="false"]::before {{ transform: rotate(-90deg); }}
+.sec-head:hover {{ color: var(--ink); }}
+.sec-head:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 3px; }}
 .rack-name {{ color: var(--accent); margin: 0 0 12px; font: 700 15px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); display: flex; align-items: center; gap: 12px; }}
 .rack-name::after {{ content: ""; flex: 1; height: 1px; background: var(--line); }}
@@ -916,26 +887,6 @@ body.focusing .hit {{ opacity: 1; }}
   content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
 }}
-.stock {{ margin-top: 56px; max-width: 680px; }}
-.stock h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
-  letter-spacing: .03em; margin: 0 0 6px; }}
-.stock .lead {{ margin: 0 0 12px; color: var(--muted); max-width: 68ch; }}
-.stock table {{ width: 100%; min-width: 420px; border-collapse: collapse; font-size: 13.5px; }}
-.stock th {{ text-align: left; font: 600 11px/1.2 "Nunito", sans-serif; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }}
-.stock td, .stock tbody th {{ padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle;
-  font-variant-numeric: tabular-nums; }}
-.stock tbody th {{ text-align: left; font-weight: 400; }}
-.stock tbody th b {{ font-weight: 600; font-size: 13.5px; }}
-.stock tbody th small {{ display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }}
-.stock td.need, .stock td.short {{ text-align: center; width: 70px; }}
-.stock td.short.ok {{ color: var(--plugged); font-weight: 600; }}
-.stock td.short.gap {{ color: #d9603f; font-weight: 700; }}
-.stock-have {{
-  width: 64px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 3px; background: transparent;
-  color: var(--ink); font: 600 13px/1 "Nunito", system-ui, sans-serif; text-align: center;
-}}
-.stock-have:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 1px; }}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1092,6 +1043,8 @@ body.focusing .hit {{ opacity: 1; }}
   body {{ font-size: 11px; }}
   .wrap {{ max-width: none; padding: 0; }}
   .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle {{ display: none !important; }}
+  .sec-body {{ display: block !important; }}
+  .sec-head::before {{ display: none; }}
   h1 {{ font-size: 19px; color: #111; }}
   .rack-name, .cables h2, .midi-list h2, .moves h2, .notes h2 {{ color: #111; }}
   .meta {{ margin-top: 2px; font-size: 9.5px; }}
@@ -1151,9 +1104,6 @@ body.focusing .hit {{ opacity: 1; }}
   .gj-tabs {{ display: none; }}
   .gj-group li, .gj-group small {{ color: #111; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
-  .stock {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
-  .stock table {{ min-width: 0; font-size: 10px; }}
-  .stock td, .stock tbody th, .stock th {{ padding: 3px 8px; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
@@ -1211,7 +1161,6 @@ body.focusing .hit {{ opacity: 1; }}
   </section>
   {render_ghost_rear()}
   {render_room_cables()}
-  {render_stock()}
   {render_todos()}
   {render_midi_list()}
   {render_moves()}
@@ -1228,6 +1177,64 @@ body.focusing .hit {{ opacity: 1; }}
     document.getElementById('view-state').textContent = rear
       ? 'Looking at the back - port 1 is on the right'
       : 'Looking at the front';
+  }});
+}})();
+// Ghost rear panel: show one group at a time.
+(function () {{
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.gj-tab'));
+  if (!tabs.length) return;
+  tabs.forEach(function (tab) {{
+    tab.addEventListener('click', function () {{
+      var show = tab.dataset.show;
+      tabs.forEach(function (t) {{ t.setAttribute('aria-pressed', t === tab ? 'true' : 'false'); }});
+      document.querySelectorAll('.gj-group').forEach(function (g) {{
+        g.hidden = show !== 'all' && g.dataset.group !== show;
+      }});
+    }});
+  }});
+}})();
+// Every section folds away; the choice is remembered in this browser.
+(function () {{
+  var KEY = 'patchbay-sections';
+  function state() {{ try {{ return JSON.parse(localStorage.getItem(KEY) || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function remember(id, open) {{
+    try {{
+      var st = state();
+      st[id] = open;
+      localStorage.setItem(KEY, JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = state();
+  var blocks = document.querySelectorAll('.rack-group, .gear-rack, .ghost, .cables, .midi-list, .todos, .notes');
+  Array.prototype.forEach.call(blocks, function (block, i) {{
+    var head = block.querySelector('h2');
+    if (!head) return;
+    var id = block.id || head.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'sec-' + i;
+    var body = document.createElement('div');
+    body.className = 'sec-body';
+    while (head.nextSibling) body.appendChild(head.nextSibling);
+    block.appendChild(body);
+    head.classList.add('sec-head');
+    head.setAttribute('role', 'button');
+    head.setAttribute('tabindex', '0');
+    var open = id in saved ? !!saved[id] : true;
+    function apply(next) {{
+      open = next;
+      body.hidden = !open;
+      head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }}
+    apply(open);
+    function toggle() {{
+      apply(!open);
+      remember(id, open);
+    }}
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', function (e) {{
+      if (e.key === 'Enter' || e.key === ' ') {{
+        e.preventDefault();
+        toggle();
+      }}
+    }});
   }});
 }})();
 document.querySelectorAll('.chip').forEach(function (chip) {{
@@ -1381,66 +1388,6 @@ window.addEventListener('scroll', function () {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
         boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
-        paint();
-        localSave();
-      }}, function () {{ store = null; }});
-    }});
-  }}
-}})();
-// Cable stock: how many of each cable is on hand, saved in the artifact's store (else this browser).
-(function () {{
-  var inputs = Array.prototype.slice.call(document.querySelectorAll('.stock-have'));
-  if (!inputs.length) return;
-  var store = null, timers = {{}};
-  function paint() {{
-    inputs.forEach(function (input) {{
-      var row = input.closest('tr');
-      var need = parseInt(row.querySelector('.need').dataset.need, 10) || 0;
-      var have = parseInt(input.value, 10);
-      var cell = row.querySelector('.short');
-      if (isNaN(have)) {{
-        cell.textContent = '–';
-        cell.className = 'short';
-        return;
-      }}
-      var gap = need - have;
-      cell.textContent = gap > 0 ? gap : 'ok';
-      cell.className = 'short ' + (gap > 0 ? 'gap' : 'ok');
-    }});
-  }}
-  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-stock') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
-  function localSave() {{
-    try {{
-      var st = {{}};
-      inputs.forEach(function (i) {{ if (i.value !== '') st[i.dataset.task] = i.value; }});
-      localStorage.setItem('patchbay-stock', JSON.stringify(st));
-    }} catch (e) {{}}
-  }}
-  var saved = localLoad();
-  inputs.forEach(function (i) {{ if (i.dataset.task in saved) i.value = saved[i.dataset.task]; }});
-  paint();
-  inputs.forEach(function (input) {{
-    input.addEventListener('input', function () {{
-      paint();
-      localSave();
-      clearTimeout(timers[input.dataset.task]);
-      timers[input.dataset.task] = setTimeout(function () {{
-        if (store) store.collection('stock').doc(input.dataset.task)
-          .set({{ have: input.value === '' ? null : Number(input.value) }}).catch(function () {{}});
-      }}, 600);
-    }});
-  }});
-  if (window.claude && window.claude.use) {{
-    window.claude.use('db').then(function (db) {{
-      if (!db) return;
-      store = db;
-      db.collection('stock').onSnapshot(function (snap) {{
-        var st = {{}};
-        snap.docs.forEach(function (d) {{ st[d.id] = (d.data() || {{}}).have; }});
-        inputs.forEach(function (i) {{
-          if (i === document.activeElement) return;
-          if (i.dataset.task in st) i.value = st[i.dataset.task] == null ? '' : st[i.dataset.task];
-        }});
         paint();
         localSave();
       }}, function () {{ store = null; }});
