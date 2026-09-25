@@ -126,9 +126,10 @@ def render_bay(bay):
                 pc = categories.get(entry.get("category"), ("", "var(--spare)"))[1]
                 label = f'<em style="--pc:{pc}">Reserved · {escape(pending)}</em>'
             anchor = f' id="port-{bay["label_name"]}-{port}"' if row == "tape-top" else ""
-            marks = (flag if row == "tape-top" else "") + (info_mark if row == info_row else "")
-            return (f'<div class="{cls}"{anchor} {common} style="grid-row:{row_of[row]};grid-column:{cols}">'
-                    f'<span>{label}</span>{marks}</div>')
+            here = (flag if row == "tape-top" else "") + (info_mark if row == info_row else "")
+            room = (" has-flag" if (flag and row == "tape-top") else "") + (" has-info" if (info_mark and row == info_row) else "")
+            return (f'<div class="{cls}{room}"{anchor} {common} style="grid-row:{row_of[row]};grid-column:{cols}">'
+                    f'<span>{label}</span>{here}</div>')
 
         cells.append(tape(top, "tape-top"))
         if not single_row:
@@ -831,6 +832,8 @@ body.rear .panel > * {{ transform: rotateY(180deg); }}
 .tape.pending em {{ font: italic 500 10px/1.15 "IBM Plex Sans", sans-serif; color: var(--pc, var(--engrave)); letter-spacing: 0; }}
 .tape.blank {{ background: transparent; box-shadow: inset 0 0 0 1px var(--panel-edge); }}
 .tape.blank.pending {{ box-shadow: none; border: 1px dashed #6b7278; }}
+.tape.has-info {{ padding-left: 16px; }}
+.tape.has-flag {{ padding-right: 16px; }}
 .info-mark {{
   position: absolute; top: 4px; left: 3px; width: 13px; height: 13px; border-radius: 50%;
   background: #6b7278; color: #f3f4f5; font: 700 9px/13px "Nunito", sans-serif; font-style: normal; text-align: center;
