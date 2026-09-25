@@ -723,10 +723,11 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 12px; align-items: stretch; }}
 .bay-note-wrap {{ grid-column: 2; }}
 .bay-note-wrap summary {{
-  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; width: fit-content;
+  display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; width: 100%;
   font: 600 10.5px/1 "Nunito", system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--muted); padding: 3px 0;
+  color: var(--muted); padding: 6px 8px; border: 1px dashed transparent; border-radius: 3px;
 }}
+.bay-note-wrap summary:hover {{ border-color: var(--panel-edge); color: var(--ink); }}
 .bay-note-wrap summary::-webkit-details-marker {{ display: none; }}
 .bay-note-wrap summary::before {{ content: "▸"; font-size: 11px; transition: transform .15s; }}
 .bay-note-wrap[open] summary::before {{ transform: rotate(90deg); }}
@@ -1391,15 +1392,31 @@ setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
 setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
 // Open a bay's notes when it has something in it, and flag it in the summary.
 (function () {{
+  var KEY = 'patchbay-note-open';
+  function openState() {{
+    try {{ return JSON.parse(localStorage.getItem(KEY) || '{{}}'); }} catch (e) {{ return {{}}; }}
+  }}
+  function remember(bay, open) {{
+    try {{
+      var st = openState();
+      st[bay] = open;
+      localStorage.setItem(KEY, JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
   function mark(n) {{
     var wrap = n.closest('.bay-note-wrap');
     if (!wrap) return;
     wrap.classList.toggle('has-text', !!n.value.trim());
-    if (n.value.trim()) wrap.open = true;
   }}
-  var notes = document.querySelectorAll('.bay-note');
+  var saved = openState();
+  var notes = Array.prototype.slice.call(document.querySelectorAll('.bay-note'));
   notes.forEach(function (n) {{
+    var wrap = n.closest('.bay-note-wrap');
+    var bay = n.dataset.bay;
     mark(n);
+    // Remembered choice wins; otherwise open a bay that already has notes.
+    wrap.open = bay in saved ? !!saved[bay] : !!n.value.trim();
+    wrap.addEventListener('toggle', function () {{ remember(bay, wrap.open); }});
     n.addEventListener('input', function () {{ mark(n); }});
   }});
   setInterval(function () {{ notes.forEach(mark); }}, 2000);
