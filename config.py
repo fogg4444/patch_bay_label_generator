@@ -127,7 +127,10 @@ config = [
     "entries": [
         {"normalled": True, "top": "Ghost 1-16 Tape Send", "bottom": "Apollo #1 1-16 In", "width": 16, "category": Category.CONSOLE},
         {"normalled": True, "top": "Control Room Out L/R", "bottom": "Yamaha Monitors In", "width": 2, "category": Category.MONITORING},
-        {"normalled": True, "top": "Alt CRM Out L", "bottom": "Mix Cube In", "width": 1, "category": Category.MONITORING},
+        {"normalled": True, "top": "Alt CRM Out L", "bottom": "Mix Cube In", "width": 1, "category": Category.MONITORING,
+         "info": "Avantone Active MixCube: the lamp in its rear power switch is dead. The speaker and its supply "
+                 "are fine - the switch just doesn't light up, so don't go chasing a dead unit.",
+         "info_at": "bottom"},
         {"normalled": True, "top": "Alt CRM Out R", "bottom": "-", "width": 1, "category": Category.MONITORING},
         {"normalled": True, "top": "Studio A O/P L/R", "bottom": "Headamp Pro Input", "width": 2, "category": Category.MONITORING},
         {"normalled": True, "top": "Studio Phones B L/R Out", "bottom": "Meyer Mains In L/R", "width": 2, "category": Category.MONITORING},
