@@ -1121,8 +1121,11 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card thead tr + tr th {{ padding-top: 6px; font-weight: 500; }}
 /* a gap between the two groups, and after the name column */
 .room-card th:nth-child(2), .room-card td:nth-child(2) {{ padding-left: 14px; }}
-.room-card thead tr:first-child th.grp + th.grp {{ border-left: 1px solid var(--line); }}
-.room-card tbody td:nth-child(5), .room-card thead tr + tr th:nth-child(3) {{ border-left: 1px solid var(--line); }}
+.room-card thead tr:first-child th.grp {{ border-left: 1px solid var(--line); }}
+.room-card tbody td:nth-child(3), .room-card tbody td:nth-child(5),
+.room-card thead tr + tr th:nth-child(1), .room-card thead tr + tr th:nth-child(3) {{
+  border-left: 1px solid var(--line);
+}}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 8px 10px 8px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 6px; min-width: 0; }}
@@ -1368,8 +1371,8 @@ body.focusing .hit {{ opacity: 1; }}
     <h2>Open questions</h2>
     <ul>{render_notes()}</ul>
   </section>
-  {render_ghost_rear()}
   {render_room_cables()}
+  {render_ghost_rear()}
   {render_solder()}
   {render_compromises()}
   {render_todos()}
