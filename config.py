@@ -92,8 +92,9 @@ config = [
     "entries": [
         {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE},
         {"normalled": False, "top": "Aux 8 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
+        {"normalled": False, "top": "-",                     "bottom": "-",                   "width": 1},
         {"normalled": False, "top": "Moog DLY Out", "bottom": "-", "width": 1, "category": Category.FX},
-        {"normalled": False, "top": "-", "bottom": "-", "width": 3},
+        {"normalled": False, "top": "-",                     "bottom": "-",                   "width": 2},
         {"normalled": True, "top": "Main Insert Send", "bottom": "Main Insert Return", "width": 2, "category": Category.GROUPS},
     ]
   },

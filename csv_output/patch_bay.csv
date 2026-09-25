@@ -16,8 +16,8 @@ Ghost Channel Insert Return 17-32,,,,,,,,,,,,,,,,EMT 140 In,PCM60 In,SDE 1000 In
 
 Patch bay: 4
 
-Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,Aux 8 Out L/R,,Moog DLY Out,-,,,Main Insert Send,
-Console Line In 1-16,,,,,,,,,,,,,,,,-,,-,-,,,Main Insert Return,
+Worm hole Matched to Left Side Patch bay 1-16 top,,,,,,,,,,,,,,,,Aux 8 Out L/R,,-,Moog DLY Out,-,,Main Insert Send,
+Console Line In 1-16,,,,,,,,,,,,,,,,-,,-,-,-,,Main Insert Return,
 
 Patch bay: 5
 
