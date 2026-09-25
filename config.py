@@ -345,9 +345,16 @@ todos = [
     "Find the screws for all the cover plates",
     "Gather every cover plate in one place",
     "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
+    "Go back to every black-flagged XLR run and terminate it once the parts arrive",
 ]
 
 
 # Compromises made during the build that aren't tied to one port. Anything with an "info"
 # key on a patch bay entry is listed alongside these automatically.
-compromises = []
+compromises = [
+    {"where": "Room XLR runs", "what":
+        "While spooling out the cable, every XLR run from a room to the console is flagged with black tape at "
+        "BOTH ends - room side and console side - because the parts to finish them aren't here yet. Anything "
+        "without a black flag was soldered and jacked into the patch bay as it was pulled. So: black flag = "
+        "still to terminate."},
+]
