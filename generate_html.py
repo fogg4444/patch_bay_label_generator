@@ -1300,23 +1300,6 @@ window.addEventListener('scroll', function () {{
       }}, function () {{ store = null; }});
     }});
   }}
-}}
-setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
-setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
-// Open a bay's notes when it has something in it, and flag it in the summary.
-(function () {{
-  function mark(n) {{
-    var wrap = n.closest('.bay-note-wrap');
-    if (!wrap) return;
-    wrap.classList.toggle('has-text', !!n.value.trim());
-    if (n.value.trim()) wrap.open = true;
-  }}
-  var notes = document.querySelectorAll('.bay-note');
-  notes.forEach(function (n) {{
-    mark(n);
-    n.addEventListener('input', function () {{ mark(n); }});
-  }});
-  setInterval(function () {{ notes.forEach(mark); }}, 2000);
 }})();
 // To do list: saved in the artifact's store (else this browser).
 (function () {{
@@ -1403,6 +1386,23 @@ function setupNotes(selector, collection, key, attr) {{
       }}, function () {{ store = null; }});
     }});
   }}
+}}
+setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
+setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
+// Open a bay's notes when it has something in it, and flag it in the summary.
+(function () {{
+  function mark(n) {{
+    var wrap = n.closest('.bay-note-wrap');
+    if (!wrap) return;
+    wrap.classList.toggle('has-text', !!n.value.trim());
+    if (n.value.trim()) wrap.open = true;
+  }}
+  var notes = document.querySelectorAll('.bay-note');
+  notes.forEach(function (n) {{
+    mark(n);
+    n.addEventListener('input', function () {{ mark(n); }});
+  }});
+  setInterval(function () {{ notes.forEach(mark); }}, 2000);
 }})();
 // MIDI hookups: saved in the artifact's shared store when available, else this browser.
 (function () {{
