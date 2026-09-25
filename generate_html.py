@@ -1103,8 +1103,8 @@ body.focusing .hit {{ opacity: 1; }}
 .cables .wp-label {{ font-size: 12.5px; }}
 .cables .wp-label b {{ font-size: 18px; }}
 .cables .wire-progress.total .wp-label b {{ color: var(--plugged); }}
-.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }}
-.room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground);
+.room-grid {{ display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }}
+.room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px 14px; background: var(--ground);
   min-width: 0; overflow: hidden; }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
   border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 6px; }}
@@ -1113,16 +1113,20 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done {{ border-color: var(--plugged); }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
-.room-card thead th {{ font: 600 9px/1.25 "Nunito", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--muted); padding: 0 4px 4px; text-align: center; width: 52px; }}
-.room-card thead th.grp {{ color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 3px; }}
-.room-card thead tr + tr th {{ padding-top: 3px; font-weight: 500; }}
+.room-card thead th {{ font: 600 9.5px/1.3 "Nunito", sans-serif; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--muted); padding: 0 6px 6px; text-align: center; width: 56px; }}
+.room-card thead th.grp {{ color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 5px; }}
+.room-card thead tr + tr th {{ padding-top: 6px; font-weight: 500; }}
+/* a gap between the two groups, and after the name column */
+.room-card th:nth-child(2), .room-card td:nth-child(2) {{ padding-left: 14px; }}
+.room-card thead tr:first-child th.grp + th.grp {{ border-left: 1px solid var(--line); }}
+.room-card tbody td:nth-child(5), .room-card thead tr + tr th:nth-child(3) {{ border-left: 1px solid var(--line); }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
-.room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 8px 6px 0; border-top: 1px solid var(--line); }}
+.room-card tbody th {{ text-align: left; font-weight: 400; padding: 8px 10px 8px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 6px; min-width: 0; }}
 .room-card tbody th .row-label b {{ flex: 1; }}
 .room-card tbody th .kind {{ flex: none; width: 52px; text-align: center; }}
-.room-card tbody td {{ text-align: center; padding: 6px 5px; border-top: 1px solid var(--line); }}
+.room-card tbody td {{ text-align: center; padding: 8px 6px; border-top: 1px solid var(--line); }}
 .room-card tbody th b {{ font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
 .room-card tbody th small {{ display: block; color: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }}
 .room-card tbody th small.ends {{ font-style: italic; }}
