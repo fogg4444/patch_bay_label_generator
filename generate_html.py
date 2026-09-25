@@ -534,7 +534,7 @@ def render_room_cables():
                     verb = verb.replace("Solder", "Terminate")
                 group = {"Terminated": "solder", "Patched": "patch"}.get(group_name, step)
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
-                             f'data-room="{slug(room)}" data-group="{group}" data-kind="{slug(kind)}" '
+                             f'data-room="{slug(room)}" data-group="{group}" data-step="{step}" data-kind="{slug(kind)}" '
                              f'title="{escape(room)} · {escape(name)} · {escape(verb)}" '
                              f'aria-label="{escape(room)} {escape(name)}: {escape(verb)}"></td>')
             rows.append('<tr><th scope="row"><span class="row-label"><b>' + escape(name) + '</b>'
@@ -560,12 +560,16 @@ def render_room_cables():
             '<div class="wp-track" role="progressbar" aria-label="XLR runs pulled" aria-valuemin="0" aria-valuemax="100" '
             'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
             '<div class="wire-progress" data-group="solder">'
-            '<div class="wp-label"><b class="wp-pct">0%</b> ends soldered <span class="wp-count"></span></div>'
-            '<div class="wp-track" role="progressbar" aria-label="Cable ends soldered" aria-valuemin="0" aria-valuemax="100" '
+            '<div class="wp-label"><b class="wp-pct">0%</b> ends terminated <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Cable ends terminated" aria-valuemin="0" aria-valuemax="100" '
             'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
-            '<div class="wire-progress" data-group="patch">'
-            '<div class="wp-label"><b class="wp-pct">0%</b> patched in <span class="wp-count"></span></div>'
-            '<div class="wp-track" role="progressbar" aria-label="Cables patched in" aria-valuemin="0" aria-valuemax="100" '
+            '<div class="wire-progress" data-step="patch-room">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> patched, room side <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Patched at the room" aria-valuemin="0" aria-valuemax="100" '
+            'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
+            '<div class="wire-progress" data-step="patch">'
+            '<div class="wp-label"><b class="wp-pct">0%</b> patched, console side <span class="wp-count"></span></div>'
+            '<div class="wp-track" role="progressbar" aria-label="Patched at the console" aria-valuemin="0" aria-valuemax="100" '
             'aria-valuenow="0"><div class="wp-fill"></div></div></div>'
             '<div class="wire-progress total" data-group="all">'
             '<div class="wp-label"><b class="wp-pct">0%</b> of everything <span class="wp-count"></span></div>'
@@ -1599,9 +1603,9 @@ window.addEventListener('scroll', function () {{
       el.closest('.room-card').classList.toggle('done', c[0] === c[1]);
     }});
     document.querySelectorAll('.cable-bars .wire-progress').forEach(function (bar) {{
-      var g = bar.dataset.group;
-      var kind = bar.dataset.kind;
+      var g = bar.dataset.group, step = bar.dataset.step, kind = bar.dataset.kind;
       var mine = boxes.filter(function (b) {{
+        if (step) return b.dataset.step === step;
         return (g === 'all' || b.dataset.group === g) && (!kind || b.dataset.kind === kind);
       }});
       var done = mine.filter(function (b) {{ return b.checked; }}).length;
