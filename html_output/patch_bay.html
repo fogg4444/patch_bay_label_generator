@@ -86,8 +86,20 @@ body.rear .flip-btn .flip-icon { transform: rotate(180deg); }
 .rack .bay:first-child { padding-top: 4px; }
 .rack .bay:last-child { border-bottom: 0; }
 .bay { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 12px; align-items: stretch; }
+.bay-note-wrap { grid-column: 2; }
+.bay-note-wrap summary {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; width: fit-content;
+  font: 600 10.5px/1 "Nunito", system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); padding: 3px 0;
+}
+.bay-note-wrap summary::-webkit-details-marker { display: none; }
+.bay-note-wrap summary::before { content: "▸"; font-size: 11px; transition: transform .15s; }
+.bay-note-wrap[open] summary::before { transform: rotate(90deg); }
+.bay-note-wrap summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bay-note-wrap.has-text summary { color: var(--accent); }
+.bay-note-wrap.has-text summary::after { content: "•"; }
 .bay-note {
-  grid-column: 2; width: 100%; resize: vertical; min-height: 30px; border: 1px dashed var(--panel-edge);
+  width: 100%; margin-top: 4px; resize: vertical; min-height: 30px; border: 1px dashed var(--panel-edge);
   border-radius: 3px; background: transparent; color: var(--ink); padding: 4px 7px;
   font: 400 12px/1.4 "Nunito", system-ui, sans-serif;
 }
@@ -380,6 +392,8 @@ body.focusing .hit { opacity: 1; }
   .rack-name { margin: 0 0 6px; font-size: 13px; }
   .bay { grid-template-columns: 44px minmax(0, 1fr); gap: 3px 6px; break-inside: avoid; }
   .bay-note { min-height: 16px; font-size: 8px; padding: 2px 4px; }
+  .bay-note-wrap summary { display: none; }
+  .bay-note-wrap .bay-note { display: block; }
   .bay-head h2 { font-size: 18px; }
   .bay-head h2.named { font-size: 10px; }
   .bay-head p { font-size: 8.5px; }
@@ -762,8 +776,11 @@ Top: Art Comp In L/R
 Bottom: Art Comp Out L/R
 Not normalled" style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="1" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 1"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="1" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 1"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-2">
   <header class="bay-head">
@@ -935,8 +952,11 @@ Top: Group 1 - 8 Insert Send
 Bottom: Group 1 - 8 Insert Return
 Not normalled" style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="2" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 2"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="2" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 2"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-3">
   <header class="bay-head">
@@ -1153,8 +1173,11 @@ Top: Aux 7 Out L/R
 Bottom: -
 Normalled" style="grid-area:5 / 25"></span>
   </div></div>
-  <textarea class="bay-note" data-bay="3" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 3"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="3" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 3"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-4">
   <header class="bay-head">
@@ -1350,8 +1373,11 @@ Top: Main Insert Send
 Bottom: Main Insert Return
 Normalled" style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="4" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 4"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="4" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 4"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-5">
   <header class="bay-head">
@@ -1520,8 +1546,11 @@ Top: -
 Bottom: -
 Not normalled" style="grid-area:5 / 25"></span>
   </div></div>
-  <textarea class="bay-note" data-bay="5" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 5"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="5" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 5"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-6">
   <header class="bay-head">
@@ -1696,8 +1725,11 @@ Top: -
 Bottom: -
 Not normalled" style="grid-area:5 / 25"></span>
   </div></div>
-  <textarea class="bay-note" data-bay="6" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 6"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="6" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 6"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-7">
   <header class="bay-head">
@@ -1903,8 +1935,11 @@ Bottom: FX 4 In L/R
 Not normalled
 Note: Card is turned but nothing is wired to the rear top jack, so the front top jack is connected to FX 4 In L/R. Only patch into it if you mean to feed FX 4 In L/R." style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="7" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 7"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="7" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 7"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-8">
   <header class="bay-head">
@@ -2112,8 +2147,11 @@ Top: Studio Phones B L/R Out
 Bottom: Meyer Mains In L/R
 Normalled" style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="8" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 8"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="8" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 8"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-9">
   <header class="bay-head">
@@ -2312,8 +2350,11 @@ Top: Ghost MIX B O/P L/R
 Bottom: -
 Not normalled" style="grid-area:5 / 25"></span>
   </div></div>
-  <textarea class="bay-note" data-bay="9" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 9"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="9" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 9"></textarea>
+  </details>
 </section>
 <section class="bay" id="bay-10">
   <header class="bay-head">
@@ -2572,8 +2613,11 @@ Top: Group 1 - 8 Out
 Bottom: Hearback In 1 - 8
 Not normalled" style="grid-area:5 / 25"></button>
   </div></div>
-  <textarea class="bay-note" data-bay="10" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 10"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="10" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 10"></textarea>
+  </details>
 </section></div></section><section class="rack-group"><h2 class="rack-name">Amp rack</h2><div class="rack">
 <section class="bay" id="bay-11-amp-rack">
   <header class="bay-head">
@@ -2769,8 +2813,11 @@ Top: -
 Bottom: -
 Not normalled" style="grid-area:5 / 25"></span>
   </div></div>
-  <textarea class="bay-note" data-bay="11-amp-rack" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay 11-amp-rack"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="11-amp-rack" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay 11-amp-rack"></textarea>
+  </details>
 </section></div></section><section class="rack-group"><h2 class="rack-name">Ethernet</h2><div class="rack">
 <section class="bay" id="bay-ethernet">
   <header class="bay-head">
@@ -2829,8 +2876,11 @@ Top: -" style="grid-area:3 / 18"><svg viewBox="0 0 26 24" aria-hidden="true"><re
 Top: -" style="grid-area:3 / 19"><svg viewBox="0 0 26 24" aria-hidden="true"><rect x="1" y="1" width="24" height="22" rx="1.5" fill="#9aa1a6"/><path d="M3.5 3.5h19v12.5h-5v3.5h-9v-3.5h-5z" fill="#0c0d0e"/><rect x="5.30" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="7.35" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="9.40" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="11.45" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="13.50" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="15.55" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="17.60" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="19.65" y="5" width="1.1" height="4.2" fill="#c9a34a"/></svg></span><span class="jack drawn ethernet" data-cat="spare" data-norm="spare" title="Bay ethernet · port 18-20
 Top: -" style="grid-area:3 / 20"><svg viewBox="0 0 26 24" aria-hidden="true"><rect x="1" y="1" width="24" height="22" rx="1.5" fill="#9aa1a6"/><path d="M3.5 3.5h19v12.5h-5v3.5h-9v-3.5h-5z" fill="#0c0d0e"/><rect x="5.30" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="7.35" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="9.40" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="11.45" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="13.50" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="15.55" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="17.60" y="5" width="1.1" height="4.2" fill="#c9a34a"/><rect x="19.65" y="5" width="1.1" height="4.2" fill="#c9a34a"/></svg></span>
   </div></div>
-  <textarea class="bay-note" data-bay="ethernet" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay ethernet"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="ethernet" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay ethernet"></textarea>
+  </details>
 </section></div></section><section class="rack-group"><h2 class="rack-name">MIDI</h2><div class="rack">
 <section class="bay" id="bay-midi">
   <header class="bay-head">
@@ -2886,8 +2936,11 @@ Reserved for: MIDI patch bay - label it once the instruments are installed" styl
 Top: -
 Reserved for: MIDI patch bay - label it once the instruments are installed" style="grid-area:3 / 22"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#9aa1a6"/><circle cx="12" cy="12" r="9.2" fill="#0c0d0e"/><rect x="10.4" y="2.2" width="3.2" height="3.4" rx=".6" fill="#9aa1a6"/><circle cx="17.20" cy="12.00" r="1.25" fill="#b9bec2"/><circle cx="15.68" cy="15.68" r="1.25" fill="#b9bec2"/><circle cx="12.00" cy="17.20" r="1.25" fill="#b9bec2"/><circle cx="8.32" cy="15.68" r="1.25" fill="#b9bec2"/><circle cx="6.80" cy="12.00" r="1.25" fill="#b9bec2"/></svg></span>
   </div></div>
-  <textarea class="bay-note" data-bay="midi" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay midi"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="midi" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay midi"></textarea>
+  </details>
 </section></div></section><section class="rack-group"><h2 class="rack-name">Power switches</h2><div class="rack">
 <section class="bay" id="bay-power-switches">
   <header class="bay-head">
@@ -2917,8 +2970,11 @@ Top: dbx 160 #2" style="grid-area:3 / 9"><svg viewBox="0 0 20 30" aria-hidden="t
 Top: Headamp" style="grid-row:2;grid-column:10 / 11"><span>Headamp</span></div><button type="button" class="jack wire drawn switch" data-wire="bay-power-switches-t-10" data-bay="power-switches" aria-pressed="false" aria-label="Bay power-switches top port 10 rear: Headamp" data-cat="power" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay power-switches · port 10
 Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="true"><rect x="1" y="1" width="18" height="28" rx="2.5" fill="#0c0d0e" stroke="#9aa1a6" stroke-width="1.5"/><rect x="4" y="4" width="12" height="11" rx="1.5" fill="#3a4046"/><rect x="4" y="15" width="12" height="11" rx="1.5" fill="#23272b"/><rect x="8.5" y="7" width="3" height="5" rx=".8" fill="#b9bec2"/><circle cx="10" cy="20.5" r="2.4" fill="none" stroke="#6b7278" stroke-width="1.2"/></svg></button>
   </div></div>
-  <textarea class="bay-note" data-bay="power-switches" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay power-switches"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="power-switches" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay power-switches"></textarea>
+  </details>
 </section></div></section></div>
   <div class="gear">
 <section class="gear-rack">
@@ -3393,6 +3449,21 @@ window.addEventListener('scroll', function () {
 }
 setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
 setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
+// Open a bay's notes when it has something in it, and flag it in the summary.
+(function () {
+  function mark(n) {
+    var wrap = n.closest('.bay-note-wrap');
+    if (!wrap) return;
+    wrap.classList.toggle('has-text', !!n.value.trim());
+    if (n.value.trim()) wrap.open = true;
+  }
+  var notes = document.querySelectorAll('.bay-note');
+  notes.forEach(function (n) {
+    mark(n);
+    n.addEventListener('input', function () { mark(n); });
+  });
+  setInterval(function () { notes.forEach(mark); }, 2000);
+})();
 // To do list: saved in the artifact's store (else this browser).
 (function () {
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.todo-check'));

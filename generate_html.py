@@ -179,8 +179,11 @@ def render_bay(bay):
   <div class="scroll"><div class="panel{' has-divider' if has_divider else ''}{' idle' if bay.get('in_use') is False else ''}" style="grid-template-columns:{template}">
     {''.join(cells)}
   </div></div>
-  <textarea class="bay-note" data-bay="{escape(bay['label_name'])}" rows="1" placeholder="Notes for this bay…"
-    aria-label="Notes for bay {escape(bay['label_name'])}"></textarea>
+  <details class="bay-note-wrap">
+    <summary>Notes</summary>
+    <textarea class="bay-note" data-bay="{escape(bay['label_name'])}" rows="2" placeholder="Notes for this bay…"
+      aria-label="Notes for bay {escape(bay['label_name'])}"></textarea>
+  </details>
 </section>"""
 
 
@@ -718,8 +721,20 @@ body.rear .flip-btn .flip-icon {{ transform: rotate(180deg); }}
 .rack .bay:first-child {{ padding-top: 4px; }}
 .rack .bay:last-child {{ border-bottom: 0; }}
 .bay {{ display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 12px; align-items: stretch; }}
+.bay-note-wrap {{ grid-column: 2; }}
+.bay-note-wrap summary {{
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; width: fit-content;
+  font: 600 10.5px/1 "Nunito", system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); padding: 3px 0;
+}}
+.bay-note-wrap summary::-webkit-details-marker {{ display: none; }}
+.bay-note-wrap summary::before {{ content: "▸"; font-size: 11px; transition: transform .15s; }}
+.bay-note-wrap[open] summary::before {{ transform: rotate(90deg); }}
+.bay-note-wrap summary:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.bay-note-wrap.has-text summary {{ color: var(--accent); }}
+.bay-note-wrap.has-text summary::after {{ content: "•"; }}
 .bay-note {{
-  grid-column: 2; width: 100%; resize: vertical; min-height: 30px; border: 1px dashed var(--panel-edge);
+  width: 100%; margin-top: 4px; resize: vertical; min-height: 30px; border: 1px dashed var(--panel-edge);
   border-radius: 3px; background: transparent; color: var(--ink); padding: 4px 7px;
   font: 400 12px/1.4 "Nunito", system-ui, sans-serif;
 }}
@@ -1012,6 +1027,8 @@ body.focusing .hit {{ opacity: 1; }}
   .rack-name {{ margin: 0 0 6px; font-size: 13px; }}
   .bay {{ grid-template-columns: 44px minmax(0, 1fr); gap: 3px 6px; break-inside: avoid; }}
   .bay-note {{ min-height: 16px; font-size: 8px; padding: 2px 4px; }}
+  .bay-note-wrap summary {{ display: none; }}
+  .bay-note-wrap .bay-note {{ display: block; }}
   .bay-head h2 {{ font-size: 18px; }}
   .bay-head h2.named {{ font-size: 10px; }}
   .bay-head p {{ font-size: 8.5px; }}
@@ -1286,6 +1303,21 @@ window.addEventListener('scroll', function () {{
 }}
 setupNotes('.room-note', 'room_notes', 'patchbay-notes', 'room');
 setupNotes('.bay-note', 'bay_notes', 'patchbay-bay-notes', 'bay');
+// Open a bay's notes when it has something in it, and flag it in the summary.
+(function () {{
+  function mark(n) {{
+    var wrap = n.closest('.bay-note-wrap');
+    if (!wrap) return;
+    wrap.classList.toggle('has-text', !!n.value.trim());
+    if (n.value.trim()) wrap.open = true;
+  }}
+  var notes = document.querySelectorAll('.bay-note');
+  notes.forEach(function (n) {{
+    mark(n);
+    n.addEventListener('input', function () {{ mark(n); }});
+  }});
+  setInterval(function () {{ notes.forEach(mark); }}, 2000);
+}})();
 // To do list: saved in the artifact's store (else this browser).
 (function () {{
   var boxes = Array.prototype.slice.call(document.querySelectorAll('.todo-check'));
