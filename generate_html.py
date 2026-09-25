@@ -112,7 +112,8 @@ def render_bay(bay):
         common = f'data-cat="{cat}" data-norm="{norm_state}"{" data-pending" if pending else ""} title="{escape(tip)}"'
         flag = ""
         info_row = "tape-bottom" if entry.get("info_at") == "bottom" else "tape-top"
-        info_mark = f'<i class="info-mark" title="{escape(info)}" aria-label="{escape(info)}">i</i>' if info else ""
+        info_mark = (f'<i class="info-mark" tabindex="0" data-tip="{escape(info)}" '
+                     f'aria-label="{escape(info)}">i</i>') if info else ""
         if note:
             note_id = f"note-{bay['label_name']}-{port}"
             flag = (f'<button type="button" class="flag" popovertarget="{note_id}" aria-label="Open question">?</button>'
@@ -950,9 +951,15 @@ body.rear .panel > * {{ transform: rotateY(180deg); }}
 .tape.blank {{ background: transparent; box-shadow: inset 0 0 0 1px var(--panel-edge); }}
 .tape.blank.pending {{ box-shadow: none; border: 1px dashed #6b7278; }}
 .tape.has-info {{ padding-left: 16px; }}
+.hover-tip {{
+  position: fixed; z-index: 50; max-width: min(300px, calc(100vw - 24px)); pointer-events: none;
+  background: var(--ground); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid #6b7278;
+  border-radius: 3px; padding: 8px 10px; box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  font: 400 12.5px/1.45 "Nunito", system-ui, sans-serif;
+}}
 .tape.has-flag {{ padding-right: 16px; }}
 .info-mark {{
-  position: absolute; top: 4px; left: 3px; width: 13px; height: 13px; border-radius: 50%;
+  cursor: help; position: absolute; top: 4px; left: 3px; width: 13px; height: 13px; border-radius: 50%;
   background: #6b7278; color: #f3f4f5; font: 700 9px/13px "Nunito", sans-serif; font-style: normal; text-align: center;
 }}
 .flag {{
@@ -1406,6 +1413,35 @@ body.focusing .hit {{ opacity: 1; }}
       }});
     }});
   }});
+}})();
+// Hover or focus an "i" marker to read its note, placed so it never covers the label.
+(function () {{
+  var tip = null;
+  function hide() {{
+    if (tip) tip.remove();
+    tip = null;
+  }}
+  function show(el) {{
+    hide();
+    tip = document.createElement('div');
+    tip.className = 'hover-tip';
+    tip.textContent = el.dataset.tip;
+    document.body.appendChild(tip);
+    var r = el.getBoundingClientRect();
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = Math.min(Math.max(12, r.left + r.width / 2 - w / 2), window.innerWidth - w - 12);
+    var top = r.bottom + 8;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }}
+  document.querySelectorAll('[data-tip]').forEach(function (el) {{
+    el.addEventListener('mouseenter', function () {{ show(el); }});
+    el.addEventListener('mouseleave', hide);
+    el.addEventListener('focus', function () {{ show(el); }});
+    el.addEventListener('blur', hide);
+  }});
+  window.addEventListener('scroll', hide, {{ passive: true, capture: true }});
 }})();
 // Every section folds away; the choice is remembered in this browser.
 (function () {{

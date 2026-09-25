@@ -144,7 +144,7 @@ config = [
          "info": "Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack.",
          "info_at": "bottom"},
         {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK},
-        {"normalled": True, "top": "Ghost MIX O/P L/R", "bottom": "Phones Amp In L/R", "width": 2, "category": Category.TWO_TRACK},
+        {"normalled": False, "top": "Ghost MIX O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": False, "top": "Ghost MIX B O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
     ]
   },
@@ -247,7 +247,7 @@ gear_racks = [
         {"u": 10, "size": 1, "name": "SDE 1000 delay",         "category": Category.FX,       "patch": "SDE 1000"},
         {"u": 11, "size": 2, "name": "dbx 160 compressors",    "category": Category.OUTBOARD, "patch": "160"},
         {"u": 13, "size": 1, "name": "EMT reverb remote",      "category": Category.FX,       "movable": True},
-        {"u": 14, "size": 1, "name": "Headphone amp",          "category": Category.MONITORING, "patch": "Phones Amp", "movable": True},
+        {"u": 14, "size": 1, "name": "Headphone amp",          "category": Category.MONITORING, "patch": "Headamp Pro Input", "movable": True},
         {"u": 15, "size": 1, "name": "Headphone power supply", "category": Category.POWER},
         {"u": 16, "size": 1, "name": "MIDI patch bay",         "category": Category.MIDI, "bay": "midi"},
         {"u": 17, "size": 1, "name": "Hearback unit",          "category": Category.MONITORING, "patch": "Hearback"},
