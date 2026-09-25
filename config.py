@@ -151,8 +151,11 @@ config = [
   {
     "label_name": "10",
     "entries": room_sends + [
+        {"normalled": False, "top": "Front Porch", "bottom": "Back Porch", "width": 1, "category": Category.ROOMS,
+         "info": "Mono line sends, one per porch, feeding the amp that drives the porch speakers.",
+         "info_at": "top"},
         {"normalled": False, "top": "Basement Snake A, B, C, D", "bottom": "Basement Snake E, F, G, H", "width": 4, "category": Category.TIE_LINES},
-        {"normalled": False, "top": "-", "bottom": "-", "width": 3},
+        {"normalled": False, "top": "-", "bottom": "-", "width": 2},
         {"normalled": False, "top": "Group 1 - 8 Out", "bottom": "Hearback In 1 - 8", "width": 8, "category": Category.GROUPS},
     ]
   },
