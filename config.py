@@ -297,8 +297,9 @@ midi_instruments = [
 
 # Soundcraft Ghost centre (master) section rear panel, in the order the manual lists it.
 # All jacks are 1/4"; "wired" is the patch bay label this jack goes to, if any.
+# "wiring" is how the manual says each jack is wired.
 ghost_rear = [
-    {"group": "Inputs", "jacks": [
+    {"group": "Inputs", "wiring": "TRS balanced · tip signal +, ring signal −, sleeve ground", "jacks": [
         {"label": "FX 1 L/R", "category": Category.FX, "wired": "FX 1 In L/R"},
         {"label": "FX 2 L/R", "category": Category.FX, "wired": "FX 2 In L/R"},
         {"label": "FX 3 L/R", "category": Category.FX, "wired": "FX 3 In L/R"},
@@ -306,7 +307,8 @@ ghost_rear = [
         {"label": "2TK A I/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost 2 Track A Input"},
         {"label": "2TK B I/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost 2 Track B Input"},
     ]},
-    {"group": "Outputs", "jacks": [
+    {"group": "Outputs", "wiring": "TRS ground compensated · tip signal +, ring ground sense, sleeve ground "
+                                   "(CRM, ALT and STU PHNS B are plain unbalanced)", "jacks": [
         {"label": "GRP 1-8", "category": Category.GROUPS, "wired": "Group 1 - 8 Out", "count": 8},
         {"label": "AUX 1", "category": Category.FX, "wired": "Aux 1 Out", "count": 1},
         {"label": "AUX 2", "category": Category.FX, "wired": "Aux 2 Out", "count": 1},
@@ -317,12 +319,12 @@ ghost_rear = [
         {"label": "AUX 8 L/R", "category": Category.FX, "wired": "Aux 8 Out L/R"},
         {"label": "MIX O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost MIX O/P L/R"},
         {"label": "MIX B O/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost MIX B O/P L/R"},
-        {"label": "CRM O/P L/R", "category": Category.MONITORING, "wired": "Control Room Out L/R"},
-        {"label": "ALT O/P L/R", "category": Category.MONITORING, "wired": "Alt CRM Out L"},
+        {"label": "CRM O/P L/R", "category": Category.MONITORING, "wiring": "unbalanced", "wired": "Control Room Out L/R"},
+        {"label": "ALT O/P L/R", "category": Category.MONITORING, "wiring": "unbalanced", "wired": "Alt CRM Out L"},
         {"label": "STU O/P A L/R", "category": Category.MONITORING, "wired": "Studio A O/P L/R"},
-        {"label": "STU PHNS B L/R", "category": Category.MONITORING, "wired": "Studio Phones B L/R Out"},
+        {"label": "STU PHNS B L/R", "category": Category.MONITORING, "wiring": "unbalanced", "wired": "Studio Phones B L/R Out"},
     ]},
-    {"group": "Inserts", "jacks": [
+    {"group": "Inserts", "wiring": "TRS insert, unbalanced · tip RETURN, ring SEND, sleeve ground", "jacks": [
         {"label": "GRP INS 1-8", "category": Category.GROUPS, "wired": "Group 1 - 8 Insert Send", "count": 8},
         {"label": "MIX INS L/R", "category": Category.CONSOLE, "wired": "Main Insert Send"},
     ]},

@@ -555,6 +555,7 @@ def render_ghost_rear():
             count = j.get("count", 2 if "L/R" in j["label"] else 1)
             at = find_port(j["wired"]) if j.get("wired") else None
             to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
+            kind = j.get("wiring", "")
             wires = ""
             if at:
                 side = "b" if at[2] == "bottom" else "t"
@@ -565,11 +566,13 @@ def render_ghost_rear():
                 f'<li data-cat="{j.get("category", "spare")}"{wires} title="{escape(j["label"])} - {escape(to)}">'
                 + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
                 + f'<b>{escape(j["label"])}</b>'
+                + (f'<em class="gj-kind">{escape(kind)}</em>' if kind else '')
                 + f'<small>{escape(to)}</small>'
                 + '</li>')
         gid = slug(block["group"])
+        wiring = f'<p class="gj-wiring">{escape(block["wiring"])}</p>' if block.get("wiring") else ""
         groups.append(f'<div class="gj-group" id="gj-{gid}" data-group="{gid}">'
-                      f'<h3>{escape(block["group"])}</h3><ul>{"".join(jacks)}</ul></div>')
+                      f'<h3>{escape(block["group"])}</h3>{wiring}<ul>{"".join(jacks)}</ul></div>')
     tabs = "".join(
         f'<button type="button" class="gj-tab" data-show="{slug(b["group"])}" aria-pressed="false">'
         f'{escape(b["group"])}</button>' for b in ghost_rear)
@@ -854,6 +857,8 @@ body.focusing .hit {{ opacity: 1; }}
 }}
 .gj-group h3 {{ margin: 0 0 8px; font: 700 12px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em;
   text-transform: uppercase; color: var(--engrave); }}
+.gj-wiring {{ margin: -3px 0 10px; font: 400 10.5px/1.4 "IBM Plex Mono", monospace; color: var(--engrave); }}
+.gj-kind {{ font: italic 400 9.5px/1.2 "Nunito", sans-serif; color: var(--engrave); }}
 .gj-group ul {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }}
 .gj-group li {{ display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; color: #e4e6e3; }}
 .gj-jacks {{ display: flex; gap: 3px; grid-row: span 2; }}
