@@ -102,12 +102,17 @@ def render_bay(bay):
             tip += f"\nReserved for: {pending}"
         if entry.get("in_use") is False:
             tip += "\nNot in use yet"
+        info = entry.get("info")
+        if info:
+            tip += f"\n{info}"
         if note:
             tip += f"\nNote: {note}"
         cols = span(port, width, port_count)
         norm_state = "spare" if spare else ("normalled" if normalled else "open")
         common = f'data-cat="{cat}" data-norm="{norm_state}"{" data-pending" if pending else ""} title="{escape(tip)}"'
         flag = ""
+        if info:
+            flag = f'<i class="info-mark" title="{escape(info)}" aria-label="{escape(info)}">i</i>'
         if note:
             note_id = f"note-{bay['label_name']}-{port}"
             flag = (f'<button type="button" class="flag" popovertarget="{note_id}" aria-label="Open question">?</button>'
@@ -799,6 +804,10 @@ body.rear .panel > * {{ transform: rotateY(180deg); }}
 .tape.pending em {{ font: italic 500 10px/1.15 "IBM Plex Sans", sans-serif; color: var(--pc, var(--engrave)); letter-spacing: 0; }}
 .tape.blank {{ background: transparent; box-shadow: inset 0 0 0 1px var(--panel-edge); }}
 .tape.blank.pending {{ box-shadow: none; border: 1px dashed #6b7278; }}
+.info-mark {{
+  position: absolute; top: 4px; left: 3px; width: 13px; height: 13px; border-radius: 50%;
+  background: #6b7278; color: #f3f4f5; font: 700 9px/13px "Nunito", sans-serif; font-style: normal; text-align: center;
+}}
 .flag {{
   position: absolute; top: 4px; right: 3px; width: 15px; height: 15px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
   background: #f0b429; color: #1a1400; font: 700 9.5px/15px "IBM Plex Sans", sans-serif; font-style: normal; text-align: center;
