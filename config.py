@@ -92,7 +92,7 @@ config = [
     "entries": [
         {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE},
         {"normalled": False, "top": "Aux 8 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
-        {"normalled": False, "top": "-",                     "bottom": "-",                   "width": 1},
+        {"normalled": False, "top": "SDE 1000 Return",      "bottom": "-",                   "width": 1, "category": Category.FX},
         {"normalled": False, "top": "Moog DLY Out", "bottom": "-", "width": 1, "category": Category.FX},
         {"normalled": False, "top": "-",                     "bottom": "-",                   "width": 2},
         {"normalled": True, "top": "Main Insert Send", "bottom": "Main Insert Return", "width": 2, "category": Category.GROUPS},
@@ -119,7 +119,7 @@ config = [
         {"normalled": True, "top": "Apollo #2 17-32 Out", "bottom": "Ghost 17-32 Tape In", "width": 16, "category": Category.CONSOLE},
         {"normalled": True, "top": "EMT 140 Return L/R", "bottom": "FX 1 In L/R", "width": 2, "category": Category.FX},
         {"normalled": True, "top": "PCM60 Return L/R", "bottom": "FX 2 In L/R", "width": 2, "category": Category.FX},
-        {"normalled": True, "top": "SDE 1000 Return", "bottom": "FX 3 In L/R", "width": 2, "category": Category.FX},
+        {"normalled": False, "top": "-", "bottom": "FX 3 In L/R", "width": 2, "category": Category.FX},
         {"normalled": False, "top": "-", "bottom": "FX 4 In L/R", "width": 2, "category": Category.FX},
     ]
   },
