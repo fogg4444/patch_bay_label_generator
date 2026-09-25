@@ -555,7 +555,7 @@ def render_ghost_rear():
             count = j.get("count", 2 if "L/R" in j["label"] else 1)
             at = find_port(j["wired"]) if j.get("wired") else None
             to = f'{bay_title(at[0])} · {at[3]}' if at else "not patched"
-            kind = j.get("wiring", "")
+            kind = j.get("short", block.get("short", ""))
             wires = ""
             if at:
                 side = "b" if at[2] == "bottom" else "t"
@@ -566,7 +566,7 @@ def render_ghost_rear():
                 f'<li data-cat="{j.get("category", "spare")}"{wires} title="{escape(j["label"])} - {escape(to)}">'
                 + '<span class="gj-jacks">' + "".join("<i></i>" for _ in range(count)) + "</span>"
                 + f'<b>{escape(j["label"])}</b>'
-                + (f'<em class="gj-kind">{escape(kind)}</em>' if kind else '')
+                + (f'<span class="gj-kind">{escape(kind)}</span>' if kind else '')
                 + f'<small>{escape(to)}</small>'
                 + '</li>')
         gid = slug(block["group"])
@@ -857,11 +857,15 @@ body.focusing .hit {{ opacity: 1; }}
 }}
 .gj-group h3 {{ margin: 0 0 8px; font: 700 12px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em;
   text-transform: uppercase; color: var(--engrave); }}
-.gj-wiring {{ margin: -3px 0 10px; font: 400 10.5px/1.4 "IBM Plex Mono", monospace; color: var(--engrave); }}
-.gj-kind {{ font: italic 400 9.5px/1.2 "Nunito", sans-serif; color: var(--engrave); }}
+.gj-wiring {{ margin: -3px 0 10px; font: 400 10px/1.4 "IBM Plex Mono", monospace; color: var(--engrave); opacity: .85; }}
+.gj-kind {{
+  justify-self: start; font: 600 9px/1.5 "Nunito", sans-serif; letter-spacing: .03em; color: var(--engrave);
+  border: 1px solid var(--panel-edge); border-radius: 999px; padding: 0 7px; white-space: nowrap;
+}}
 .gj-group ul {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }}
-.gj-group li {{ display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; color: #e4e6e3; }}
-.gj-jacks {{ display: flex; gap: 3px; grid-row: span 2; }}
+.gj-group li {{ display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; align-items: center; color: #e4e6e3; }}
+.gj-group li > b, .gj-group li > .gj-kind, .gj-group li > small {{ grid-column: 2; }}
+.gj-jacks {{ display: flex; gap: 3px; grid-row: span 3; align-self: center; }}
 .gj-jacks i {{
   position: relative; width: 14px; height: 14px; border-radius: 50%;
   background: radial-gradient(circle, var(--jack) 0 36%, #2a2e32 38% 58%, var(--jack-ring) 60% 100%);
