@@ -471,47 +471,49 @@ def where_is(label, fallback):
 
 
 def cable_runs(room):
-    """Cables to one room: (name, kind, where it lands, how it ends, does it get patched)."""
+    """Cables to one room: (name, kind, where it lands, how it ends, patched console, patched room)."""
     runs = []
     if room in SPEAKER_ONLY:
-        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", "", False))
+        runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", "", False, False))
     else:
         for side, label in (("Send L", f"{room} L"), ("Send R", f"{room} R")):
             runs.append((side, CableKind.XLR, where_is(label, "Not on a bay yet"),
-                         "XLR at the room, TRS into the patch bay", True))
-        runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet", "XLR both ends", False))
+                         "XLR at the room, TRS into the patch bay", True, True))
+        runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet", "XLR both ends", False, True))
     at = find_port(room)
     if at:
-        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}", "", True))
+        runs.append(("Network", CableKind.CAT5, f"Ethernet · jack {at[1]}", "", True, True))
     return runs
 
 
 # (id, column heading, tooltip verb, applies to every run or only to patched ones)
-CABLE_STEPS = (("pull", "Pull", "Pull the cable", True),
-               ("room", "Room", "Solder the room end", True),
-               ("rack", "Console", "Solder the console end", True),
-               ("patch", "Patch", "Plug into the patch bay", False))
+# (id, column heading, tooltip, when it applies: always / "console" / "room")
+CABLE_STEPS = (("pull", "Pull", "Pull the cable", "always"),
+               ("room", "Terminated room end", "Room end soldered onto its connector", "always"),
+               ("rack", "Terminated console end", "Console end soldered onto its connector", "always"),
+               ("patch-room", "Patched room side", "Plugged in at the room plate", "room"),
+               ("patch", "Patched console side", "Plugged into the patch bay", "console"))
 
 
 def render_room_cables():
     cards, total = [], 0
     places = [(room, cable_runs(room)) for room in ROOMS]
-    places += [(extra["name"], [(n, k, "", "", patched) for n, k, w, patched in extra["runs"]])
+    places += [(extra["name"], [(n, k, "", "", patched, False) for n, k, w, patched in extra["runs"]])
                for extra in special_runs]
     for room, runs in places:
         rows, room_total = [], 0
-        for name, kind, where, ends, patched in runs:
+        for name, kind, where, ends, patched, patched_room in runs:
             cells = []
-            for step, step_name, verb, always in CABLE_STEPS:
-                if not always and not patched:
-                    cells.append('<td><span class="na" title="Not patched">–</span></td>')
+            for step, step_name, verb, applies in CABLE_STEPS:
+                if (applies == "console" and not patched) or (applies == "room" and not patched_room):
+                    cells.append('<td><span class="na" title="Nothing to patch here">–</span></td>')
                     continue
                 total += 1
                 room_total += 1
                 task = f"{slug(room)}-{slug(name)}-{step}"
                 if kind == CableKind.CAT5:
                     verb = verb.replace("Solder", "Terminate")
-                group = "solder" if step in ("room", "rack") else step
+                group = "solder" if step in ("room", "rack") else ("patch" if step.startswith("patch") else step)
                 cells.append(f'<td><input type="checkbox" class="cable-check" id="cable-{task}" data-task="{task}" '
                              f'data-room="{slug(room)}" data-group="{group}" data-kind="{slug(kind)}" '
                              f'title="{escape(room)} · {escape(name)} · {escape(verb)}" '
@@ -523,10 +525,10 @@ def render_room_cables():
                      + '<table><thead><tr><td></td>' + "".join(f'<th scope="col" title="{escape(v)}">{escape(h)}</th>' for _, h, v, _ in CABLE_STEPS) + '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
                      + f'<textarea class="room-note" data-room="{slug(room)}" rows="2" placeholder="Notes…" '
                        f'aria-label="Notes for {escape(room)}"></textarea></article>')
-    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Every XLR end is soldered onto its cable: pull it, solder the room end, solder the rack end, "
-            "then patch it (Cat5 ends are terminated instead). Sends land on the patch bay as TRS; the returns "
-            "stay in a loom on the floor, so they have nothing to patch — <b>%d</b> steps in all. "
-            "The destination is where the cable lands at the rack." % total)
+    lead = ("Two XLR sends, one XLR return and one Cat5 per room. Each cable: pull it, terminate both ends "
+            "onto their connectors, then patch it in at the room plate and at the console - <b>%d</b> tasks in all. "
+            "A dash means there is nothing to patch there: the returns live in a floor loom and the deck "
+            "speaker runs never touch a bay." % total)
     return ('<section class="cables" id="cables"><h2>Cable pulls to each room</h2>'
             f'<p class="lead">{lead}</p>'
             '<div class="cable-bars">'
@@ -1083,7 +1085,7 @@ body.focusing .hit {{ opacity: 1; }}
 .cables .wp-label {{ font-size: 12.5px; }}
 .cables .wp-label b {{ font-size: 18px; }}
 .cables .wire-progress.total .wp-label b {{ color: var(--plugged); }}
-.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }}
+.room-grid {{ display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }}
 .room-card {{ border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px 12px; background: var(--ground);
   min-width: 0; overflow: hidden; }}
 .room-card header {{ display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
@@ -1094,7 +1096,7 @@ body.focusing .hit {{ opacity: 1; }}
 .room-card.done .room-count {{ color: var(--plugged); font-weight: 600; }}
 .room-card table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 .room-card thead th {{ font: 600 9px/1.25 "IBM Plex Sans", sans-serif; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--muted); padding: 0 3px 5px; text-align: center; width: 46px; }}
+  color: var(--muted); padding: 0 4px 5px; text-align: center; width: 58px; line-height: 1.25; }}
 .room-card .na {{ color: var(--muted); opacity: .6; }}
 .room-card tbody th {{ text-align: left; font-weight: 400; padding: 6px 8px 6px 0; border-top: 1px solid var(--line); }}
 .room-card tbody th .row-label {{ display: flex; align-items: baseline; gap: 6px; min-width: 0; }}
@@ -1288,12 +1290,12 @@ body.focusing .hit {{ opacity: 1; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
-  .room-grid {{ grid-template-columns: repeat(3, 1fr); gap: 8px; }}
+  .room-grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
   .room-card {{ break-inside: avoid; padding: 6px 8px 8px; }}
   .room-card tbody th b {{ font-size: 10px; }}
   .room-card tbody th .kind {{ width: 40px; font-size: 7.5px; }}
   .room-card tbody th small {{ font-size: 8px; }}
-  .room-card thead th {{ font-size: 7.5px; width: 32px; padding: 0 2px 3px; }}
+  .room-card thead th {{ font-size: 7px; width: 40px; padding: 0 2px 3px; }}
   .room-card tbody th, .room-card tbody td {{ padding: 2px 4px 2px 0; }}
   .room-note {{ min-height: 26px; margin-top: 5px; font-size: 8.5px; }}
   .cable-check {{ width: 12px; height: 12px; }}
