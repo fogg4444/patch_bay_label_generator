@@ -309,7 +309,8 @@ ghost_rear = [
         {"label": "2TK B I/P L/R", "category": Category.TWO_TRACK, "wired": "Ghost 2 Track B Input"},
     ]},
     {"group": "Outputs", "short": "TRS ground-comp",
-     "wiring": "tip signal +, ring ground sense, sleeve ground", "jacks": [
+     "wiring": "tip signal +, ring ground sense, sleeve ground; the TS unbalanced ones are "
+               "tip signal +, ring not used, sleeve ground", "jacks": [
         {"label": "GRP 1-8", "category": Category.GROUPS, "wired": "Group 1 - 8 Out", "count": 8},
         {"label": "AUX 1", "category": Category.FX, "wired": "Aux 1 Out", "count": 1},
         {"label": "AUX 2", "category": Category.FX, "wired": "Aux 2 Out", "count": 1},
