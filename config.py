@@ -339,3 +339,18 @@ todos = [
     "Gather every cover plate in one place",
     "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
 ]
+
+
+# Cables to keep track of. "need" is filled in automatically for the room runs;
+# rows with a number here are counted by hand. Stock counts live in the HTML view.
+cable_stock = [
+    {"name": "XLR (room sends and returns)", "kind": CableKind.XLR, "auto": True},
+    {"name": "Cat5e", "kind": CableKind.CAT5, "auto": True},
+    {"name": "Speaker cable (deck runs)", "kind": CableKind.SPEAKER, "auto": True},
+    {"name": "TRS patch cables (bay to bay)", "need": 24,
+     "note": "Short 1/4\" TRS, for patching at the rack"},
+    {"name": "TRS-XLR ends for the sends", "need": 20,
+     "note": "Console end of each room send"},
+    {"name": "TRS insert cables", "need": 4,
+     "note": "Ghost inserts are tip RETURN, ring SEND"},
+]

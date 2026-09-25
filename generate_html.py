@@ -6,7 +6,7 @@ import os
 
 from config import (config as all_configs, gear_racks, installed_units, keep_installed_units, card_changes,
                     midi_instruments, ROOMS, SPEAKER_ONLY, special_runs, open_questions,
-                    ghost_rear, todos)
+                    ghost_rear, todos, cable_stock)
 from enums import Category, JackType, Need, CableKind
 from previous_config import config as previous_configs
 
@@ -587,6 +587,41 @@ def render_ghost_rear():
 </section>"""
 
 
+def render_stock():
+    """What cables the job needs, and how many are on hand."""
+    need_by_kind = {}
+    for room in ROOMS:
+        for _, kind, _, _, _ in cable_runs(room):
+            need_by_kind[kind] = need_by_kind.get(kind, 0) + 1
+    for extra in special_runs:
+        for _, kind, _, _ in extra["runs"]:
+            need_by_kind[kind] = need_by_kind.get(kind, 0) + 1
+
+    rows = []
+    for i, item in enumerate(cable_stock):
+        need = need_by_kind.get(item.get("kind"), 0) if item.get("auto") else item.get("need", 0)
+        rows.append(
+            '<tr>'
+            + f'<th scope="row"><b>{escape(item["name"])}</b>'
+            + (f'<small>{escape(item["note"])}</small>' if item.get("note") else '')
+            + '</th>'
+            + f'<td class="need" data-need="{need}">{need}</td>'
+            + f'<td><input type="number" class="stock-have" min="0" step="1" inputmode="numeric" '
+              f'id="stock-{i}" data-task="stock-{i}" aria-label="{escape(item["name"])} on hand"></td>'
+            + f'<td class="short" data-for="stock-{i}">–</td>'
+            + '</tr>')
+    return f"""
+<section class="stock" id="stock">
+  <h2>Cables on hand</h2>
+  <p class="lead">Type in how many you have; the gap updates as you go. The first three counts come straight
+  from the room runs, so they follow any change to the layout.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Cable</th><th>Need</th><th>Have</th><th>Short</th></tr></thead>
+    <tbody>{''.join(rows)}</tbody>
+  </table></div>
+</section>"""
+
+
 def render_todos():
     items = "".join(
         f'<li><input type="checkbox" class="todo-check" id="todo-{i}" data-task="todo-{i}">'
@@ -881,6 +916,26 @@ body.focusing .hit {{ opacity: 1; }}
   content: "✓"; position: absolute; right: -4px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
   background: var(--plugged); color: #fff; font: 700 7px/10px "Nunito", sans-serif; text-align: center;
 }}
+.stock {{ margin-top: 56px; max-width: 680px; }}
+.stock h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 6px; }}
+.stock .lead {{ margin: 0 0 12px; color: var(--muted); max-width: 68ch; }}
+.stock table {{ width: 100%; min-width: 420px; border-collapse: collapse; font-size: 13.5px; }}
+.stock th {{ text-align: left; font: 600 11px/1.2 "Nunito", sans-serif; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }}
+.stock td, .stock tbody th {{ padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle;
+  font-variant-numeric: tabular-nums; }}
+.stock tbody th {{ text-align: left; font-weight: 400; }}
+.stock tbody th b {{ font-weight: 600; font-size: 13.5px; }}
+.stock tbody th small {{ display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }}
+.stock td.need, .stock td.short {{ text-align: center; width: 70px; }}
+.stock td.short.ok {{ color: var(--plugged); font-weight: 600; }}
+.stock td.short.gap {{ color: #d9603f; font-weight: 700; }}
+.stock-have {{
+  width: 64px; padding: 5px 7px; border: 1px solid var(--line); border-radius: 3px; background: transparent;
+  color: var(--ink); font: 600 13px/1 "Nunito", system-ui, sans-serif; text-align: center;
+}}
+.stock-have:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 1px; }}
 .todos {{ margin-top: 56px; max-width: 680px; }}
 .todos h2 {{ color: var(--accent); font: 700 20px/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 6px; }}
@@ -1096,6 +1151,9 @@ body.focusing .hit {{ opacity: 1; }}
   .gj-tabs {{ display: none; }}
   .gj-group li, .gj-group small {{ color: #111; }}
   .gj-jacks i {{ background: #fff; border: 1.2px solid #333; box-shadow: none; }}
+  .stock {{ break-inside: avoid; margin-top: 18px; max-width: none; }}
+  .stock table {{ min-width: 0; font-size: 10px; }}
+  .stock td, .stock tbody th, .stock th {{ padding: 3px 8px; }}
   .todos {{ break-inside: avoid; margin-top: 18px; }}
   .cables {{ break-before: page; margin-top: 0; }}
   .cables .lead {{ font-size: 10px; max-width: none; }}
@@ -1153,6 +1211,7 @@ body.focusing .hit {{ opacity: 1; }}
   </section>
   {render_ghost_rear()}
   {render_room_cables()}
+  {render_stock()}
   {render_todos()}
   {render_midi_list()}
   {render_moves()}
@@ -1322,6 +1381,66 @@ window.addEventListener('scroll', function () {{
         var st = {{}};
         snap.docs.forEach(function (d) {{ st[d.id] = !!(d.data() || {{}}).pulled; }});
         boxes.forEach(function (b) {{ if (b.dataset.task in st) b.checked = st[b.dataset.task]; }});
+        paint();
+        localSave();
+      }}, function () {{ store = null; }});
+    }});
+  }}
+}})();
+// Cable stock: how many of each cable is on hand, saved in the artifact's store (else this browser).
+(function () {{
+  var inputs = Array.prototype.slice.call(document.querySelectorAll('.stock-have'));
+  if (!inputs.length) return;
+  var store = null, timers = {{}};
+  function paint() {{
+    inputs.forEach(function (input) {{
+      var row = input.closest('tr');
+      var need = parseInt(row.querySelector('.need').dataset.need, 10) || 0;
+      var have = parseInt(input.value, 10);
+      var cell = row.querySelector('.short');
+      if (isNaN(have)) {{
+        cell.textContent = '–';
+        cell.className = 'short';
+        return;
+      }}
+      var gap = need - have;
+      cell.textContent = gap > 0 ? gap : 'ok';
+      cell.className = 'short ' + (gap > 0 ? 'gap' : 'ok');
+    }});
+  }}
+  function localLoad() {{ try {{ return JSON.parse(localStorage.getItem('patchbay-stock') || '{{}}'); }} catch (e) {{ return {{}}; }} }}
+  function localSave() {{
+    try {{
+      var st = {{}};
+      inputs.forEach(function (i) {{ if (i.value !== '') st[i.dataset.task] = i.value; }});
+      localStorage.setItem('patchbay-stock', JSON.stringify(st));
+    }} catch (e) {{}}
+  }}
+  var saved = localLoad();
+  inputs.forEach(function (i) {{ if (i.dataset.task in saved) i.value = saved[i.dataset.task]; }});
+  paint();
+  inputs.forEach(function (input) {{
+    input.addEventListener('input', function () {{
+      paint();
+      localSave();
+      clearTimeout(timers[input.dataset.task]);
+      timers[input.dataset.task] = setTimeout(function () {{
+        if (store) store.collection('stock').doc(input.dataset.task)
+          .set({{ have: input.value === '' ? null : Number(input.value) }}).catch(function () {{}});
+      }}, 600);
+    }});
+  }});
+  if (window.claude && window.claude.use) {{
+    window.claude.use('db').then(function (db) {{
+      if (!db) return;
+      store = db;
+      db.collection('stock').onSnapshot(function (snap) {{
+        var st = {{}};
+        snap.docs.forEach(function (d) {{ st[d.id] = (d.data() || {{}}).have; }});
+        inputs.forEach(function (i) {{
+          if (i === document.activeElement) return;
+          if (i.dataset.task in st) i.value = st[i.dataset.task] == null ? '' : st[i.dataset.task];
+        }});
         paint();
         localSave();
       }}, function () {{ store = null; }});
