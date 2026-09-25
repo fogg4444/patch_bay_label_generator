@@ -77,8 +77,19 @@ body.rear .flip-btn .flip-icon { transform: rotate(180deg); }
 .chip[aria-pressed="true"] { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
 .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .hint { color: var(--muted); font-size: 12.5px; margin: 0 0 20px; }
-.racks { display: grid; gap: 64px; }
+.racks { display: grid; gap: 0; }
+.racks > .rack-group + .rack-group { margin-top: 56px; }
 .sec-head { cursor: pointer; user-select: none; }
+/* A collapsed section is just its heading: no leftover gaps. */
+.rack-group:has(> .sec-head[aria-expanded="false"]),
+.gear-rack:has(> .sec-head[aria-expanded="false"]),
+.ghost:has(> .sec-head[aria-expanded="false"]),
+.cables:has(> .sec-head[aria-expanded="false"]),
+.midi-list:has(> .sec-head[aria-expanded="false"]),
+.todos:has(> .sec-head[aria-expanded="false"]),
+.notes:has(> .sec-head[aria-expanded="false"]) { margin-top: 14px; padding-top: 0; }
+.sec-head[aria-expanded="false"] { margin-bottom: 0; }
+.racks > .rack-group + .rack-group:has(> .sec-head[aria-expanded="false"]) { margin-top: 10px; }
 .sec-head::before { content: "▾"; display: inline-block; width: 14px; font-size: .75em; color: var(--muted);
   transition: transform .15s; }
 .sec-head[aria-expanded="false"]::before { transform: rotate(-90deg); }
@@ -351,7 +362,8 @@ body.focusing .hit { opacity: 1; }
 .flip.off { border: 1px dashed var(--muted); }
 .flip.check { border: 1px solid #b8923a; color: var(--ink); }
 .flip.none { color: var(--muted); padding-left: 0; }
-.gear { margin-top: 64px; display: grid; gap: 48px; }
+.gear { margin-top: 56px; display: grid; gap: 48px; }
+.gear:has(.sec-head[aria-expanded="false"]) { margin-top: 14px; }
 .elevation {
   --u: 38px; display: grid; row-gap: 2px; max-width: 760px;
   background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 3px; padding: 8px 10px;
