@@ -228,8 +228,8 @@ def render_compact():
         if not single:
             rows.append(f'<tr>{"".join(cells["bottom"])}</tr>')
     return ('<div class="compact"><p class="lead">Every bay at a glance - read only. '
-            'Hover a label for its bay and port. Hatched ports are normalled.</p>'
-            '<table class="c-table">' + "".join(rows) + '</table></div>')
+            'Hover a label for its bay and port. Hatched ports are normalled, dashed ones are spare.</p>'
+            '<div class="c-wrap"><table class="c-table">' + "".join(rows) + '</table></div></div>')
 
 
 def render_racks():
@@ -912,22 +912,25 @@ h1 {{ font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed",
 .view-tab[aria-pressed="true"] {{ background: var(--ink); color: var(--ground); border-color: var(--ink); }}
 .view-tab:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
 .compact {{ margin-top: 14px; }}
+.compact .c-wrap {{ overflow-x: auto; }}
+.compact .c-table {{ min-width: 1100px; }}
+.c-table tr + tr .c-cell {{ border-top: 0; }}
 .compact .lead {{ margin: 0 0 10px; color: var(--muted); font-size: 12.5px; }}
 .c-table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
 .c-table th.c-bay {{
-  width: 74px; text-align: left; vertical-align: middle; padding: 0 8px 0 0;
-  font: 700 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--ink);
+  width: 88px; text-align: left; vertical-align: middle; padding: 0 12px 0 0;
+  font: 700 19px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--ink);
   border-top: 2px solid var(--line);
 }}
-.c-table th.c-bay small {{ display: block; font: 400 9px/1.3 "Nunito", sans-serif; letter-spacing: .06em;
+.c-table th.c-bay small {{ display: block; font: 400 10px/1.3 "Nunito", sans-serif; letter-spacing: .06em;
   text-transform: uppercase; color: var(--muted); margin-top: 2px; }}
 .c-table tr.c-first td {{ border-top: 2px solid var(--line); }}
-.c-num {{ font: 500 7.5px/1.4 "IBM Plex Mono", monospace; color: var(--muted); text-align: center; padding: 1px 0 0; }}
+.c-num {{ font: 500 9px/1.4 "IBM Plex Mono", monospace; color: var(--muted); text-align: center; padding: 3px 0 1px; }}
 .c-cell {{
-  font: 500 7.5px/1.12 "IBM Plex Mono", monospace; color: var(--ink); text-align: center; vertical-align: middle;
-  padding: 3px 2px; border: 1px solid var(--line); border-radius: 1px; height: 26px;
+  font: 500 10px/1.2 "IBM Plex Mono", monospace; color: var(--ink); text-align: center; vertical-align: middle;
+  padding: 5px 4px; border: 1px solid var(--line); border-radius: 2px; height: 38px;
   white-space: normal; overflow-wrap: anywhere; hyphens: none;
-  box-shadow: inset 0 2px 0 var(--c, transparent);
+  box-shadow: inset 0 3px 0 var(--c, transparent);
 }}
 .c-spare {{ border-style: dashed; opacity: .45; box-shadow: none; }}
 .c-norm {{ background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--line) 4px 5px); }}
