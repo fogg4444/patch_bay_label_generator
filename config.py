@@ -90,7 +90,8 @@ config = [
   {
     "label_name": "4",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE, "in_use": False},
+        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE,
+         "info": "Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.", "info_at": "top"},
         {"normalled": False, "top": "Aux 8 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
         {"normalled": False, "top": "SDE 1000 Return",      "bottom": "-",                   "width": 1, "category": Category.FX},
         {"normalled": False, "top": "Moog DLY Out", "bottom": "-", "width": 1, "category": Category.FX},
@@ -101,7 +102,8 @@ config = [
   {
     "label_name": "5",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE, "in_use": False},
+        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE,
+         "info": "Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.", "info_at": "top"},
         {"normalled": False, "top": "-", "bottom": "-", "width": 8},
     ]
   },
