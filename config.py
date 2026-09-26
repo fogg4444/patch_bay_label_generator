@@ -90,7 +90,7 @@ config = [
   {
     "label_name": "4",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE},
+        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE, "in_use": False},
         {"normalled": False, "top": "Aux 8 Out L/R", "bottom": "-", "width": 2, "category": Category.FX},
         {"normalled": False, "top": "SDE 1000 Return",      "bottom": "-",                   "width": 1, "category": Category.FX},
         {"normalled": False, "top": "Moog DLY Out", "bottom": "-", "width": 1, "category": Category.FX},
@@ -101,7 +101,7 @@ config = [
   {
     "label_name": "5",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE},
+        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE, "in_use": False},
         {"normalled": False, "top": "-", "bottom": "-", "width": 8},
     ]
   },
@@ -350,6 +350,8 @@ todos = [
     "Gather every cover plate in one place",
     "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
     "Go back to every black-flagged XLR run and terminate it once the parts arrive",
+    "Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one "
+    "of the rooms, but which one is unknown. Tone it out and label both ends",
 ]
 
 

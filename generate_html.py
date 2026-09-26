@@ -195,6 +195,43 @@ def render_bay(bay):
 </section>"""
 
 
+def render_compact():
+    """Every bay on one screen: port numbers, top and bottom labels, nothing to click."""
+    rows = []
+    rack = ""
+    for bay in all_configs:
+        rack = bay.get("rack", rack)
+        ports = bay.get("port_count", expected_count)
+        single = bay.get("single_row", False)
+        cells = {"num": [], "top": [], "bottom": []}
+        port = 1
+        for e in bay["entries"]:
+            w = e["width"]
+            cat = e.get("category", "spare")
+            for side in ("top", "bottom"):
+                if side == "bottom" and single:
+                    continue
+                text = e.get(side, "-")
+                spare = is_spare(text)
+                cls = "c-cell" + (" c-spare" if spare else "") + (" c-norm" if e["normalled"] and not spare else "")
+                cells[side].append(
+                    f'<td class="{cls}" colspan="{w}" data-cat="{"spare" if spare else cat}" '
+                    f'title="{escape(bay_title(bay["label_name"]))} · port {port if w == 1 else f"{port}-{port + w - 1}"}">'
+                    f'{"" if spare else escape(text)}</td>')
+            for n in range(port, port + w):
+                cells["num"].append(f'<td class="c-num">{n}</td>')
+            port += w
+        head = (f'<th class="c-bay" rowspan="{2 if single else 3}">{escape(bay_title(bay["label_name"]))}'
+                f'<small>{escape(rack)}</small></th>')
+        rows.append(f'<tr class="c-first">{head}{"".join(cells["num"])}</tr>')
+        rows.append(f'<tr>{"".join(cells["top"])}</tr>')
+        if not single:
+            rows.append(f'<tr>{"".join(cells["bottom"])}</tr>')
+    return ('<div class="compact"><p class="lead">Every bay at a glance - read only. '
+            'Hover a label for its bay and port. Hatched ports are normalled.</p>'
+            '<table class="c-table">' + "".join(rows) + '</table></div>')
+
+
 def render_racks():
     racks = []
     for bay in all_configs:
@@ -867,6 +904,33 @@ h1 {{ font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed",
 .stats div {{ display: grid; }}
 .stats dt {{ font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
 .stats dd {{ margin: 0; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }}
+.view-tabs {{ display: flex; gap: 6px; margin: 16px 0 0; }}
+.view-tab {{
+  font: 600 12.5px/1 "Nunito", system-ui, sans-serif; color: var(--ink); background: transparent; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 15px;
+}}
+.view-tab[aria-pressed="true"] {{ background: var(--ink); color: var(--ground); border-color: var(--ink); }}
+.view-tab:focus-visible {{ outline: 2px solid var(--focus); outline-offset: 2px; }}
+.compact {{ margin-top: 14px; }}
+.compact .lead {{ margin: 0 0 10px; color: var(--muted); font-size: 12.5px; }}
+.c-table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
+.c-table th.c-bay {{
+  width: 74px; text-align: left; vertical-align: middle; padding: 0 8px 0 0;
+  font: 700 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--ink);
+  border-top: 2px solid var(--line);
+}}
+.c-table th.c-bay small {{ display: block; font: 400 9px/1.3 "Nunito", sans-serif; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); margin-top: 2px; }}
+.c-table tr.c-first td {{ border-top: 2px solid var(--line); }}
+.c-num {{ font: 500 7.5px/1.4 "IBM Plex Mono", monospace; color: var(--muted); text-align: center; padding: 1px 0 0; }}
+.c-cell {{
+  font: 500 7.5px/1.12 "IBM Plex Mono", monospace; color: var(--ink); text-align: center; vertical-align: middle;
+  padding: 3px 2px; border: 1px solid var(--line); border-radius: 1px; height: 26px;
+  white-space: normal; overflow-wrap: anywhere; hyphens: none;
+  box-shadow: inset 0 2px 0 var(--c, transparent);
+}}
+.c-spare {{ border-style: dashed; opacity: .45; box-shadow: none; }}
+.c-norm {{ background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--line) 4px 5px); }}
 .view-toggle {{ display: flex; align-items: center; gap: 12px; margin: 16px 0 2px; flex-wrap: wrap; }}
 .flip-btn {{
   font: 600 13px/1 "Nunito", system-ui, sans-serif; color: var(--ground); background: var(--ink); cursor: pointer;
@@ -1295,7 +1359,8 @@ body.focusing .hit {{ opacity: 1; }}
   * {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
   body {{ font-size: 11px; }}
   .wrap {{ max-width: none; padding: 0; }}
-  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle {{ display: none !important; }}
+  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle, .view-tabs {{ display: none !important; }}
+  #compact-view {{ display: none !important; }}
   .sec-body {{ display: block !important; }}
   .sec-head::before {{ display: none; }}
   h1 {{ font-size: 19px; color: #111; }}
@@ -1403,6 +1468,12 @@ body.focusing .hit {{ opacity: 1; }}
       <div class="wp-fill" id="wp-fill"></div>
     </div>
   </div>
+  <div class="view-tabs" role="group" aria-label="Which view to show">
+    <button type="button" class="view-tab" data-view="full" aria-pressed="true">Workbench</button>
+    <button type="button" class="view-tab" data-view="compact" aria-pressed="false">Compact sheet</button>
+  </div>
+  <div id="compact-view" hidden>{render_compact()}</div>
+  <div id="full-view">
   <div class="view-toggle">
     <button type="button" id="flip-view" class="flip-btn" aria-pressed="false">
       <span class="flip-icon" aria-hidden="true">⟲</span> Flip patch bay
@@ -1425,6 +1496,7 @@ body.focusing .hit {{ opacity: 1; }}
   {render_todos()}
   {render_midi_list()}
   {render_moves()}
+  </div>
 </div>
 <script>
 (function () {{
@@ -1482,6 +1554,26 @@ body.focusing .hit {{ opacity: 1; }}
     el.addEventListener('blur', hide);
   }});
   window.addEventListener('scroll', hide, {{ passive: true, capture: true }});
+}})();
+// Two views: the working page, and a compact read-only sheet.
+(function () {{
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.view-tab'));
+  var full = document.getElementById('full-view');
+  var compact = document.getElementById('compact-view');
+  if (!tabs.length || !full || !compact) return;
+  var KEY = 'patchbay-view';
+  function apply(which) {{
+    full.hidden = which === 'compact';
+    compact.hidden = which !== 'compact';
+    tabs.forEach(function (t) {{ t.setAttribute('aria-pressed', t.dataset.view === which ? 'true' : 'false'); }});
+    try {{ localStorage.setItem(KEY, which); }} catch (e) {{}}
+  }}
+  var saved = 'full';
+  try {{ saved = localStorage.getItem(KEY) || 'full'; }} catch (e) {{}}
+  apply(saved);
+  tabs.forEach(function (t) {{
+    t.addEventListener('click', function () {{ apply(t.dataset.view); }});
+  }});
 }})();
 // Every section folds away; the choice is remembered in this browser.
 (function () {{

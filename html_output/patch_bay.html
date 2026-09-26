@@ -53,6 +53,33 @@ h1 { font: 400 clamp(26px, 3.4vw, 38px)/1.12 "Bungee Tint", "Barlow Condensed", 
 .stats div { display: grid; }
 .stats dt { font: 600 11px/1.2 "IBM Plex Sans", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .stats dd { margin: 0; font: 600 26px/1.1 "Barlow Condensed", sans-serif; }
+.view-tabs { display: flex; gap: 6px; margin: 16px 0 0; }
+.view-tab {
+  font: 600 12.5px/1 "Nunito", system-ui, sans-serif; color: var(--ink); background: transparent; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 15px;
+}
+.view-tab[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.view-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.compact { margin-top: 14px; }
+.compact .lead { margin: 0 0 10px; color: var(--muted); font-size: 12.5px; }
+.c-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.c-table th.c-bay {
+  width: 74px; text-align: left; vertical-align: middle; padding: 0 8px 0 0;
+  font: 700 15px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--ink);
+  border-top: 2px solid var(--line);
+}
+.c-table th.c-bay small { display: block; font: 400 9px/1.3 "Nunito", sans-serif; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.c-table tr.c-first td { border-top: 2px solid var(--line); }
+.c-num { font: 500 7.5px/1.4 "IBM Plex Mono", monospace; color: var(--muted); text-align: center; padding: 1px 0 0; }
+.c-cell {
+  font: 500 7.5px/1.12 "IBM Plex Mono", monospace; color: var(--ink); text-align: center; vertical-align: middle;
+  padding: 3px 2px; border: 1px solid var(--line); border-radius: 1px; height: 26px;
+  white-space: normal; overflow-wrap: anywhere; hyphens: none;
+  box-shadow: inset 0 2px 0 var(--c, transparent);
+}
+.c-spare { border-style: dashed; opacity: .45; box-shadow: none; }
+.c-norm { background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--line) 4px 5px); }
 .view-toggle { display: flex; align-items: center; gap: 12px; margin: 16px 0 2px; flex-wrap: wrap; }
 .flip-btn {
   font: 600 13px/1 "Nunito", system-ui, sans-serif; color: var(--ground); background: var(--ink); cursor: pointer;
@@ -481,7 +508,8 @@ body.focusing .hit { opacity: 1; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-size: 11px; }
   .wrap { max-width: none; padding: 0; }
-  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle { display: none !important; }
+  .hint, .flag, .pop, .stats, .chip-sep, .wire-progress, .view-toggle, .view-tabs { display: none !important; }
+  #compact-view { display: none !important; }
   .sec-body { display: block !important; }
   .sec-head::before { display: none; }
   h1 { font-size: 19px; color: #111; }
@@ -589,6 +617,12 @@ body.focusing .hit { opacity: 1; }
       <div class="wp-fill" id="wp-fill"></div>
     </div>
   </div>
+  <div class="view-tabs" role="group" aria-label="Which view to show">
+    <button type="button" class="view-tab" data-view="full" aria-pressed="true">Workbench</button>
+    <button type="button" class="view-tab" data-view="compact" aria-pressed="false">Compact sheet</button>
+  </div>
+  <div id="compact-view" hidden><div class="compact"><p class="lead">Every bay at a glance - read only. Hover a label for its bay and port. Hatched ports are normalled.</p><table class="c-table"><tr class="c-first"><th class="c-bay" rowspan="3">Bay 1<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 1">Tanzbar Out L</td><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 2">Sub 37 Out</td><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 3">Fuzz In</td><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 4">MXR Dist In</td><td class="c-cell c-spare" colspan="5" data-cat="spare" title="Bay 1 · port 5-9"></td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 10">LA-2A In</td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 11">UA 550 In</td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 12">DBX 160 Link</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 13-14">SSL Fusion In L/R</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 15-16">API L/R In</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 17-18">Dbx 160A L/R In</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 19-20">D-Comp L/R In</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 21-22">902 De-esser IN 1-2</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 23-24">Art Comp In L/R</td></tr><tr><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 1">Tanzbar Out R</td><td class="c-cell c-spare" colspan="1" data-cat="spare" title="Bay 1 · port 2"></td><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 3">Fuzz Out</td><td class="c-cell" colspan="1" data-cat="instruments" title="Bay 1 · port 4">MXR Dist Out</td><td class="c-cell c-spare" colspan="5" data-cat="spare" title="Bay 1 · port 5-9"></td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 10">LA-2A Out</td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 11">UA 550 Out</td><td class="c-cell" colspan="1" data-cat="outboard" title="Bay 1 · port 12">DBX 160 Link</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 13-14">SSL Fusion Out L/R</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 15-16">API L/R Out</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 17-18">Dbx 160A L/R Out</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 19-20">D-Comp L/R Out</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 21-22">902 De-esser OUT 1-2</td><td class="c-cell" colspan="2" data-cat="outboard" title="Bay 1 · port 23-24">Art Comp Out L/R</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 2<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 2 · port 1-16">Ghost Channel Insert Send 1-16</td><td class="c-cell" colspan="8" data-cat="groups" title="Bay 2 · port 17-24">Group 1 - 8 Insert Send</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 2 · port 1-16">Ghost Channel Insert Return 1-16</td><td class="c-cell" colspan="8" data-cat="groups" title="Bay 2 · port 17-24">Group 1 - 8 Insert Return</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 3<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 3 · port 1-16">Ghost Channel Insert Send 17-32</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 17">Aux 1 Out</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 18">Aux 2 Out</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 19">Aux 3 Out</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 20">Aux 4 Out</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 3 · port 21-22">Aux 5 / 6 Out</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 3 · port 23-24">Aux 7 Out L/R</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 3 · port 1-16">Ghost Channel Insert Return 17-32</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 17">EMT 140 In</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 18">PCM60 In</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 19">SDE 1000 In</td><td class="c-cell c-norm" colspan="1" data-cat="fx" title="Bay 3 · port 20">Moog DLY In</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 3 · port 21-22"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 3 · port 23-24"></td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 4<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 4 · port 1-16">Worm hole Matched to Left Side Patch bay 1-16 top</td><td class="c-cell" colspan="2" data-cat="fx" title="Bay 4 · port 17-18">Aux 8 Out L/R</td><td class="c-cell" colspan="1" data-cat="fx" title="Bay 4 · port 19">SDE 1000 Return</td><td class="c-cell" colspan="1" data-cat="fx" title="Bay 4 · port 20">Moog DLY Out</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 4 · port 21-22"></td><td class="c-cell c-norm" colspan="2" data-cat="groups" title="Bay 4 · port 23-24">Main Insert Send</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 4 · port 1-16">Console Line In 1-16</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 4 · port 17-18"></td><td class="c-cell c-spare" colspan="1" data-cat="spare" title="Bay 4 · port 19"></td><td class="c-cell c-spare" colspan="1" data-cat="spare" title="Bay 4 · port 20"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 4 · port 21-22"></td><td class="c-cell c-norm" colspan="2" data-cat="groups" title="Bay 4 · port 23-24">Main Insert Return</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 5<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 5 · port 1-16">Worm hole Matched to Left Side Patch bay 1-16 bottom</td><td class="c-cell c-spare" colspan="8" data-cat="spare" title="Bay 5 · port 17-24"></td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 5 · port 1-16">Console Line In 17-32</td><td class="c-cell c-spare" colspan="8" data-cat="spare" title="Bay 5 · port 17-24"></td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 6<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 6 · port 1-16">Apollo #1 1-16 Out</td><td class="c-cell c-spare" colspan="6" data-cat="spare" title="Bay 6 · port 17-22"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 6 · port 23-24"></td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 6 · port 1-16">Ghost 1-16 Tape In</td><td class="c-cell c-spare" colspan="6" data-cat="spare" title="Bay 6 · port 17-22"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 6 · port 23-24"></td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 7<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 7 · port 1-16">Apollo #2 17-32 Out</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 7 · port 17-18">EMT 140 Return L/R</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 7 · port 19-20">PCM60 Return L/R</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 7 · port 21-22"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 7 · port 23-24"></td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 7 · port 1-16">Ghost 17-32 Tape In</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 7 · port 17-18">FX 1 In L/R</td><td class="c-cell c-norm" colspan="2" data-cat="fx" title="Bay 7 · port 19-20">FX 2 In L/R</td><td class="c-cell" colspan="2" data-cat="fx" title="Bay 7 · port 21-22">FX 3 In L/R</td><td class="c-cell" colspan="2" data-cat="fx" title="Bay 7 · port 23-24">FX 4 In L/R</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 8<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 8 · port 1-16">Ghost 1-16 Tape Send</td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 17-18">Control Room Out L/R</td><td class="c-cell c-norm" colspan="1" data-cat="monitoring" title="Bay 8 · port 19">Alt CRM Out L</td><td class="c-cell c-norm" colspan="1" data-cat="monitoring" title="Bay 8 · port 20">Alt CRM Out R</td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 21-22">Studio A O/P L/R</td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 23-24">Studio Phones B L/R Out</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 8 · port 1-16">Apollo #1 1-16 In</td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 17-18">Yamaha Monitors In</td><td class="c-cell c-norm" colspan="1" data-cat="monitoring" title="Bay 8 · port 19">Mix Cube In</td><td class="c-cell c-spare" colspan="1" data-cat="spare" title="Bay 8 · port 20"></td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 21-22">Headamp Pro Input</td><td class="c-cell c-norm" colspan="2" data-cat="monitoring" title="Bay 8 · port 23-24">Meyer Mains In L/R</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 9<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 9 · port 1-16">Ghost 17-32 Tape Send</td><td class="c-cell c-norm" colspan="2" data-cat="twotrack" title="Bay 9 · port 17-18">Apollo 2 Track Out</td><td class="c-cell c-norm" colspan="2" data-cat="twotrack" title="Bay 9 · port 19-20">Record Player Out</td><td class="c-cell" colspan="2" data-cat="twotrack" title="Bay 9 · port 21-22">Ghost MIX O/P L/R</td><td class="c-cell" colspan="2" data-cat="twotrack" title="Bay 9 · port 23-24">Ghost MIX B O/P L/R</td></tr><tr><td class="c-cell c-norm" colspan="16" data-cat="console" title="Bay 9 · port 1-16">Apollo #2 17-32 In</td><td class="c-cell c-norm" colspan="2" data-cat="twotrack" title="Bay 9 · port 17-18">Ghost 2 Track A Input</td><td class="c-cell c-norm" colspan="2" data-cat="twotrack" title="Bay 9 · port 19-20">Ghost 2 Track B Input</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 9 · port 21-22"></td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 9 · port 23-24"></td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 10<small>Main rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 1">Kitchen L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 2">Bath Up L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 3">Bath Dn L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 4">Den L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 5">Gallery L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 6">Master Bed L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 7">Guest Bed L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 8">Office L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 9">Record Player L</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 10">Front Porch</td><td class="c-cell" colspan="4" data-cat="tielines" title="Bay 10 · port 11-14">Basement Snake A, B, C, D</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 10 · port 15-16"></td><td class="c-cell" colspan="8" data-cat="groups" title="Bay 10 · port 17-24">Group 1 - 8 Out</td></tr><tr><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 1">Kitchen R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 2">Bath Up R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 3">Bath Dn R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 4">Den R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 5">Gallery R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 6">Master Bed R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 7">Guest Bed R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 8">Office R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 9">Record Player R</td><td class="c-cell" colspan="1" data-cat="rooms" title="Bay 10 · port 10">Back Porch</td><td class="c-cell" colspan="4" data-cat="tielines" title="Bay 10 · port 11-14">Basement Snake E, F, G, H</td><td class="c-cell c-spare" colspan="2" data-cat="spare" title="Bay 10 · port 15-16"></td><td class="c-cell" colspan="8" data-cat="groups" title="Bay 10 · port 17-24">Hearback In 1 - 8</td></tr><tr class="c-first"><th class="c-bay" rowspan="3">Bay 11-amp-rack<small>Amp rack</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td><td class="c-num">23</td><td class="c-num">24</td></tr><tr><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 1-2">L / R Audio Source Out</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 3-4">DBX High Out L/R</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 5-6">DBX Mid Out L/R</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 7-8">DBX Low Out L/R</td><td class="c-cell c-spare" colspan="16" data-cat="spare" title="Bay 11-amp-rack · port 9-24"></td></tr><tr><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 1-2">DBX Drive Rack L/R IN</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 3-4">High Amp In L/R</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 5-6">Mid Amp In L/R</td><td class="c-cell c-norm" colspan="2" data-cat="amp" title="Bay 11-amp-rack · port 7-8">Low Amp In L/R</td><td class="c-cell c-spare" colspan="16" data-cat="spare" title="Bay 11-amp-rack · port 9-24"></td></tr><tr class="c-first"><th class="c-bay" rowspan="2">Ethernet<small>Ethernet</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td></tr><tr><td class="c-cell" colspan="8" data-cat="network" title="Ethernet · port 1-8">Hearback Out 1-8</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 9">Kitchen</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 10">Bath Up</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 11">Bath Dn</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 12">Den</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 13">Gallery</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 14">Master Bed</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 15">Guest Bed</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 16">Office</td><td class="c-cell" colspan="1" data-cat="network" title="Ethernet · port 17">Record Player</td><td class="c-cell c-spare" colspan="3" data-cat="spare" title="Ethernet · port 18-20"></td></tr><tr class="c-first"><th class="c-bay" rowspan="2">Midi<small>MIDI</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td><td class="c-num">11</td><td class="c-num">12</td><td class="c-num">13</td><td class="c-num">14</td><td class="c-num">15</td><td class="c-num">16</td><td class="c-num">17</td><td class="c-num">18</td><td class="c-num">19</td><td class="c-num">20</td><td class="c-num">21</td><td class="c-num">22</td></tr><tr><td class="c-cell c-spare" colspan="22" data-cat="spare" title="Midi · port 1-22"></td></tr><tr class="c-first"><th class="c-bay" rowspan="2">Power Switches<small>Power switches</small></th><td class="c-num">1</td><td class="c-num">2</td><td class="c-num">3</td><td class="c-num">4</td><td class="c-num">5</td><td class="c-num">6</td><td class="c-num">7</td><td class="c-num">8</td><td class="c-num">9</td><td class="c-num">10</td></tr><tr><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 1">Monitors</td><td class="c-cell c-spare" colspan="1" data-cat="spare" title="Power Switches · port 2"></td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 3">API 2500</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 4">D-Comp</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 5">dbx 902</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 6">PCM 60</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 7">SDE 1000</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 8">dbx 160 #1</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 9">dbx 160 #2</td><td class="c-cell" colspan="1" data-cat="power" title="Power Switches · port 10">Headamp</td></tr></table></div></div>
+  <div id="full-view">
   <div class="view-toggle">
     <button type="button" id="flip-view" class="flip-btn" aria-pressed="false">
       <span class="flip-icon" aria-hidden="true">⟲</span> Flip patch bay
@@ -1291,115 +1325,150 @@ Normalled" style="grid-area:5 / 25"></span>
 <section class="bay" id="bay-4">
   <header class="bay-head">
     <h2>4</h2>
-    <p>24 × 2</p><p><b>2</b> spare</p><p><b>18</b> normalled</p><p><b class="wired-count" data-bay="4">0</b>/40 rear plugged in</p>
+    <p>24 × 2</p><p><b>2</b> spare</p><p><b>18</b> normalled</p><p><b class="wired-count" data-bay="4">0</b>/8 rear plugged in</p>
   </header>
   <div class="scroll"><div class="panel has-divider" style="grid-template-columns:repeat(16, minmax(0, 1fr)) var(--divider) repeat(8, minmax(0, 1fr))">
-    <span class="split" style="grid-column:17;grid-row:1 / -1"></span><span class="num" style="grid-area:1 / 1">1</span><span class="num" style="grid-area:1 / 2">2</span><span class="num" style="grid-area:1 / 3">3</span><span class="num" style="grid-area:1 / 4">4</span><span class="num" style="grid-area:1 / 5">5</span><span class="num" style="grid-area:1 / 6">6</span><span class="num" style="grid-area:1 / 7">7</span><span class="num" style="grid-area:1 / 8">8</span><span class="num" style="grid-area:1 / 9">9</span><span class="num" style="grid-area:1 / 10">10</span><span class="num" style="grid-area:1 / 11">11</span><span class="num" style="grid-area:1 / 12">12</span><span class="num" style="grid-area:1 / 13">13</span><span class="num" style="grid-area:1 / 14">14</span><span class="num" style="grid-area:1 / 15">15</span><span class="num" style="grid-area:1 / 16">16</span><span class="num" style="grid-area:1 / 18">17</span><span class="num" style="grid-area:1 / 19">18</span><span class="num" style="grid-area:1 / 20">19</span><span class="num" style="grid-area:1 / 21">20</span><span class="num" style="grid-area:1 / 22">21</span><span class="num" style="grid-area:1 / 23">22</span><span class="num" style="grid-area:1 / 24">23</span><span class="num" style="grid-area:1 / 25">24</span><div class="tape" id="port-4-1" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
+    <span class="split" style="grid-column:17;grid-row:1 / -1"></span><span class="num" style="grid-area:1 / 1">1</span><span class="num" style="grid-area:1 / 2">2</span><span class="num" style="grid-area:1 / 3">3</span><span class="num" style="grid-area:1 / 4">4</span><span class="num" style="grid-area:1 / 5">5</span><span class="num" style="grid-area:1 / 6">6</span><span class="num" style="grid-area:1 / 7">7</span><span class="num" style="grid-area:1 / 8">8</span><span class="num" style="grid-area:1 / 9">9</span><span class="num" style="grid-area:1 / 10">10</span><span class="num" style="grid-area:1 / 11">11</span><span class="num" style="grid-area:1 / 12">12</span><span class="num" style="grid-area:1 / 13">13</span><span class="num" style="grid-area:1 / 14">14</span><span class="num" style="grid-area:1 / 15">15</span><span class="num" style="grid-area:1 / 16">16</span><span class="num" style="grid-area:1 / 18">17</span><span class="num" style="grid-area:1 / 19">18</span><span class="num" style="grid-area:1 / 20">19</span><span class="num" style="grid-area:1 / 21">20</span><span class="num" style="grid-area:1 / 22">21</span><span class="num" style="grid-area:1 / 23">22</span><span class="num" style="grid-area:1 / 24">23</span><span class="num" style="grid-area:1 / 25">24</span><div class="tape idle" id="port-4-1" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-row:2;grid-column:1 / 17"><span>Worm hole Matched to Left Side Patch bay 1-16 top</span></div><div class="tape" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-row:2;grid-column:1 / 17"><span>Worm hole Matched to Left Side Patch bay 1-16 top</span></div><div class="tape idle" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-row:6;grid-column:1 / 17"><span>Console Line In 1-16</span></div><div class="norm on" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-row:6;grid-column:1 / 17"><span>Console Line In 1-16</span></div><div class="norm on" data-cat="console" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-row:4;grid-column:1 / 17"><span>Normalled</span></div><button type="button" class="jack wire normalled" data-wire="bay-4-t-1" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 1 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-row:4;grid-column:1 / 17"><span>Normalled</span></div><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 1"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-1" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 1 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 1"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 1"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-2" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 2 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 1"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 2"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-2" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 2 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 2"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 2"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-3" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 3 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 2"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 3"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-3" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 3 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 3"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 3"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-4" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 4 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 3"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 4"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-4" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 4 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 4"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 4"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-5" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 5 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 4"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 5"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-5" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 5 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 5"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 5"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-6" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 6 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 5"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 6"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-6" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 6 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 6"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 6"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-7" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 7 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 6"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 7"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-7" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 7 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 7"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 7"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-8" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 8 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 7"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 8"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-8" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 8 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 8"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 8"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-9" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 9 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 8"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 9"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-9" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 9 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 9"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 9"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-10" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 10 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 9"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 10"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-10" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 10 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 10"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 10"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-11" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 11 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 10"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 11"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-11" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 11 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 11"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 11"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-12" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 12 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 11"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 12"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-12" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 12 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 12"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 12"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-13" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 13 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 12"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 13"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-13" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 13 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 13"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 13"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-14" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 14 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 13"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 14"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-14" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 14 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 14"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 14"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-15" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 15 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 14"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 15"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-15" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 15 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 15"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 15"></button><button type="button" class="jack wire normalled" data-wire="bay-4-t-16" data-bay="4" aria-pressed="false" aria-label="Bay 4 top port 16 rear: Worm hole Matched to Left Side Patch bay 1-16 top" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 15"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:3 / 16"></button><button type="button" class="jack wire normalled lower" data-wire="bay-4-b-16" data-bay="4" aria-pressed="false" aria-label="Bay 4 bottom port 16 rear: Console Line In 1-16" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 4 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 16"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 4 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 top
 Bottom: Console Line In 1-16
-Normalled" style="grid-area:5 / 16"></button><div class="tape" id="port-4-17" data-cat="fx" data-norm="open" title="Bay 4 · port 17-18
+Normalled
+Not in use yet" style="grid-area:5 / 16"></span><div class="tape" id="port-4-17" data-cat="fx" data-norm="open" title="Bay 4 · port 17-18
 Top: Aux 8 Out L/R
 Bottom: -
 Not normalled" style="grid-row:2;grid-column:18 / 20"><span>Aux 8 Out L/R</span></div><div class="tape blank" data-cat="fx" data-norm="open" title="Bay 4 · port 17-18
@@ -1500,115 +1569,150 @@ Normalled" style="grid-area:5 / 25"></button>
 <section class="bay" id="bay-5">
   <header class="bay-head">
     <h2>5</h2>
-    <p>24 × 2</p><p><b>8</b> spare</p><p><b>16</b> normalled</p><p><b class="wired-count" data-bay="5">0</b>/32 rear plugged in</p>
+    <p>24 × 2</p><p><b>8</b> spare</p><p><b>16</b> normalled</p><p><b class="wired-count" data-bay="5">0</b>/0 rear plugged in</p>
   </header>
   <div class="scroll"><div class="panel has-divider" style="grid-template-columns:repeat(16, minmax(0, 1fr)) var(--divider) repeat(8, minmax(0, 1fr))">
-    <span class="split" style="grid-column:17;grid-row:1 / -1"></span><span class="num" style="grid-area:1 / 1">1</span><span class="num" style="grid-area:1 / 2">2</span><span class="num" style="grid-area:1 / 3">3</span><span class="num" style="grid-area:1 / 4">4</span><span class="num" style="grid-area:1 / 5">5</span><span class="num" style="grid-area:1 / 6">6</span><span class="num" style="grid-area:1 / 7">7</span><span class="num" style="grid-area:1 / 8">8</span><span class="num" style="grid-area:1 / 9">9</span><span class="num" style="grid-area:1 / 10">10</span><span class="num" style="grid-area:1 / 11">11</span><span class="num" style="grid-area:1 / 12">12</span><span class="num" style="grid-area:1 / 13">13</span><span class="num" style="grid-area:1 / 14">14</span><span class="num" style="grid-area:1 / 15">15</span><span class="num" style="grid-area:1 / 16">16</span><span class="num" style="grid-area:1 / 18">17</span><span class="num" style="grid-area:1 / 19">18</span><span class="num" style="grid-area:1 / 20">19</span><span class="num" style="grid-area:1 / 21">20</span><span class="num" style="grid-area:1 / 22">21</span><span class="num" style="grid-area:1 / 23">22</span><span class="num" style="grid-area:1 / 24">23</span><span class="num" style="grid-area:1 / 25">24</span><div class="tape" id="port-5-1" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
+    <span class="split" style="grid-column:17;grid-row:1 / -1"></span><span class="num" style="grid-area:1 / 1">1</span><span class="num" style="grid-area:1 / 2">2</span><span class="num" style="grid-area:1 / 3">3</span><span class="num" style="grid-area:1 / 4">4</span><span class="num" style="grid-area:1 / 5">5</span><span class="num" style="grid-area:1 / 6">6</span><span class="num" style="grid-area:1 / 7">7</span><span class="num" style="grid-area:1 / 8">8</span><span class="num" style="grid-area:1 / 9">9</span><span class="num" style="grid-area:1 / 10">10</span><span class="num" style="grid-area:1 / 11">11</span><span class="num" style="grid-area:1 / 12">12</span><span class="num" style="grid-area:1 / 13">13</span><span class="num" style="grid-area:1 / 14">14</span><span class="num" style="grid-area:1 / 15">15</span><span class="num" style="grid-area:1 / 16">16</span><span class="num" style="grid-area:1 / 18">17</span><span class="num" style="grid-area:1 / 19">18</span><span class="num" style="grid-area:1 / 20">19</span><span class="num" style="grid-area:1 / 21">20</span><span class="num" style="grid-area:1 / 22">21</span><span class="num" style="grid-area:1 / 23">22</span><span class="num" style="grid-area:1 / 24">23</span><span class="num" style="grid-area:1 / 25">24</span><div class="tape idle" id="port-5-1" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-row:2;grid-column:1 / 17"><span>Worm hole Matched to Left Side Patch bay 1-16 bottom</span></div><div class="tape" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-row:2;grid-column:1 / 17"><span>Worm hole Matched to Left Side Patch bay 1-16 bottom</span></div><div class="tape idle" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-row:6;grid-column:1 / 17"><span>Console Line In 17-32</span></div><div class="norm on" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-row:6;grid-column:1 / 17"><span>Console Line In 17-32</span></div><div class="norm on" data-cat="console" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-row:4;grid-column:1 / 17"><span>Normalled</span></div><button type="button" class="jack wire normalled" data-wire="bay-5-t-1" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 1 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-row:4;grid-column:1 / 17"><span>Normalled</span></div><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 1"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-1" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 1 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 1"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 1"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-2" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 2 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 1"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 2"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-2" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 2 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 2"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 2"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-3" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 3 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 2"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 3"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-3" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 3 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 3"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 3"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-4" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 4 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 3"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 4"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-4" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 4 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 4"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 4"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-5" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 5 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 4"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 5"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-5" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 5 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 5"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 5"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-6" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 6 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 5"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 6"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-6" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 6 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 6"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 6"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-7" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 7 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 6"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 7"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-7" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 7 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 7"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 7"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-8" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 8 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 7"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 8"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-8" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 8 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 8"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 8"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-9" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 9 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 8"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 9"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-9" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 9 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 9"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 9"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-10" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 10 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 9"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 10"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-10" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 10 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 10"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 10"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-11" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 11 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 10"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 11"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-11" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 11 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 11"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 11"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-12" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 12 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 11"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 12"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-12" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 12 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 12"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 12"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-13" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 13 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 12"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 13"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-13" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 13 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 13"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 13"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-14" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 14 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 13"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 14"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-14" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 14 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 14"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 14"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-15" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 15 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 14"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 15"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-15" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 15 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 15"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 15"></button><button type="button" class="jack wire normalled" data-wire="bay-5-t-16" data-bay="5" aria-pressed="false" aria-label="Bay 5 top port 16 rear: Worm hole Matched to Left Side Patch bay 1-16 bottom" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:5 / 15"></span><span class="jack normalled" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:3 / 16"></button><button type="button" class="jack wire normalled lower" data-wire="bay-5-b-16" data-bay="5" aria-pressed="false" aria-label="Bay 5 bottom port 16 rear: Console Line In 17-32" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 5 · port 1-16
+Normalled
+Not in use yet" style="grid-area:3 / 16"></span><span class="jack normalled lower" data-cat="spare" data-norm="normalled" title="Bay 5 · port 1-16
 Top: Worm hole Matched to Left Side Patch bay 1-16 bottom
 Bottom: Console Line In 17-32
-Normalled" style="grid-area:5 / 16"></button><div class="tape blank" id="port-5-17" data-cat="spare" data-norm="spare" title="Bay 5 · port 17-24
+Normalled
+Not in use yet" style="grid-area:5 / 16"></span><div class="tape blank" id="port-5-17" data-cat="spare" data-norm="spare" title="Bay 5 · port 17-24
 Top: -
 Bottom: -
 Not normalled" style="grid-row:2;grid-column:18 / 26"><span></span></div><div class="tape blank" data-cat="spare" data-norm="spare" title="Bay 5 · port 17-24
@@ -3327,8 +3431,8 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
   
 <section class="todos" id="todos">
   <h2>To do</h2>
-  <p class="progress" id="todo-progress"><b>0</b> of 4 done</p>
-  <ul class="todo-list"><li><input type="checkbox" class="todo-check" id="todo-0" data-task="todo-0"><label for="todo-0">Find the screws for all the cover plates</label></li><li><input type="checkbox" class="todo-check" id="todo-1" data-task="todo-1"><label for="todo-1">Gather every cover plate in one place</label></li><li><input type="checkbox" class="todo-check" id="todo-2" data-task="todo-2"><label for="todo-2">Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown</label></li><li><input type="checkbox" class="todo-check" id="todo-3" data-task="todo-3"><label for="todo-3">Go back to every black-flagged XLR run and terminate it once the parts arrive</label></li></ul>
+  <p class="progress" id="todo-progress"><b>0</b> of 5 done</p>
+  <ul class="todo-list"><li><input type="checkbox" class="todo-check" id="todo-0" data-task="todo-0"><label for="todo-0">Find the screws for all the cover plates</label></li><li><input type="checkbox" class="todo-check" id="todo-1" data-task="todo-1"><label for="todo-1">Gather every cover plate in one place</label></li><li><input type="checkbox" class="todo-check" id="todo-2" data-task="todo-2"><label for="todo-2">Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown</label></li><li><input type="checkbox" class="todo-check" id="todo-3" data-task="todo-3"><label for="todo-3">Go back to every black-flagged XLR run and terminate it once the parts arrive</label></li><li><input type="checkbox" class="todo-check" id="todo-4" data-task="todo-4"><label for="todo-4">Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one of the rooms, but which one is unknown. Tone it out and label both ends</label></li></ul>
   <textarea class="room-note todo-note" data-room="general" rows="3" placeholder="Anything else…"
     aria-label="General notes"></textarea>
 </section>
@@ -3490,6 +3594,7 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
         </tr></tbody>
   </table></div>
 </details>
+  </div>
 </div>
 <script>
 (function () {
@@ -3547,6 +3652,26 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
     el.addEventListener('blur', hide);
   });
   window.addEventListener('scroll', hide, { passive: true, capture: true });
+})();
+// Two views: the working page, and a compact read-only sheet.
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.view-tab'));
+  var full = document.getElementById('full-view');
+  var compact = document.getElementById('compact-view');
+  if (!tabs.length || !full || !compact) return;
+  var KEY = 'patchbay-view';
+  function apply(which) {
+    full.hidden = which === 'compact';
+    compact.hidden = which !== 'compact';
+    tabs.forEach(function (t) { t.setAttribute('aria-pressed', t.dataset.view === which ? 'true' : 'false'); });
+    try { localStorage.setItem(KEY, which); } catch (e) {}
+  }
+  var saved = 'full';
+  try { saved = localStorage.getItem(KEY) || 'full'; } catch (e) {}
+  apply(saved);
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { apply(t.dataset.view); });
+  });
 })();
 // Every section folds away; the choice is remembered in this browser.
 (function () {
