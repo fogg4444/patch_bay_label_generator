@@ -63,7 +63,9 @@ config = [
         {"normalled": False, "top": "SSL Fusion In L/R", "bottom": "SSL Fusion Out L/R", "width": 2, "category": Category.OUTBOARD},
         {"normalled": False, "top": "API L/R In", "bottom": "API L/R Out", "width": 2, "category": Category.OUTBOARD},
         {"normalled": False, "top": "Dbx 160A L/R In", "bottom": "Dbx 160A L/R Out", "width": 2, "category": Category.OUTBOARD},
-        {"normalled": False, "top": "D-Comp L/R In", "bottom": "D-Comp L/R Out", "width": 2, "category": Category.OUTBOARD},
+        {"normalled": False, "top": "D-Comp L/R In", "bottom": "D-Comp L/R Out", "width": 2, "category": Category.OUTBOARD,
+         "info": "The D-Comp stereo return is wired unbalanced. No real loss here - the Ghost's insert points are unbalanced anyway (tip return, ring send).",
+         "info_at": "bottom"},
         {"normalled": False, "top": "902 De-esser IN 1-2", "bottom": "902 De-esser OUT 1-2", "width": 2, "category": Category.OUTBOARD},
         {"normalled": False, "top": "Art Comp In L/R", "bottom": "Art Comp Out L/R", "width": 2, "category": Category.OUTBOARD},
     ]
