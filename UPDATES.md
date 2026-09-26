@@ -2,6 +2,30 @@
 
 ---
 
+## 2026-09-20
+
+### Reorganized: Main Rack Patch Bays
+
+Full re-layout of bays 1–10 (top of rack first). Console buckets stay 16 wide on the left; the right 8 ports are grouped by job.
+
+- **Bay 1:** instruments & pedals (1–9, spares reserved for more), mono outboard, stereo outboard, Art Comp far right
+- **Bays 2–3:** Ghost channel inserts, with group inserts and aux sends on the right
+- **Bays 4–9:** worm hole → line in, Apollo ↔ Ghost tape, with Aux 8 / Moog / Main Insert, FX returns, monitoring and 2-track on the right
+- **Bay 10:** room sends (L over R), basement snake, group outs → Hearback
+
+### Added
+- SSL Fusion (bay 1), Aux 4 normalled into the Moog delay, stereo sends to 10 rooms
+- MIDI patch bay label (22 jacks) and power switch label (10 switches) - names still to fill in
+
+### Removed
+- Tascam TSR-8, Pro Verb, Transition Delay
+
+### Changed
+- 902 de-esser no longer normalled; Ghost Mix Out normalled
+- Porch renamed to Deck on the ethernet bay
+
+---
+
 ## 2026-03-08
 
 ### Added: Ethernet Patch Bay

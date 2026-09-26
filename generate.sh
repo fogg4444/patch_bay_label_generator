@@ -9,4 +9,6 @@ rm ./label_outputs/*
 
 python3 ./generate.py
 
+python3 ./generate_html.py
+
 open -a Preview printable_reference/reference_sheet.pdf
