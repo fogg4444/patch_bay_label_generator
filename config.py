@@ -28,6 +28,9 @@ ROOMS = [
 SPEAKER_ONLY = ["Front Deck", "Back Deck"]
 # Questions with nowhere better to live, shown in the HTML view's open questions.
 open_questions = []
+# The record player keeps its network drop, but its audio reaches the console at bay 9
+# (Record Player Out), so it needs no stereo send on bay 10.
+NO_SEND = ["Record Player"]
 SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
 
 # Cable runs that aren't a standard room: (name, CableKind, where it lands, does it get patched).
@@ -44,7 +47,7 @@ special_runs = [
 # TRS bay (phantom power) - they'll get their own XLR patch bay later.
 room_sends = [
     {"normalled": False, "top": f"{room} L", "bottom": f"{room} R", "width": 1, "category": Category.ROOMS}
-    for room in SEND_ROOMS
+    for room in SEND_ROOMS if room not in NO_SEND
 ]
 
 config = [
@@ -160,6 +163,7 @@ config = [
   {
     "label_name": "10",
     "entries": room_sends + [
+        {"normalled": False, "top": "-", "bottom": "-", "width": 1},
         {"normalled": False, "top": "Front Porch", "bottom": "Back Porch", "width": 1, "category": Category.ROOMS,
          "info": "Mono line sends, one per porch, feeding the amp that drives the porch speakers.",
          "info_at": "top"},

@@ -514,9 +514,10 @@ def cable_runs(room):
     if room in SPEAKER_ONLY:
         runs.append(("Speaker", CableKind.SPEAKER, "Amp out to the speaker - not on a patch bay", "", False, False))
     else:
-        for side, label in (("Send L", f"{room} L"), ("Send R", f"{room} R")):
-            runs.append((side, CableKind.XLR, where_is(label, "Not on a bay yet"),
-                         "XLR at the room, TRS into the patch bay", True, True))
+        if find_port(f"{room} L"):
+            for side, label in (("Send L", f"{room} L"), ("Send R", f"{room} R")):
+                runs.append((side, CableKind.XLR, where_is(label, "Not on a bay yet"),
+                             "XLR at the room, TRS into the patch bay", True, True))
         runs.append(("Return", CableKind.XLR, "Loom on the floor - no patching yet", "XLR both ends", False, True))
     at = find_port(room)
     if at:
