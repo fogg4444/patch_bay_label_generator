@@ -45,8 +45,16 @@ special_runs = [
 
 # Each room: stereo send, L over R in one column. Room mic returns stay off this
 # TRS bay (phantom power) - they'll get their own XLR patch bay later.
+# Notes that belong to one room's send port.
+ROOM_SEND_NOTES = {
+    "Kitchen": "Both stereo sends to the kitchen run unbalanced for the last stretch: the tail behind the wall "
+               "plate was too short, so they are extended with unbalanced extenders. To be redone properly with "
+               "a balanced junction.",
+}
+
 room_sends = [
-    {"normalled": False, "top": f"{room} L", "bottom": f"{room} R", "width": 1, "category": Category.ROOMS}
+    {"normalled": False, "top": f"{room} L", "bottom": f"{room} R", "width": 1, "category": Category.ROOMS,
+     **({"info": ROOM_SEND_NOTES[room], "info_at": "top"} if room in ROOM_SEND_NOTES else {})}
     for room in SEND_ROOMS if room not in NO_SEND
 ]
 
@@ -364,6 +372,7 @@ todos = [
     "Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one "
     "of the rooms, but which one is unknown. Tone it out and label both ends",
     "Rebuild the bay 6 mult bus with properly made cable - the current jumpers cause phase problems in the rooms",
+    "Redo the kitchen stereo sends with a balanced junction instead of the unbalanced extenders",
 ]
 
 
