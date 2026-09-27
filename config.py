@@ -119,8 +119,8 @@ config = [
     "entries": [
         {"normalled": True, "top": "Apollo #1 1-16 Out", "bottom": "Ghost 1-16 Tape In", "width": 16, "category": Category.CONSOLE},
         {"normalled": False, "top": "Mult L 17-24", "bottom": "Mult R 17-24", "width": 8,
-         "category": Category.TIE_LINES, "in_use": False,
-         "info": "Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain.",
+         "category": Category.TIE_LINES,
+         "info": "Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it.",
          "info_at": "top"},
     ]
   },
@@ -363,6 +363,7 @@ todos = [
     "Go back to every black-flagged XLR run and terminate it once the parts arrive",
     "Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one "
     "of the rooms, but which one is unknown. Tone it out and label both ends",
+    "Rebuild the bay 6 mult bus with properly made cable - the current jumpers cause phase problems in the rooms",
 ]
 
 

@@ -606,7 +606,7 @@ body.focusing .hit { opacity: 1; }
   <div class="top">
     <div>
       <h1>Studio Carquinez Patch Bay</h1>
-      <p class="meta"><span id="view-name">Front view</span>, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated 2026-09-26 from <code>config.py</code>.</p>
+      <p class="meta"><span id="view-name">Front view</span>, top of rack first. Left 16 ports: console buckets. Right 8: outboard, FX, monitoring. Generated 2026-09-27 from <code>config.py</code>.</p>
     </div>
     <dl class="stats">
       <div><dt>Bays</dt><dd>14</dd></div>
@@ -1794,7 +1794,7 @@ Not normalled" style="grid-area:5 / 25"></span>
 <section class="bay" id="bay-6">
   <header class="bay-head">
     <h2>6</h2>
-    <p>24 × 2</p><p><b>0</b> spare</p><p><b>16</b> normalled</p><p><b class="wired-count" data-bay="6">0</b>/32 rear plugged in</p>
+    <p>24 × 2</p><p><b>0</b> spare</p><p><b>16</b> normalled</p><p><b class="wired-count" data-bay="6">0</b>/48 rear plugged in</p>
   </header>
   <div class="scroll"><div class="panel has-divider" style="grid-template-columns:repeat(16, minmax(0, 1fr)) var(--divider) repeat(8, minmax(0, 1fr))">
     <span class="split" style="grid-column:17;grid-row:1 / -1"></span><span class="num" style="grid-area:1 / 1">1</span><span class="num" style="grid-area:1 / 2">2</span><span class="num" style="grid-area:1 / 3">3</span><span class="num" style="grid-area:1 / 4">4</span><span class="num" style="grid-area:1 / 5">5</span><span class="num" style="grid-area:1 / 6">6</span><span class="num" style="grid-area:1 / 7">7</span><span class="num" style="grid-area:1 / 8">8</span><span class="num" style="grid-area:1 / 9">9</span><span class="num" style="grid-area:1 / 10">10</span><span class="num" style="grid-area:1 / 11">11</span><span class="num" style="grid-area:1 / 12">12</span><span class="num" style="grid-area:1 / 13">13</span><span class="num" style="grid-area:1 / 14">14</span><span class="num" style="grid-area:1 / 15">15</span><span class="num" style="grid-area:1 / 16">16</span><span class="num" style="grid-area:1 / 18">17</span><span class="num" style="grid-area:1 / 19">18</span><span class="num" style="grid-area:1 / 20">19</span><span class="num" style="grid-area:1 / 21">20</span><span class="num" style="grid-area:1 / 22">21</span><span class="num" style="grid-area:1 / 23">22</span><span class="num" style="grid-area:1 / 24">23</span><span class="num" style="grid-area:1 / 25">24</span><div class="tape" id="port-6-1" data-cat="console" data-norm="normalled" title="Bay 6 · port 1-16
@@ -1902,102 +1902,83 @@ Bottom: Ghost 1-16 Tape In
 Normalled" style="grid-area:3 / 16"></button><button type="button" class="jack wire normalled lower" data-wire="bay-6-b-16" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 16 rear: Ghost 1-16 Tape In" data-cat="console" data-norm="normalled" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 1-16
 Top: Apollo #1 1-16 Out
 Bottom: Ghost 1-16 Tape In
-Normalled" style="grid-area:5 / 16"></button><div class="tape idle has-info" id="port-6-17" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
+Normalled" style="grid-area:5 / 16"></button><div class="tape has-info" id="port-6-17" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-row:2;grid-column:18 / 26"><span>Mult L 17-24</span><i class="info-mark" tabindex="0" data-tip="Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." aria-label="Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain.">i</i></div><div class="tape idle" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-row:2;grid-column:18 / 26"><span>Mult L 17-24</span><i class="info-mark" tabindex="0" data-tip="Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." aria-label="Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it.">i</i></div><div class="tape" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-row:6;grid-column:18 / 26"><span>Mult R 17-24</span></div><div class="norm off" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-row:6;grid-column:18 / 26"><span>Mult R 17-24</span></div><div class="norm off" data-cat="tielines" data-norm="open" title="Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-row:4;grid-column:18 / 26"></div><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-row:4;grid-column:18 / 26"></div><button type="button" class="jack wire" data-wire="bay-6-t-17" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 17 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 18"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 18"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-17" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 17 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 18"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 18"></button><button type="button" class="jack wire" data-wire="bay-6-t-18" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 18 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 19"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 19"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-18" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 18 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 19"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 19"></button><button type="button" class="jack wire" data-wire="bay-6-t-19" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 19 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 20"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 20"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-19" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 19 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 20"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 20"></button><button type="button" class="jack wire" data-wire="bay-6-t-20" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 20 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 21"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 21"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-20" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 20 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 21"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 21"></button><button type="button" class="jack wire" data-wire="bay-6-t-21" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 21 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 22"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 22"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-21" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 21 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 22"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 22"></button><button type="button" class="jack wire" data-wire="bay-6-t-22" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 22 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 23"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 23"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-22" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 22 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 23"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 23"></button><button type="button" class="jack wire" data-wire="bay-6-t-23" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 23 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 24"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 24"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-23" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 23 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 24"></span><span class="jack" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 24"></button><button type="button" class="jack wire" data-wire="bay-6-t-24" data-bay="6" aria-pressed="false" aria-label="Bay 6 top port 24 rear: Mult L 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:3 / 25"></span><span class="jack lower" data-cat="spare" data-norm="open" title="Bay 6 · port 17-24
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:3 / 25"></button><button type="button" class="jack wire lower" data-wire="bay-6-b-24" data-bay="6" aria-pressed="false" aria-label="Bay 6 bottom port 24 rear: Mult R 17-24" data-cat="tielines" data-norm="open" title="Click to mark the rear jack plugged in&#10;Bay 6 · port 17-24
 Top: Mult L 17-24
 Bottom: Mult R 17-24
 Not normalled
-Not in use yet
-Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain." style="grid-area:5 / 25"></span>
+Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it." style="grid-area:5 / 25"></button>
   </div></div>
   <details class="bay-note-wrap">
     <summary>Notes</summary>
@@ -3469,13 +3450,13 @@ Top: Headamp" style="grid-area:3 / 10"><svg viewBox="0 0 20 30" aria-hidden="tru
   <h2>Imperfect crimes</h2>
   <p class="lead">Shortcuts taken during the build, so nobody has to rediscover them with a meter.
   Ones tied to a port also show as an <b>i</b> on that bay.</p>
-  <ul class="crime-list"><li><b>Bay 1 · port 19–20 bottom</b><span>The D-Comp stereo return is wired unbalanced. No real loss here - the Ghost&#x27;s insert points are unbalanced anyway (tip return, ring send).</span></li><li><b>Bay 4 · port 1–16 top</b><span>Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.</span></li><li><b>Bay 4 · port 17–18 top</b><span>Aux 8 is on the bay but not wired to anything yet - stereo send, no destination chosen.</span></li><li><b>Bay 5 · port 1–16 top</b><span>Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.</span></li><li><b>Bay 6 · port 17–24 top</b><span>Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain.</span></li><li><b>Bay 8 · port 19 bottom</b><span>Avantone Active MixCube: the lamp in its rear power switch is dead. The speaker and its supply are fine - the switch just doesn&#x27;t light up, so don&#x27;t go chasing a dead unit.</span></li><li><b>Bay 9 · port 17–18 bottom</b><span>Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack.</span></li><li><b>Bay 10 · port 9 top</b><span>Mono line sends, one per porch, feeding the amp that drives the porch speakers.</span></li><li><b>Room XLR runs</b><span>While spooling out the cable, every XLR run from a room to the console is flagged with black tape at BOTH ends - room side and console side - because the parts to finish them aren&#x27;t here yet. Anything without a black flag was soldered and jacked into the patch bay as it was pulled. So: black flag = still to terminate.</span></li></ul>
+  <ul class="crime-list"><li><b>Bay 1 · port 19–20 bottom</b><span>The D-Comp stereo return is wired unbalanced. No real loss here - the Ghost&#x27;s insert points are unbalanced anyway (tip return, ring send).</span></li><li><b>Bay 4 · port 1–16 top</b><span>Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.</span></li><li><b>Bay 4 · port 17–18 top</b><span>Aux 8 is on the bay but not wired to anything yet - stereo send, no destination chosen.</span></li><li><b>Bay 5 · port 1–16 top</b><span>Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.</span></li><li><b>Bay 6 · port 17–24 top</b><span>Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it.</span></li><li><b>Bay 8 · port 19 bottom</b><span>Avantone Active MixCube: the lamp in its rear power switch is dead. The speaker and its supply are fine - the switch just doesn&#x27;t light up, so don&#x27;t go chasing a dead unit.</span></li><li><b>Bay 9 · port 17–18 bottom</b><span>Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack.</span></li><li><b>Bay 10 · port 9 top</b><span>Mono line sends, one per porch, feeding the amp that drives the porch speakers.</span></li><li><b>Room XLR runs</b><span>While spooling out the cable, every XLR run from a room to the console is flagged with black tape at BOTH ends - room side and console side - because the parts to finish them aren&#x27;t here yet. Anything without a black flag was soldered and jacked into the patch bay as it was pulled. So: black flag = still to terminate.</span></li></ul>
 </section>
   
 <section class="todos" id="todos">
   <h2>To do</h2>
-  <p class="progress" id="todo-progress"><b>0</b> of 5 done</p>
-  <ul class="todo-list"><li><input type="checkbox" class="todo-check" id="todo-0" data-task="todo-0"><label for="todo-0">Find the screws for all the cover plates</label></li><li><input type="checkbox" class="todo-check" id="todo-1" data-task="todo-1"><label for="todo-1">Gather every cover plate in one place</label></li><li><input type="checkbox" class="todo-check" id="todo-2" data-task="todo-2"><label for="todo-2">Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown</label></li><li><input type="checkbox" class="todo-check" id="todo-3" data-task="todo-3"><label for="todo-3">Go back to every black-flagged XLR run and terminate it once the parts arrive</label></li><li><input type="checkbox" class="todo-check" id="todo-4" data-task="todo-4"><label for="todo-4">Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one of the rooms, but which one is unknown. Tone it out and label both ends</label></li></ul>
+  <p class="progress" id="todo-progress"><b>0</b> of 6 done</p>
+  <ul class="todo-list"><li><input type="checkbox" class="todo-check" id="todo-0" data-task="todo-0"><label for="todo-0">Find the screws for all the cover plates</label></li><li><input type="checkbox" class="todo-check" id="todo-1" data-task="todo-1"><label for="todo-1">Gather every cover plate in one place</label></li><li><input type="checkbox" class="todo-check" id="todo-2" data-task="todo-2"><label for="todo-2">Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown</label></li><li><input type="checkbox" class="todo-check" id="todo-3" data-task="todo-3"><label for="todo-3">Go back to every black-flagged XLR run and terminate it once the parts arrive</label></li><li><input type="checkbox" class="todo-check" id="todo-4" data-task="todo-4"><label for="todo-4">Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one of the rooms, but which one is unknown. Tone it out and label both ends</label></li><li><input type="checkbox" class="todo-check" id="todo-5" data-task="todo-5"><label for="todo-5">Rebuild the bay 6 mult bus with properly made cable - the current jumpers cause phase problems in the rooms</label></li></ul>
   <textarea class="room-note todo-note" data-room="general" rows="3" placeholder="Anything else…"
     aria-label="General notes"></textarea>
 </section>
