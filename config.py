@@ -115,8 +115,10 @@ config = [
     "label_name": "6",
     "entries": [
         {"normalled": True, "top": "Apollo #1 1-16 Out", "bottom": "Ghost 1-16 Tape In", "width": 16, "category": Category.CONSOLE},
-        {"normalled": False, "top": "-", "bottom": "-", "width": 6},
-        {"normalled": False, "top": "-", "bottom": "-", "width": 2},
+        {"normalled": False, "top": "Mult L 17-24", "bottom": "Mult R 17-24", "width": 8,
+         "category": Category.TIE_LINES, "in_use": False,
+         "info": "Stereo mult: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. Wire the bus on the REAR jacks and turn those cards, so patching at the front never breaks the chain.",
+         "info_at": "top"},
     ]
   },
   {
