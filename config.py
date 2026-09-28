@@ -163,9 +163,13 @@ config = [
     "entries": [
         {"normalled": True, "top": "Ghost 17-32 Tape Send", "bottom": "Apollo #2 17-32 In", "width": 16, "category": Category.CONSOLE},
         {"normalled": True, "top": "Apollo 2 Track Out", "bottom": "Ghost 2 Track A Input", "width": 2, "category": Category.TWO_TRACK,
-         "info": "Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack.",
+         "info": "Bay to the Ghost 2 Track A input is 2x unshielded TRS cables, about 6 ft, inside the rack. "
+                 "They also pass through a poor junction behind the console that may be flaky - replace it.",
          "info_at": "bottom"},
-        {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK},
+        {"normalled": True, "top": "Record Player Out", "bottom": "Ghost 2 Track B Input", "width": 2, "category": Category.TWO_TRACK,
+         "info": "Runs through the same poor junction behind the console as the 2 Track A feed - suspect it first "
+                 "if this input goes intermittent.",
+         "info_at": "bottom"},
         {"normalled": False, "top": "Ghost MIX O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
         {"normalled": False, "top": "Ghost MIX B O/P L/R", "bottom": "-", "width": 2, "category": Category.TWO_TRACK},
     ]
@@ -375,6 +379,7 @@ todos = [
     "of the rooms, but which one is unknown. Tone it out and label both ends",
     "Rebuild the bay 6 mult bus with properly made cable - the current jumpers cause phase problems in the rooms",
     "Redo the kitchen stereo sends with a balanced junction instead of the unbalanced extenders",
+    "Replace the flaky junction behind the console that the Ghost 2 Track A and B inputs run through",
 ]
 
 
