@@ -39,6 +39,14 @@ categories = {
 }
 
 
+def in_use(entry, side=None):
+    """An entry's in_use flag: True/False for the whole port, or {"top": bool, "bottom": bool} per row."""
+    flag = entry.get("in_use", True)
+    if isinstance(flag, dict):
+        return bool(flag.get(side, True)) if side else all(flag.get(s, True) for s in ("top", "bottom"))
+    return bool(flag)
+
+
 def is_spare(text):
     return text is None or text.strip() in ("", "-")
 
@@ -100,8 +108,12 @@ def render_bay(bay):
             tip += f"\nBottom: {bottom}\n{'Normalled' if normalled else 'Not normalled'}"
         if pending:
             tip += f"\nReserved for: {pending}"
-        if entry.get("in_use") is False:
+        if not in_use(entry):
             tip += "\nNot in use yet"
+        elif not in_use(entry, "top"):
+            tip += "\nTop row not in use yet"
+        elif not in_use(entry, "bottom"):
+            tip += "\nBottom row not in use yet"
         info = entry.get("info")
         if info:
             tip += f"\n{info}"
@@ -120,7 +132,8 @@ def render_bay(bay):
                     f'<div popover id="{note_id}" class="pop"><b>Bay {escape(bay["label_name"])} · port {port_range}</b>{escape(note)}</div>')
 
         def tape(text, row):
-            cls = "tape blank" if is_spare(text) else ("tape idle" if entry.get("in_use") is False else "tape")
+            cls = ("tape blank" if is_spare(text)
+                   else ("tape" if in_use(entry, "top" if row == "tape-top" else "bottom") else "tape idle"))
             label = "" if is_spare(text) else escape(text)
             if is_spare(text) and pending:
                 cls += " pending"
@@ -141,23 +154,24 @@ def render_bay(bay):
                 normalled_ports += width
             elif not spare:
                 cells.append(f'<div class="norm off" {common} style="grid-row:{row_of["norm"]};grid-column:{cols}"></div>')
-        def jack_attrs(text):
+        def jack_attrs(text, side="top"):
             """Unused jacks get no category colour."""
-            unused = is_spare(text) or entry.get("in_use") is False
+            unused = is_spare(text) or not in_use(entry, side)
             return common.replace(f'data-cat="{cat}"', 'data-cat="spare"', 1) if unused else common
 
         def jack(extra, text, row, c, p, side, inner=""):
             """A jack; on wiring bays, a used jack is a toggle for 'plugged in'."""
             area = f'style="grid-area:{row_of[row]} / {c}"'
-            if wiring and not is_spare(text) and entry.get("in_use", True):
+            row_side = "top" if side == "t" else "bottom"
+            if wiring and not is_spare(text) and in_use(entry, row_side):
                 wire_id = f"bay-{bay['label_name']}-{side}-{p}"
-                attrs = jack_attrs(text).replace('title="', 'title="Click to mark the rear jack plugged in&#10;', 1)
+                attrs = jack_attrs(text, row_side).replace('title="', 'title="Click to mark the rear jack plugged in&#10;', 1)
                 wired_total[0] += 1
                 where = "top" if side == "t" else "bottom"
                 return (f'<button type="button" class="jack wire{extra}" data-wire="{wire_id}" data-bay="{escape(bay["label_name"])}" '
                         f'aria-pressed="false" aria-label="Bay {escape(bay["label_name"])} {where} port {p} rear: {escape(text)}" '
                         f'{attrs} {area}>{inner}</button>')
-            return f'<span class="jack{extra}" {jack_attrs(text)} {area}>{inner}</span>'
+            return f'<span class="jack{extra}" {jack_attrs(text, row_side)} {area}>{inner}</span>'
 
         for p in range(port, port + width):
             c = grid_col(p, port_count)

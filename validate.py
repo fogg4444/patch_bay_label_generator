@@ -49,6 +49,11 @@ def check_bays(bays, where="config"):
                 problems.append(f"{span}: missing bottom label")
             if "category" in entry and not isinstance(entry["category"], Category):
                 problems.append(f"{span}: category {entry['category']!r} - {_enum_hint(Category, entry['category'])}")
+            flag = entry.get("in_use", True)
+            if not (isinstance(flag, bool)
+                    or (isinstance(flag, dict) and set(flag) <= {"top", "bottom"}
+                        and all(isinstance(v, bool) for v in flag.values()))):
+                problems.append(f"{span}: in_use must be True/False, or {{'top': bool, 'bottom': bool}}")
             if "pending" in entry and not (_spare(entry.get("top")) and (single or _spare(entry.get("bottom")))):
                 problems.append(f"{span}: 'pending' only goes on a spare ('-') entry")
             port += width
