@@ -116,9 +116,7 @@ config = [
   {
     "label_name": "5",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE,
-         "info": "Top row is the worm hole to the left-side bay - not wired yet. The Console Line In jacks below are in use.", "info_at": "top",
-         "in_use": {"top": False}},
+        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 bottom", "bottom": "Console Line In 17-32", "width": 16, "category": Category.CONSOLE},
         {"normalled": False, "top": "-", "bottom": "-", "width": 8},
     ]
   },
