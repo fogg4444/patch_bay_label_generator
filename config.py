@@ -130,7 +130,7 @@ config = [
         {"normalled": True, "top": "Apollo #1 1-16 Out", "bottom": "Ghost 1-16 Tape In", "width": 16, "category": Category.CONSOLE},
         {"normalled": False, "top": "Mult L 17-24", "bottom": "Mult R 17-24", "width": 8,
          "category": Category.TIE_LINES,
-         "info": "Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. The jumper cables that make the bus were badly manufactured, so the mult introduces phase problems in the rooms - known and lived with for now; rebuild the bus with better cable to fix it.",
+         "info": "Stereo mult, installed 2026-09-27: all 8 top jacks joined as the L bus, all 8 bottom jacks as the R bus. Feed Studio A O/P into any one port, the other 7 are outputs. POLARITY IS WRONG on this bus: the cables used to build it have a manufacturing fault (tip and ring swapped on some legs), so feeds come out polarity-inverted against each other and cancel in the rooms. Known and lived with for now - rebuild the bus with cable that has been buzzed out first.",
          "info_at": "top"},
     ]
   },
@@ -377,7 +377,7 @@ todos = [
     "Go back to every black-flagged XLR run and terminate it once the parts arrive",
     "Identify the stray XLR sticking out of the loom behind the desk (Steve found it) - it comes from one "
     "of the rooms, but which one is unknown. Tone it out and label both ends",
-    "Rebuild the bay 6 mult bus with properly made cable - the current jumpers cause phase problems in the rooms",
+    "Rebuild the bay 6 mult bus - the jumper cables have tip and ring swapped on some legs, so the room feeds are polarity-inverted against each other",
     "Redo the kitchen stereo sends with a balanced junction instead of the unbalanced extenders",
     "Replace the flaky junction behind the console that the Ghost 2 Track A and B inputs run through",
 ]
