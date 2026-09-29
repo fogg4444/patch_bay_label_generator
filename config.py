@@ -106,7 +106,10 @@ config = [
   {
     "label_name": "4",
     "entries": [
-        {"normalled": True, "top": "Worm hole Matched to Left Side Patch bay 1-16 top", "bottom": "Console Line In 1-16", "width": 16, "category": Category.CONSOLE},
+        {"normalled": True, "top": "Worm hole 1-8 top", "bottom": "Console Line In 1-8", "width": 8,
+         "category": Category.CONSOLE},
+        {"normalled": True, "top": "Worm hole 9-16 top", "bottom": "Console Line In 9-16", "width": 8,
+         "category": Category.CONSOLE, "in_use": {"bottom": False}},
         {"normalled": False, "top": "Aux 8 Out L/R", "bottom": "-", "width": 2, "category": Category.FX,
          "info": "Aux 8 is on the bay but not wired to anything yet - stereo send, no destination chosen.",
          "info_at": "top"},
