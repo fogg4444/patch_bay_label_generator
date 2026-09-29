@@ -205,7 +205,8 @@ config = [
     ] + [
         {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK} for room in SEND_ROOMS
     ] + [
-        {"normalled": False, "top": "-", "width": 3},
+        {"normalled": False, "top": "Office 2", "width": 1, "category": Category.NETWORK},
+        {"normalled": False, "top": "-", "width": 2},
     ]
   },
   {
