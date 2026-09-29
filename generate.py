@@ -2,6 +2,9 @@ from datetime import date
 import os
 from PIL import Image, ImageDraw, ImageFont
 from config import config as all_configs
+from validate import validate
+
+validate(all_configs)
 
 print('Creating your patch bay label')
 
@@ -31,6 +34,20 @@ image_height_px = int(image_height_inches * pixels_per_inch)
 
 # Load a font (this will need to be changed to a path on your system)
 fnt = ImageFont.truetype(font_location, font_size)
+
+# Labels keep their full names: anything too wide for its own ports is drawn a size or two smaller.
+min_font_size = 16
+_font_cache = {font_size: fnt}
+
+
+def font_that_fits(draw, text, max_width_px):
+    """The largest font from font_size down to min_font_size whose text fits, with a little padding."""
+    room = max_width_px - 10
+    for size in range(font_size, min_font_size - 1, -1):
+        f = _font_cache.setdefault(size, ImageFont.truetype(font_location, size))
+        if draw.textlength(text, font=f) <= room:
+            return f
+    return _font_cache[min_font_size]
 
 def clear_csv_file():
     open(csv_output_file, 'w').close()
@@ -77,10 +94,11 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool, port_count: int
 
         text_entry = entry[top_or_bottom_key]
 
-        text_length_px = int(d.textlength(text_entry, font=fnt))
-        
+        entry_font = font_that_fits(d, text_entry, rect_width)
+        text_length_px = int(d.textlength(text_entry, font=entry_font))
+
         # # Calcluate height of font
-        ascent, descent = fnt.getmetrics()
+        ascent, descent = entry_font.getmetrics()
         text_height_px = ascent + descent
 
         text_x = last_used_x_position + (rect_width / 2) - (text_length_px / 2)
@@ -98,7 +116,7 @@ def generate_single_label(top_or_bottom_key: str, reverse: bool, port_count: int
         d.rectangle(rect_top_config, width=rect_width, outline=(ink_color))
 
         # generate text
-        d.text(text_pos, text_entry, font=fnt, fill=(ink_color))
+        d.text(text_pos, text_entry, font=entry_font, fill=(ink_color))
         
         # Add underline only if it's a normalled connection
         underline_padding = 8
@@ -426,6 +444,9 @@ def generate_reference_sheet(all_configs):
 
 
 def generate_patch_bay_labels_from_json(config, index):
+    if config.get("in_use") is False:
+        print(f"Skipping labels for {config['label_name']}: not in use")
+        return
     port_count = config.get("port_count", expected_count)
     total_width = sum(e['width'] for e in config["entries"])
 
