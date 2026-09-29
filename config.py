@@ -373,6 +373,12 @@ ghost_rear = [
 
 # Odd jobs that don't belong to a bay, a cable run or a rack unit.
 todos = [
+    "Den: build the wall panel, solder it, test it",
+    "Terminate the ethernet runs still on the reels - both ends",
+    "Test every Hearback destination in the rooms",
+    "Test ethernet in every room once the drops are terminated",
+    "Screw the wall panels into the walls to finish each room off",
+    "Sort out the office - it is the messiest room left",
     "Find the screws for all the cover plates",
     "Gather every cover plate in one place",
     "Work out which rooms are missing cover plates - Kitchen and Guest Bed are, the rest unknown",
