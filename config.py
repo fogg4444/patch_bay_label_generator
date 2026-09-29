@@ -203,7 +203,7 @@ config = [
     "entries": [
         {"normalled": False, "top": "Hearback Out 1-8", "width": 8, "category": Category.NETWORK},
     ] + [
-        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK, "in_use": False} for room in SEND_ROOMS
+        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK} for room in SEND_ROOMS
     ] + [
         {"normalled": False, "top": "-", "width": 3},
     ]
