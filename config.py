@@ -31,6 +31,9 @@ open_questions = []
 # The record player keeps its network drop, but its audio reaches the console at bay 9
 # (Record Player Out), so it needs no stereo send on bay 10.
 NO_SEND = ["Record Player"]
+# The ethernet bay has its own order, and a drop the rooms list doesn't have.
+NETWORK_DROPS = ["Kitchen", "Bath Up", "Bath Dn", "Den", "Gallery", "Master Bed", "Guest Bed",
+                 "Record Player", "Office", "Office 2"]
 SEND_ROOMS = [r for r in ROOMS if r not in SPEAKER_ONLY]
 
 # Cable runs that aren't a standard room: (name, CableKind, where it lands, does it get patched).
@@ -203,9 +206,8 @@ config = [
     "entries": [
         {"normalled": False, "top": "Hearback Out 1-8", "width": 8, "category": Category.NETWORK},
     ] + [
-        {"normalled": False, "top": room, "width": 1, "category": Category.NETWORK} for room in SEND_ROOMS
+        {"normalled": False, "top": drop, "width": 1, "category": Category.NETWORK} for drop in NETWORK_DROPS
     ] + [
-        {"normalled": False, "top": "Office 2", "width": 1, "category": Category.NETWORK},
         {"normalled": False, "top": "-", "width": 2},
     ]
   },
